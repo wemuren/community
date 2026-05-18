@@ -1,10 +1,52 @@
 <?php
-$host = getenv('DB_HOST') ?: '127.0.0.1';
-$port = getenv('DB_PORT') ?: '3306';
-$db = getenv('DB_NAME') ?: 'community';
-$user = getenv('DB_USER') ?: 'root';
-$pass = getenv('DB_PASSWORD') ?: '';
-$charset = getenv('DB_CHARSET') ?: 'utf8mb4';
+function getEnvConfigValue(string $key, string $default = ''): string
+{
+    $value = getenv($key);
+    if ($value !== false && $value !== '') {
+        return $value;
+    }
+
+    static $fileConfig = null;
+
+    if ($fileConfig === null) {
+        $fileConfig = [];
+        $envPath = dirname(__DIR__) . '/.env';
+
+        if (is_readable($envPath)) {
+            $lines = file($envPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+
+            foreach ($lines as $line) {
+                $line = trim($line);
+
+                if ($line === '' || str_starts_with($line, '#') || !str_contains($line, '=')) {
+                    continue;
+                }
+
+                [$envKey, $envValue] = explode('=', $line, 2);
+                $envKey = trim($envKey);
+                $envValue = trim($envValue);
+
+                if (
+                    (str_starts_with($envValue, '"') && str_ends_with($envValue, '"')) ||
+                    (str_starts_with($envValue, "'") && str_ends_with($envValue, "'"))
+                ) {
+                    $envValue = substr($envValue, 1, -1);
+                }
+
+                $fileConfig[$envKey] = $envValue;
+            }
+        }
+    }
+
+    return $fileConfig[$key] ?? $default;
+}
+
+$host = getEnvConfigValue('DB_HOST', '127.0.0.1');
+$port = getEnvConfigValue('DB_PORT', '3306');
+$db = getEnvConfigValue('DB_NAME', 'community');
+$user = getEnvConfigValue('DB_USER', 'root');
+$pass = getEnvConfigValue('DB_PASSWORD', '');
+$charset = getEnvConfigValue('DB_CHARSET', 'utf8mb4');
 
 $dsn = "mysql:host=$host;port=$port;dbname=$db;charset=$charset";
 $options = [
