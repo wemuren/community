@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost/projects/community/api';
-const THUMB_URL = 'http://localhost/projects/community/api/uploads/thumbnails/';
+import { API_BASE_URL } from '@/config/api';
+import { THUMB_URL } from '@/config/api';
 
 const PlaylistCard = ({ playlist, onEdit, authUser }) => {
   const navigate = useNavigate();

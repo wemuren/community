@@ -3,8 +3,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import '../assets/styles/admin.css'; 
 
-const API_BASE_URL = 'http://localhost/projects/community/api';
-const THUMB_URL = 'http://localhost/projects/community/api/uploads/thumbnails/';
+import { API_BASE_URL } from '@/config/api';
+import { THUMB_URL } from '@/config/api';
 
 const StudioVideos = () => {
   const navigate = useNavigate();

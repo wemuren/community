@@ -4,8 +4,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import '../assets/styles/studio.css';
 import '../assets/styles/auth.css'; // Для счетчиков и ошибок
 
-const API_BASE_URL = 'http://localhost/projects/community/api';
-const THUMB_URL = 'http://localhost/projects/community/api/uploads/thumbnails/';
+import { API_BASE_URL } from '@/config/api';
+import { THUMB_URL } from '@/config/api';
 
 const StudioEdit = () => {
   const { id } = useParams();

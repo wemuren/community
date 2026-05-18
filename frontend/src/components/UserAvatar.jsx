@@ -1,4 +1,5 @@
 import React from 'react';
+import { AVATAR_URL } from '@/config/api';
 
 // Выносим палитру и логику цвета наружу, чтобы не пересоздавать при каждом рендере
 const getAvatarStyle = (username) => {
@@ -26,7 +27,7 @@ const UserAvatar = ({ user, sizeClass }) => {
     return (
       <div className={sizeClass}>
         <img 
-          src={`http://localhost/projects/community/api/uploads/avatars/${user.avatar}`} 
+          src={`${AVATAR_URL}${user.avatar}`} 
           alt="" 
           onError={(e) => { e.target.style.display = 'none'; }} // На случай, если файл удален с сервера
         />

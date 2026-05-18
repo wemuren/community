@@ -1,5 +1,5 @@
 <?php
-header("Access-Control-Allow-Origin: http://localhost:5173"); // Разрешаем твой Vite
+header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST, GET, OPTIONS, DELETE"); // Разрешаем методы
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With"); // РАЗРЕШАЕМ Content-Type
 header("Access-Control-Allow-Origin: *");

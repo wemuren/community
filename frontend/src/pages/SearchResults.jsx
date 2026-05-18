@@ -5,7 +5,7 @@ import VideoCard from '../components/VideoCard';
 import UserAvatar from '../components/UserAvatar';
 import { useVideoActions } from '../hooks/useVideoActions';
 
-const THUMB_URL = 'http://localhost/projects/community/api/uploads/thumbnails/';
+import { API_BASE_URL, THUMB_URL } from '@/config/api';
 
 const SearchResults = () => {
   const navigate = useNavigate();
@@ -20,7 +20,7 @@ const SearchResults = () => {
     const fetchResults = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(`http://localhost/projects/community/api/search/global_search.php?q=${encodeURIComponent(query)}`);
+        const res = await axios.get(`${API_BASE_URL}/search/global_search.php?q=${encodeURIComponent(query)}`);
         setResults(res.data);
       } catch (err) {
         console.error("Search error:", err);

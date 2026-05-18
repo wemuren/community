@@ -3,7 +3,7 @@ import axios from 'axios';
 import '../assets/styles/playlist.css';
 import PlaylistCard from '../components/PlaylistCard';
 
-const API_BASE_URL = 'http://localhost/projects/community/api';
+import { API_BASE_URL } from '@/config/api';
 
 const Playlists = () => {
   const [playlists, setPlaylists] = useState([]);

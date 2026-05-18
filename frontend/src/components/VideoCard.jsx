@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import UserAvatar from './UserAvatar';
 
-const THUMB_URL = 'http://localhost/projects/community/api/uploads/thumbnails/';
+import { THUMB_URL } from '@/config/api';
 
 const VideoCard = ({ 
   video, 

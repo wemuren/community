@@ -3,7 +3,7 @@ import axios from 'axios';
 import '../assets/styles/admin.css';
 import UserAvatar from '../components/UserAvatar';
 
-const API_BASE_URL = 'http://localhost/projects/community/api';
+import { API_BASE_URL } from '@/config/api';
 
 const Monetization = () => {
   const [data, setData] = useState({ promos: [], premiums: [], price: '0' });

@@ -5,10 +5,10 @@ import UserAvatar from '../components/UserAvatar';
 import AdminUserModal from './components/AdminUserModal';
 
 
-const API_BASE_URL = 'http://localhost/projects/community/api';
-const UPLOADS_URL = 'http://localhost/projects/community/api/uploads/videos/';
-const BANNER_URL = 'http://localhost/projects/community/api/uploads/banners/';
-const THUMB_URL = 'http://localhost/projects/community/api/uploads/thumbnails/';
+import { API_BASE_URL } from '@/config/api';
+import { VIDEO_URL as UPLOADS_URL } from '@/config/api';
+import { BANNER_URL } from '@/config/api';
+import { THUMB_URL } from '@/config/api';
 
 const Channels = () => {
   const [channels, setChannels] = useState([]);

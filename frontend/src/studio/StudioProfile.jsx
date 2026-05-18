@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost/projects/community/api';
+import { API_BASE_URL } from '@/config/api';
 
 const StudioProfile = () => {
   const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')));

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../assets/styles/admin.css';
 
-const API_BASE_URL = 'http://localhost/projects/community/api';
+import { API_BASE_URL } from '@/config/api';
 
 const Tags = () => {
   const [tags, setTags] = useState([]);

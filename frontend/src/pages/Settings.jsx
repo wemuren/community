@@ -4,7 +4,7 @@ import axios from 'axios';
 import '../assets/styles/user.css';
 import '../assets/styles/auth.css';
 
-const API_BASE_URL = 'http://localhost/projects/community/api';
+import { API_BASE_URL } from '@/config/api';
 
 const normalize = (str) => (str || '').trim().toLowerCase();
 

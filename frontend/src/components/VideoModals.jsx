@@ -1,7 +1,7 @@
 import React from 'react';
 import UserAvatar from './UserAvatar';
 
-const UPLOADS_URL = 'http://localhost/projects/community/api/uploads/videos/';
+import { VIDEO_URL as UPLOADS_URL } from '@/config/api';
 
 const VideoModals = ({ 
   // Состояние плейлистов

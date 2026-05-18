@@ -5,7 +5,7 @@ import VideoCard from '../components/VideoCard'; // Импорт карточк�
 import { useVideoActions } from '../hooks/useVideoActions'; // Импорт действий
 import { useNavigate } from 'react-router-dom';
 
-const API_BASE_URL = 'http://localhost/projects/community/api';
+import { API_BASE_URL, AVATAR_URL } from '@/config/api';
 
 const StudioDashboard = () => {
   const [stats, setStats] = useState(null);
@@ -107,7 +107,7 @@ const StudioDashboard = () => {
                 gap: '12px'
               }}>
                 <img 
-                  src={c.avatar ? `http://localhost/projects/community/api/uploads/avatars/${c.avatar}` : '/default-avatar.png'} 
+                  src={c.avatar ? `${AVATAR_URL}${c.avatar}` : '/default-avatar.png'} 
                   style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover' }}
                   alt=""
                 />
