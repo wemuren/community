@@ -1,0 +1,227 @@
+.auth-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: #ffffff;
+    font-family: 'Inter', sans-serif;
+}
+
+.logo-main {
+    font-size: 48px;
+    font-weight: 900;
+    letter-spacing: -2px;
+    margin-bottom: 80px;
+}
+
+.logo-main span {
+    background-color: #ff0000;
+    color: white;
+    padding: 0 4px;
+    margin-left: 2px;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 500px;
+    padding: 20px;
+}
+
+.auth-card h2 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 32px;
+    text-transform: uppercase;
+}
+
+.input-group {
+    margin-bottom: 24px;
+    display: flex;
+    flex-direction: column;
+}
+
+.input-group label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.auth-input {
+    border: none;
+    border-bottom: 1px solid #ccc;
+    padding: 12px 0;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.auth-input:focus {
+    border-bottom: 2px solid #000;
+}
+
+.captcha-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 24px 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.btn-auth {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 8px;
+    background-color: #b0b0b0; /* Серый по дефолту */
+    color: white;
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-auth.active {
+    border-radius: 8px;
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0.50) 0%, rgba(255, 0, 0, 0.50) 100%), #000;
+}
+
+.btn-auth:hover.active {
+    background-color: #600000;
+}
+
+.auth-footer {
+    margin-top: 32px;
+    text-align: center;
+    font-size: 14px;
+    color: #333;
+}
+
+.auth-footer a {
+    color: #000;
+    font-weight: 700;
+    text-decoration: underline;
+}
+
+.legal-text {
+    margin-top: 24px;
+    font-size: 12px;
+    color: #999;
+    text-align: center;
+    line-height: 1.5;
+}
+
+.error-message {
+    color: #C20000;
+    font-size: 13px;
+    font-weight: 500;
+    margin-top: 12px;
+    text-align: center;
+    animation: fadeIn 0.3s ease; /* Плавное появление */
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Красная линия инпута при ошибке (опционально) */
+.auth-input.error {
+    border-bottom: 2px solid #C20000;
+}
+
+.code-info {
+    margin: 24px 0;
+    text-align: center;
+    font-size: 14px;
+    color: #666;
+    line-height: 1.6;
+}
+
+.timer-text {
+    color: #999;
+    display: block;
+    margin-top: 8px;
+}
+
+.resend-link {
+    background: none;
+    border: none;
+    color: #000;
+    font-weight: 700;
+    text-decoration: underline;
+    cursor: pointer;
+    display: block;
+    margin: 8px auto 0;
+    font-family: inherit;
+    font-size: 14px;
+    padding: 0;
+}
+
+.resend-link:hover {
+    color: #C20000; /* Наш фирменный красный при наведении */
+}
+
+.password-group {
+    position: relative;
+}
+
+.eye-icon {
+    position: absolute;
+    right: 0;
+    bottom: 12px;
+    cursor: pointer;
+    font-size: 18px;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+}
+
+.eye-icon:hover {
+    opacity: 1;
+}
+
+/* Красивая ссылка "Забыли пароль" */
+.auth-card a:hover {
+    text-decoration: underline !important;
+}
+
+.input-group {
+  position: relative; /* Для позиционирования счетчика */
+  margin-bottom: 24px;
+}
+
+.char-counter {
+  position: absolute;
+  right: 0;
+  top: 0;
+  font-size: 11px;
+  color: #999;
+  font-weight: 500;
+}
+
+.char-counter.limit {
+  color: var(--brand-red); /* Когда достигли максимума */
+}
+
+.error-label {
+  display: block;
+  color: var(--brand-red);
+  font-size: 12px;
+  margin-top: 6px;
+  font-weight: 500;
+  animation: fadeIn 0.3s ease;
+}
+
+.auth-input.invalid {
+  border-color: var(--brand-red) !important;
+  background-color: rgba(255, 71, 71, 0.05);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}

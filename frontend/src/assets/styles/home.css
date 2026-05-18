@@ -1,0 +1,341 @@
+.home-container {
+  background: var(--white);
+  padding: 24px;
+  border-radius: 24px;
+}
+
+.tags-container {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.tag-btn {
+  padding: 8px 16px;
+  background: var(--white);
+  box-shadow: var(--shadow-soft);
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.03);
+  font-size: 18px;
+}
+
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.video-card {
+  padding: 12px;
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: 0.3s;
+}
+
+.video-card:hover{
+  background: #e5e5e5;
+}
+
+.video-thumbnail {
+  height: 200px;
+  /* Убираем жесткий красный фон по умолчанию, если он мешает */
+  background: #eee; 
+  border-radius: 16px;
+  display: flex;
+  justify-content: flex-end;
+  /* padding: 16px;  <-- УДАЛИ ЭТУ СТРОЧКУ ИЛИ ЗАКОММЕНТИРУЙ */
+  position: relative;
+  overflow: hidden; /* Это важно, чтобы картинка не вылезала за скругления */
+}
+
+/* Растягиваем картинку на весь блок без зазоров */
+.thumb-img-main {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute; /* Чтобы она была под иконками ховера */
+  top: 0;
+  left: 0;
+}
+
+/* Если картинки нет, показываем цветную заглушку (для премиума и обычных) */
+.no-thumb-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.overlay-icons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.icon-badge {
+  background: rgba(244, 244, 244, 0.5);
+  backdrop-filter: blur(4px);
+  padding: 8px;
+  border-radius: 8px;
+}
+
+.video-info {
+  display: flex;
+  gap: 16px;
+}
+
+.author-avatar {
+  width: 48px;
+  height: 48px;
+  background: var(--primary-red);
+  border-radius: 50%;
+}
+
+.video-title { font-size: 16px; margin: 0; }
+.video-meta { color: var(--text-muted); font-size: 14px; }
+
+.video-thumbnail {
+  position: relative;
+  overflow: hidden;
+}
+
+.hover-actions {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 5;
+}
+
+.video-card:hover .hover-actions {
+  opacity: 1;
+}
+
+.action-btn {
+  background: rgba(0, 0, 0, 0.7);
+  border: none;
+  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.action-btn:hover {
+  background: #C20000;
+}
+
+/* Модалка плейлистов */
+.playlist-modal-content {
+    background: white;
+    padding: 24px;
+    border-radius: 24px;
+    width: 100%;
+    max-width: 360px;
+}
+
+.playlist-scroll-area {
+    margin: 15px 0;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.playlist-row-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: 0.2s;
+    gap: 12px;
+}
+
+.playlist-row-item:hover { background: #f5f5f5; }
+
+.create-pl-inline {
+    display: flex;
+    gap: 8px;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+.create-pl-inline input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    outline: none;
+}
+
+.create-pl-inline button {
+    background: #C20000;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* Теги в плеере */
+.video-tag-badge {
+    color: #C20000;
+    font-size: 13px;
+    font-weight: 600;
+    margin-right: 8px;
+}
+
+.player-info-block {
+    padding: 20px;
+}
+
+.player-description {
+    margin-top: 15px;
+    font-size: 14px;
+    color: #444;
+    line-height: 1.5;
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 12px;
+}
+
+.thumb-img-main { width: 100%; height: 100%; object-fit: cover; }
+
+.avatar-home-grid { width: 36px; height: 36px; border-radius: 50%; }
+
+/* --- СТИЛИ ДЛЯ АВАТАРОК (Home.jsx) --- */
+
+/* Контейнер аватарки в сетке видео (Home) */
+.avatar-home-grid {
+  width: 38px;  /* Размер круга */
+  height: 38px;
+  border-radius: 50%; /* Делаем круглым */
+  overflow: hidden; /* Скрываем всё, что выходит за пределы круга */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Добавляем легкую обводку, чтобы буквы/фото не сливались с фоном */
+  border: 1px solid rgba(0,0,0,0.05);
+  font-weight: bold;
+  font-size: 16px; /* Размер буквы, если нет фото */
+  color: #fff; /* Цвет буквы */
+  user-select: none; /* Чтобы букву нельзя было выделить мышкой */
+}
+
+/* Картинка внутри круга аватарки */
+.avatar-home-grid img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Заполняем круг картинкой без искажений */
+  display: block;
+}
+
+/* Ссылка-обертка вокруг аватарки */
+.author-avatar-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none; /* Убираем подчеркивание */
+  transition: opacity 0.2s;
+}
+
+.author-avatar-link:hover {
+  opacity: 0.8; /* Легкий эффект при наведении */
+}
+
+/* --- Правка для выравнивания блока инфо --- */
+.video-info {
+  display: flex;
+  gap: 12px; /* Чуть уменьшим отступ, чтобы было плотнее */
+  margin-top: 5px;
+  align-items: center; /* Выравниваем аватарку и текст по центру */
+}
+
+/* --- СТИЛЬ ДЛЯ ПЛЕЕРА --- */
+.avatar-mini {
+  width: 48px;  /* В плеере аватарка может быть чуть крупнее */
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.avatar-mini img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* --- СТИЛИ ДЛЯ ВЕРХНЕЙ ЛЕНТЫ ПОДПИСОК (Subscriptions.jsx) --- */
+
+/* Контейнер для каждой аватарки в горизонтальном списке */
+.avatar-subs-list {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f0f0; /* Светлый фон для пустого состояния */
+  border: 2px solid var(--primary-red); /* Тонкий красный ободок в стиле твоего бренда */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  font-size: 24px; /* Размер буквы, если нет фото */
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0; /* Чтобы кружок не сплющивался при узком экране */
+}
+
+/* Эффект при наведении на кружок канала */
+.sub-channel-item:hover .avatar-subs-list {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(194, 0, 0, 0.2);
+}
+
+/* Картинка внутри кружка */
+.avatar-subs-list img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Подпись под аватаркой (имя канала) */
+.sub-channel-item span {
+  display: block;
+  margin-top: 8px;
+  max-width: 80px; /* Чтобы длинные имена не растягивали сетку */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* Добавляет "..." если имя слишком длинное */
+  color: #333;
+}
+
+/* Красивый скроллбар для ленты каналов (чтобы не был уродливым в Windows) */
+.subs-channels-list::-webkit-scrollbar {
+  height: 4px;
+}
+
+.subs-channels-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.subs-channels-list::-webkit-scrollbar-thumb {
+  background: #eee;
+  border-radius: 10px;
+}

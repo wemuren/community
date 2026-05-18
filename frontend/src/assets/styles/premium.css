@@ -1,0 +1,204 @@
+.premium-page-wrapper {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 60px 20px;
+}
+
+.premium-hero {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.premium-hero h1 {
+  font-size: 3rem;
+  font-weight: 900;
+  letter-spacing: -1px;
+}
+
+.red-shine {
+  color: var(--brand-red);
+  text-shadow: 0 0 20px rgba(255, 71, 71, 0.4);
+}
+
+.premium-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+}
+
+.premium-card {
+  background: white;
+  padding: 40px;
+  border-radius: 24px;
+  border: 1px solid #eee;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.featured-card {
+  border: 2px solid var(--brand-red);
+  box-shadow: 0 20px 40px rgba(255, 71, 71, 0.1);
+  transform: scale(1.05);
+}
+
+.card-icon { font-size: 50px; margin-bottom: 20px; }
+
+.price-display {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin: 20px 0;
+}
+
+.price-display span { font-size: 1.5rem; color: #888; }
+
+.features-list {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0 40px;
+  text-align: left;
+}
+
+.features-list li { margin-bottom: 10px; color: #444; }
+
+.premium-btn {
+  width: 100%;
+  padding: 16px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: 0.2s;
+}
+
+.premium-btn.primary { background: var(--brand-red); color: white; }
+.premium-btn.secondary { background: #f0f0f0; color: #333; }
+.premium-btn:hover { opacity: 0.9; transform: translateY(-2px); }
+
+.premium-input {
+  width: 100%;
+  padding: 14px;
+  border: 2px solid #eee;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  text-align: center;
+  font-family: monospace;
+  font-size: 1.1rem;
+}
+
+/* MODAL */
+.pay-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.pay-modal-content {
+  background: white;
+  padding: 40px;
+  border-radius: 30px;
+  width: 100%;
+  max-width: 450px;
+}
+
+.pay-form { margin-top: 30px; }
+.input-group { margin-bottom: 20px; text-align: left; }
+.input-group label { display: block; margin-bottom: 8px; font-weight: 600; }
+.input-group input { 
+  width: 100%; 
+  padding: 12px; 
+  border: 1px solid #ddd; 
+  border-radius: 8px; 
+  font-size: 1rem;
+}
+
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+
+.pay-submit-btn {
+  width: 100%;
+  padding: 16px;
+  background: var(--brand-red);
+  color: white;
+  border-radius: 12px;
+  border: none;
+  font-weight: 700;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.pay-cancel-btn {
+  width: 100%;
+  margin-top: 10px;
+  background: none;
+  border: none;
+  color: #888;
+  cursor: pointer;
+}
+
+
+/* ... Предыдущие стили без изменений ... */
+
+/* УНИВЕРСАЛЬНЫЙ СТИЛЬ ДЛЯ МАСКИРОВАННЫХ ИНПУТОВ */
+.premium-input-masked {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-family: monospace; /* Чтобы цифры были одинаковой ширины */
+  letter-spacing: 1px;
+}
+
+.premium-input-masked:focus {
+  border-color: var(--brand-red);
+  box-shadow: 0 0 10px rgba(255, 71, 71, 0.1);
+}
+
+.mini-input {
+  text-align: center;
+  padding: 14px 10px;
+}
+
+.cvc-input {
+  font-family: Arial, sans-serif; /* Для звездочек *** обычный шрифт лучше */
+  font-size: 1.3rem;
+  letter-spacing: 3px;
+}
+
+/* MODAL FIXES */
+.modal-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.accepted-cards {
+  display: flex;
+  gap: 8px;
+}
+
+.accepted-cards img {
+  height: 20px;
+  opacity: 0.7;
+}
+
+.flex-row {
+  display: flex;
+  gap: 15px;
+}
+
+.full-width {
+  width: 100% !important;
+}
+
+.modal-actions {
+  margin-top: 30px;
+}
