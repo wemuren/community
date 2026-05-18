@@ -8,8 +8,8 @@ import VideoModals from '../components/VideoModals';
 import { useVideoActions } from '../hooks/useVideoActions';
 import PlaylistCard from '../components/PlaylistCard';
 
-const API_BASE_URL = 'http://localhost/projects/community/api';
-const BANNER_URL = 'http://localhost/projects/community/api/uploads/banners/';
+import { API_BASE_URL } from '@/config/api';
+import { BANNER_URL } from '@/config/api';
 
 const User_cabinet = () => {
   const { id } = useParams();

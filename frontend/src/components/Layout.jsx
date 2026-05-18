@@ -6,7 +6,7 @@ import '../assets/styles/search-dropdown.css';
 import logo from '../assets/img/logo.svg';
 import { House, Users, ListVideo, User, PaintbrushVertical, Plus, Settings, LogOut, Search } from 'lucide-react';
 
-const API_BASE_URL = 'http://localhost/projects/community/api';
+import { API_BASE_URL } from '@/config/api';
 const THUMB_URL = `${API_BASE_URL}/uploads/thumbnails/`;
 
 const isPremiumActive = (user) => {

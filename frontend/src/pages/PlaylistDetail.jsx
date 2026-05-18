@@ -7,7 +7,7 @@ import VideoCard from '../components/VideoCard';
 import VideoModals from '../components/VideoModals';
 import { useVideoActions } from '../hooks/useVideoActions';
 
-const API_BASE_URL = 'http://localhost/projects/community/api';
+import { API_BASE_URL } from '@/config/api';
 
 const PlaylistDetail = () => {
   const { id } = useParams();

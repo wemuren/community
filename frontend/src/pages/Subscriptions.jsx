@@ -7,7 +7,7 @@ import UserAvatar from '../components/UserAvatar';
 import VideoModals from '../components/VideoModals';
 import { useVideoActions } from '../hooks/useVideoActions';
 
-const API_BASE_URL = 'http://localhost/projects/community/api';
+import { API_BASE_URL } from '@/config/api';
 
 const Subscriptions = () => {
   const authUser = JSON.parse(localStorage.getItem('user'));

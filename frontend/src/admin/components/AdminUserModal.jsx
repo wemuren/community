@@ -1,8 +1,8 @@
 import React from 'react';
 import UserAvatar from '../../components/UserAvatar';
 
-const BANNER_URL = 'http://localhost/projects/community/api/uploads/banners/';
-const THUMB_URL = 'http://localhost/projects/community/api/uploads/thumbnails/';
+import { BANNER_URL } from '@/config/api';
+import { THUMB_URL } from '@/config/api';
 
 const AdminUserModal = ({ 
   user, 

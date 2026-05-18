@@ -1,0 +1,64 @@
+name: Deploy To VPS
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script_stop: true
+          script: |
+            set -eu
+
+            APP_DIR="${{ secrets.VPS_APP_DIR }}"
+            CONTAINER_NAME="community-app"
+            IMAGE_NAME="community-app:latest"
+            HOST_PORT="${{ secrets.VPS_APP_PORT }}"
+
+            if [ -z "$HOST_PORT" ]; then
+              HOST_PORT="8080"
+            fi
+
+            cd "$APP_DIR"
+
+            if [ ! -f ".env" ]; then
+              echo ".env file not found in $APP_DIR"
+              exit 1
+            fi
+
+            git fetch origin master
+            git pull --ff-only origin master
+
+            docker build -t "$IMAGE_NAME" .
+
+            if docker ps -a --format '{{.Names}}' | grep -Eq "^${CONTAINER_NAME}$"; then
+              docker rm -f "$CONTAINER_NAME"
+            fi
+
+            docker run -d \
+              --name "$CONTAINER_NAME" \
+              --restart unless-stopped \
+              --env-file .env \
+              --add-host=host.docker.internal:host-gateway \
+              -p "${HOST_PORT}:80" \
+              "$IMAGE_NAME"
+
+            docker image prune -f

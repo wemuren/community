@@ -6,9 +6,9 @@ import '../assets/styles/video-page.css';
 import VideoModals from '../components/VideoModals';
 import { useVideoActions } from '../hooks/useVideoActions';
 
-const API_BASE_URL = 'http://localhost/projects/community/api';
-const VIDEO_URL = 'http://localhost/projects/community/api/uploads/videos/';
-const THUMB_URL = 'http://localhost/projects/community/api/uploads/thumbnails/';
+import { API_BASE_URL } from '@/config/api';
+import { VIDEO_URL } from '@/config/api';
+import { THUMB_URL } from '@/config/api';
 const COMMENT_LIMIT = 500;
 
 const getAuthUser = () => JSON.parse(localStorage.getItem('user'));

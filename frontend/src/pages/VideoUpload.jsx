@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import '../assets/styles/studio.css';
 import '../assets/styles/auth.css'; // Для счетчиков и ошибок
 
-const API_BASE_URL = 'http://localhost/projects/community/api';
+import { API_BASE_URL } from '@/config/api';
 
 const VideoUpload = () => {
   const navigate = useNavigate();

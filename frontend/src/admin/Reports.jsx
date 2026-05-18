@@ -3,9 +3,9 @@ import axios from 'axios';
 import '../assets/styles/admin.css';
 import UserAvatar from '../components/UserAvatar';
 
-const API_BASE_URL = 'http://localhost/projects/community/api';
-const BANNER_URL = 'http://localhost/projects/community/api/uploads/banners/';
-const THUMB_URL = 'http://localhost/projects/community/api/uploads/thumbnails/';
+import { API_BASE_URL } from '@/config/api';
+import { BANNER_URL } from '@/config/api';
+import { THUMB_URL } from '@/config/api';
 
 const Reports = () => {
   const [reports, setReports] = useState([]);
