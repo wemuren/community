@@ -1,0 +1,94 @@
+/* --- АДАПТИВНАЯ СЕТКА ВИДЕОПОТОКА (GRID SYSTEM) --- */
+.video-grid {
+  display: grid;
+  /* Базовое состояние для больших мониторов (1920 и выше) — строго 4 видео в ряд */
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+  width: 100%;
+  box-sizing: border-box;
+  align-items: start;
+}
+
+/* --- КНОПКИ ТЕГОВ (ГОРИЗОНТАЛЬНАЯ ПРОКРУТКА ПО ФИГМЕ) --- */
+.tags-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  width: 100%;
+  
+  /* Включаем горизонтальную прокрутку вместо wrap */
+  overflow-x: auto;
+  white-space: nowrap;
+  
+  /* Прячем уродливый дефолтный скроллбар браузера, чтобы сохранить минимализм */
+  scrollbar-width: none; /* Firefox */
+  padding-bottom: 4px; /* Небольшой зазор под тени при скролле */
+}
+
+.tags-container::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.tag-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border-radius: var(--border-radius-sm); /* 8px из index.css */
+  flex-shrink: 0; /* Чтобы кнопки не сжимались при длинной ленте */
+  
+  /* Белые с тенью по умолчанию */
+  background: var(--white);
+  box-shadow: var(--shadow-soft);
+  border: none;
+  
+  color: var(--text-main);
+  font-size: var(--descr); /* 16px из index.css */
+  font-weight: 400;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+/* Ховер: серые с сохранением тени */
+.tag-btn:hover {
+  background-color: #F7F7F7; 
+}
+
+/* Выбранный тег */
+.tag-btn.active {
+  background-color: var(--primary-red);
+  color: var(--white);
+}
+
+.tag-btn:active {
+  transform: scale(0.98);
+}
+
+/* --- МЕДИА-ЗАПРОСЫ ПОД МОНИТОРЫ И НОУТБУКИ --- */
+
+/* Ноутбуки и экраны поменьше (например, 1440, 1366 и ниже) */
+@media (max-width: 1445px) {
+  .video-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)); /* Строго 3 в ряд */
+    gap: 20px;
+  }
+}
+
+/* Планшеты */
+@media (max-width: 1024px) {
+  .video-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+}
+
+/* Мобильные телефоны */
+@media (max-width: 600px) {
+  .video-grid {
+    grid-template-columns: minmax(0, 1fr); /* Строго 1 видео в ряд на весь экран */
+    gap: 16px;
+  }
+}

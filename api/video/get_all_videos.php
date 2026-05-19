@@ -1,21 +1,33 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: *");
-header("Access-Control-Allow-Methods: POST, OPTIONS");
+// ИСПРАВЛЕНО: Добавлен GET в список разрешенных методов модерации браузера
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Content-Type: application/json; charset=UTF-8");
 require_once '../db.php';
 
+// Принимаем ID текущего залогиненного юзера с фронтенда для проверки флагов активности
+$current_user_id = isset($_GET['user_id']) ? (int)$_GET['user_id'] : 0;
 $tagFilter = $_GET['tag'] ?? null;
 
 try {
-    $sql = "SELECT v.*, u.username, u.full_name, u.avatar, 
+    // ИСПРАВЛЕНО: Добавлены динамические подзапросы для вычисления is_liked и in_later по БД
+    $sql = "SELECT v.*, u.username, u.full_name, u.avatar, u.is_paid,
             (SELECT GROUP_CONCAT(t.name) 
              FROM video_tags vt 
              JOIN tags t ON vt.tag_id = t.id 
-             WHERE vt.video_id = v.id) as tags_list
+             WHERE vt.video_id = v.id) as tags_list,
+            (SELECT COUNT(*) 
+             FROM playlist_videos pv 
+             JOIN playlists p ON pv.playlist_id = p.id 
+             WHERE pv.video_id = v.id AND p.user_id = :current_user_1 AND p.type = 'liked') as is_liked,
+            (SELECT COUNT(*) 
+             FROM playlist_videos pv 
+             JOIN playlists p ON pv.playlist_id = p.id 
+             WHERE pv.video_id = v.id AND p.user_id = :current_user_2 AND p.type = 'watch_later') as in_later
             FROM videos v
             JOIN users u ON v.user_id = u.id
-            WHERE u.is_active = 1";  // ← скрываем видео забаненных
+            WHERE u.is_active = 1"; // Скрываем ролики забаненных авторов
 
     if ($tagFilter) {
         $sql .= " AND v.id IN (
@@ -29,6 +41,9 @@ try {
     $sql .= " ORDER BY v.created_at DESC";
 
     $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':current_user_1', $current_user_id, PDO::PARAM_INT);
+    $stmt->bindParam(':current_user_2', $current_user_id, PDO::PARAM_INT);
+    
     if ($tagFilter) {
         $stmt->bindParam(':tag_name', $tagFilter);
     }

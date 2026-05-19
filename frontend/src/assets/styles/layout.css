@@ -1,6 +1,6 @@
 :root {
   --sidebar-padding: clamp(16px, 2vh, 24px);
-  --menu-gap: clamp(24px, 1.8vh, 24px); 
+  --menu-gap: 24px; 
 }
 
 .app-container {
@@ -11,7 +11,7 @@
 }
 
 .sidebar {
-  width: 280px;
+  width: 315px;
   min-width: 280px;
   background: var(--white);
   padding: var(--sidebar-padding);
@@ -25,6 +25,10 @@
   
   overflow-y: auto;
   scrollbar-width: none;
+}
+
+.sidebar-top{
+  gap: 48px;
 }
 
 .sidebar::-webkit-scrollbar {
@@ -44,12 +48,23 @@
   color: var(--primary-red); 
 }
 
+.page-wrapper{
+  height: 100%;
+}
+
+.home-container {
+  background: var(--white);
+  padding: 24px;
+  border-radius: 24px;
+  min-height: 100vh;
+}
+
 .main-content {
   flex: 1;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  height: 100vh;
+  min-height: 100vh;
 }
 
 .nav-menu {
@@ -102,17 +117,18 @@ button.nav-link {
 }
 
 
+/* ── Premium card — по Фигме ── */
+
 .premium-card {
   display: flex;
   padding: 16px;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 24px;
   box-sizing: border-box;
+  gap: 24px;
 
   border-radius: 16px;
   background: var(--white);
-  box-shadow: var(--shadow-soft);
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.04);
 }
 
 .premium-info {
@@ -120,25 +136,25 @@ button.nav-link {
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
-  gap: 16px;
+  gap: 8px;
   width: 100%;
 }
 
-.premium-title { 
-  font-size: var(--p);
-  font-weight: 400;
+.premium-title {
+  font-size: 15px;
+  font-weight: 500;
   color: var(--text-main);
   margin: 0;
-  line-height: 1.2;
+  line-height: 1.3;
 }
 
-.premium-price, 
-.premium-days { 
-  color: var(--text-muted); 
-  font-size: var(--descr);
+.premium-price,
+.premium-days {
+  color: rgba(0, 0, 0, 0.50);  /* Фигма: rgba(0,0,0,0.50) */
+  font-size: 13px;
   font-weight: 400;
   margin: 0;
-  line-height: 1.2;
+  line-height: 1.3;
 }
 
 .premium-days strong {
@@ -148,17 +164,18 @@ button.nav-link {
 
 .premium-button {
   width: 100%;
-  align-self: stretch;
-  padding: 8px 0;
+  padding: 8px 0;           /* Фигма: 8px top/bottom */
   background: var(--premium-gradient);
-  border-radius: var(--border-radius-sm);
-  color: var(--white);
-  
-  font-size: var(--button);
-  font-weight: 700;
-  text-transform: uppercase;
-  text-align: center;
+  /* --premium-gradient: linear-gradient(135deg, black 0%, #3B0000 32%, #810000 63%, #C60000 83%, #FF0000 100%) */
+  border-radius: 8px;
   border: none;
+  color: var(--white);
+
+  font-size: 18px;          /* Фигма: 18px, не 20px */
+  font-weight: 700;
+  font-family: var(--font-main);
+  text-transform: none;     /* Фигма: "Оформить" — не uppercase */
+  text-align: center;
   cursor: pointer;
   display: flex;
   justify-content: center;
@@ -167,18 +184,10 @@ button.nav-link {
   transition: opacity 0.2s, transform 0.1s;
 }
 
-.premium-button:hover {
-  opacity: 0.92;
-}
+.premium-button:hover  { opacity: 0.9; }
+.premium-button:active { transform: scale(0.98); }
 
-.premium-button:active {
-  transform: scale(0.98); 
-}
-
-.premium-card.is-premium {
-  border: 1px solid rgba(194, 0, 0, 0.25);
-}
-
+/* Модификаторы состояния */
 .premium-card.is-premium .premium-title {
   color: var(--primary-red);
   font-weight: 600;
@@ -196,19 +205,14 @@ button.nav-link {
 }
 
 .footer-links {
-  margin-top: 12px;
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px 12px;
-  padding-top: 12px;
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  flex-direction: column;
+  gap: 12px !important;
 }
 
 .footer-links a {
-  color: #BBB;
-  text-decoration: none;
-  font-size: 10px;
-  font-weight: 500;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.50);
 }
 
 .header {

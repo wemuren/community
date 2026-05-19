@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Plus } from 'lucide-react';
 import '../assets/styles/playlist.css';
+import '../assets/styles/video-card.css'; // Переиспользуем .video-grid отсюда
 import PlaylistCard from '../components/PlaylistCard';
 
 import { API_BASE_URL } from '@/config/api';
 
 const Playlists = () => {
   const [playlists, setPlaylists] = useState([]);
-  const [savedPlaylists, setSavedPlaylists] = useState([]); // Стейт для сохраненных чужих плейлистов
+  const [savedPlaylists, setSavedPlaylists] = useState([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingPlaylist, setEditingPlaylist] = useState(null);
   const [isDeleteConfirm, setIsDeleteConfirm] = useState(null);
@@ -24,18 +26,16 @@ const Playlists = () => {
         `${API_BASE_URL}/playlist/get_user_playlists.php?user_id=${authUser.id}&viewer_id=${authUser.id}`
       );
       if (res.data.status === 'success') {
-        // Устанавливаем свои плейлисты
         setPlaylists(res.data.playlists || []);
-        // Устанавливаем сохраненные чужие плейлисты
         setSavedPlaylists(res.data.saved_playlists || []);
       } 
     } catch (err) { 
-      console.error("Ошибка загрузки плейлистов:", err); 
+      console.error("Ошибка загрузки плейлистов:", err);
     }
   };
 
   useEffect(() => { 
-    fetchPlaylists(); 
+    fetchPlaylists(); // eslint-disable-line react-hooks/exhaustive-deps
   }, []);
 
   const handleCreate = async () => {
@@ -74,18 +74,19 @@ const Playlists = () => {
     } catch (err) { console.error(err); }
   };
 
+
   return (
     <div className="home-container">
-      {/* ВЕРХНЯЯ ПАНЕЛЬ */}
-      <div className="pl-top-bar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
-        <h2 className="section-title">Плейлисты</h2>
+      {/* ВЕРХНЯЯ ПАНЕЛЬ С СИСТЕМНОЙ ИКОНКОЙ PLUS */}
+      <div className="pl-top-bar">
+        <h2>Плейлисты</h2>
         <button className="btn-create-playlist-main" onClick={() => setShowCreateModal(true)}>
-          + Создать плейлист
+          <Plus size={16} strokeWidth={2} /> Создать плейлист
         </button>
       </div>
 
       {/* СЕКЦИЯ: МОИ ПЛЕЙЛИСТЫ */}
-      <section>
+      <section style={{ marginBottom: '40px' }}>
         <div className="video-grid">
           {playlists.map(pl => (
             <PlaylistCard 
@@ -93,16 +94,18 @@ const Playlists = () => {
               playlist={pl} 
               authUser={authUser} 
               onEdit={(p) => setEditingPlaylist(p)} 
+              onDeleteClick={(p) => setIsDeleteConfirm(p)}
+              fetchPlaylists={fetchPlaylists} /* ИСПРАВЛЕНО: передаем функцию обновления списков */
             />
           ))}
         </div>
-        {playlists.length === 0 && <p className="sub-text">У вас пока нет плейлистов</p>}
+        {playlists.length === 0 && <p className="sub-text" style={{ color: 'var(--text-muted)' }}>У вас пока нет плейлистов</p>}
       </section>
 
-      {/* СЕКЦИЯ: СОХРАНЕННЫЕ КОЛЛЕКЦИИ (появляется только если они есть) */}
+      {/* СЕКЦИЯ: СОХРАНЕННЫЕ КОЛЛЕКЦИИ */}
       {savedPlaylists.length > 0 && (
-        <section style={{ marginTop: '60px', borderTop: '1px solid #eee', paddingTop: '40px' }}>
-          <h2 className="section-title" style={{ marginBottom: '20px', fontSize: '1.2rem', color: '#888' }}>
+        <section style={{ marginTop: '60px', borderTop: '2px solid var(--bg-main)', paddingTop: '40px' }}>
+          <h2 className="section-title" style={{ marginBottom: '24px', fontSize: '16px', color: 'var(--text-muted)' }}>
             СОХРАНЕННЫЕ КОЛЛЕКЦИИ
           </h2>
           <div className="video-grid">
@@ -111,7 +114,9 @@ const Playlists = () => {
                 key={pl.id} 
                 playlist={pl} 
                 authUser={authUser} 
-                onEdit={null} // Запрещаем редактирование чужих плейлистов
+                onEdit={null} 
+                onDeleteClick={null}
+                fetchPlaylists={fetchPlaylists} /* ИСПРАВЛЕНО: передаем функцию обновления списков */
               />
             ))}
           </div>
@@ -120,49 +125,60 @@ const Playlists = () => {
 
       {/* МОДАЛКА СОЗДАНИЯ */}
       {showCreateModal && (
-        <div className="video-modal-overlay" onClick={() => setShowCreateModal(false)}>
-          <div className="video-modal-content" style={{ maxWidth: '400px' }} onClick={e => e.stopPropagation()}>
-            <h2>Новый плейлист</h2>
-            <input type="text" className="edit-input-field" value={newTitle} onChange={(e) => setNewTitle(e.target.value)} placeholder="Название" />
-            <label className="checkbox-label">
-              <input type="checkbox" checked={isPrivate} onChange={(e) => setIsPrivate(e.target.checked)} /> Приватный
-            </label>
-            <div className="modal-btns">
-              <button className="btn-edit-profile" onClick={handleCreate}>Создать</button>
-              <button className="btn-cancel" onClick={() => setShowCreateModal(false)}>Отмена</button>
+        <div className="admin-modal-overlay" onClick={() => setShowCreateModal(false)}>
+          <div className="admin-user-card small-modal" onClick={e => e.stopPropagation()}>
+            <div className="card-header">
+              <h3 className="page-title" style={{ fontSize: '20px' }}>Новый плейлист</h3>
+              <button className="close-btn" onClick={() => setShowCreateModal(false)}>&times;</button>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '8px' }}>
+              <input type="text" className="edit-input-field" style={{ padding: '12px' }} value={newTitle} onChange={(e) => setNewTitle(e.target.value)} placeholder="Название" />
+              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', cursor: 'pointer' }}>
+                <input type="checkbox" checked={isPrivate} onChange={(e) => setIsPrivate(e.target.checked)} /> Приватный плейлист
+              </label>
+              <div className="quick-actions-bar" style={{ marginTop: '12px' }}>
+                <button className="btn-action" style={{ background: 'var(--primary-red)', color: '#fff', border: 'none' }} onClick={handleCreate}>Создать</button>
+                <button className="btn-action" onClick={() => setShowCreateModal(false)}>Отмена</button>
+              </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* МОДАЛКА РЕДАКТИРОВАНИЯ */}
+      {/* МОДАЛКА РЕДАКТИРОВАНИЯ И НАСТРОЕК */}
       {editingPlaylist && (
-        <div className="video-modal-overlay" onClick={() => setEditingPlaylist(null)}>
-          <div className="video-modal-content" style={{ maxWidth: '420px', padding: '0' }} onClick={e => e.stopPropagation()}>
-            <div style={{ padding: '25px' }}>
-              <h2>Настройки плейлиста</h2>
-              <input 
-                type="text" 
-                className="edit-input-field"
-                value={editingPlaylist.title}
-                onChange={(e) => setEditingPlaylist({...editingPlaylist, title: e.target.value})}
-              />
-              <label className="checkbox-label">
+        <div className="admin-modal-overlay" onClick={() => setEditingPlaylist(null)}>
+          <div className="admin-user-card" style={{ maxWidth: '420px', padding: '0' }} onClick={e => e.stopPropagation()}>
+            <div style={{ padding: '24px' }}>
+              <div className="card-header" style={{ marginBottom: '16px' }}>
+                <h3 className="page-title" style={{ fontSize: '20px' }}>Настройки плейлиста</h3>
+                <button className="close-btn" onClick={() => setEditingPlaylist(null)}>&times;</button>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <input 
-                  type="checkbox" 
-                  checked={editingPlaylist.is_private == 1} 
-                  onChange={(e) => setEditingPlaylist({...editingPlaylist, is_private: e.target.checked ? 1 : 0})} 
+                  type="text" 
+                  className="edit-input-field"
+                  style={{ padding: '12px' }}
+                  value={editingPlaylist.title}
+                  onChange={(e) => setEditingPlaylist({...editingPlaylist, title: e.target.value})}
                 />
-                Сделать приватным
-              </label>
-              <div style={{ display: 'flex', gap: '10px' }}>
-                <button className="btn-edit-profile" style={{ flex: 2 }} onClick={handleUpdate}>Сохранить</button>
-                <button className="btn-cancel" style={{ flex: 1 }} onClick={() => setEditingPlaylist(null)}>Отмена</button>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', cursor: 'pointer' }}>
+                  <input 
+                    type="checkbox" 
+                    checked={editingPlaylist.is_private == 1}
+                    onChange={(e) => setEditingPlaylist({...editingPlaylist, is_private: e.target.checked ? 1 : 0})} 
+                  />
+                  Сделать приватным
+                </label>
+                <div className="quick-actions-bar">
+                  <button className="btn-action" style={{ background: 'var(--primary-red)', color: '#fff', border: 'none' }} onClick={handleUpdate}>Сохранить</button>
+                  <button className="btn-action" onClick={() => setEditingPlaylist(null)}>Отмена</button>
+                </div>
               </div>
             </div>
 
-            <div className="danger-zone" style={{ background: '#fff1f1', padding: '20px 25px', borderRadius: '0 0 15px 15px' }}>
-               <button className="btn-delete-simple" onClick={() => setIsDeleteConfirm(editingPlaylist)}>Удалить плейлист</button>
+            <div style={{ background: '#fff1f1', padding: '16px 24px', borderRadius: '0 0 24px 24px', borderTop: '1px solid #ffe1e1', textAlign: 'right' }}>
+               <button className="btn-action danger" style={{ width: '100%' }} onClick={() => setIsDeleteConfirm(editingPlaylist)}>Удалить плейлист</button>
             </div>
           </div>
         </div>
@@ -170,13 +186,13 @@ const Playlists = () => {
 
       {/* ПОДТВЕРЖДЕНИЕ УДАЛЕНИЯ */}
       {isDeleteConfirm && (
-        <div className="video-modal-overlay" style={{ zIndex: 1100 }} onClick={() => setIsDeleteConfirm(null)}>
-          <div className="video-modal-content" style={{ maxWidth: '350px', textAlign: 'center' }} onClick={e => e.stopPropagation()}>
-            <h3>Удалить плейлист?</h3>
-            <p className="sub-text">"{isDeleteConfirm.title}" исчезнет навсегда.</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '20px' }}>
-               <button className="btn-delete-confirm" onClick={handleDelete}>Да, удалить</button>
-               <button className="btn-cancel" onClick={() => setIsDeleteConfirm(null)}>Отмена</button>
+        <div className="admin-modal-overlay" style={{ zIndex: 1100 }} onClick={() => setIsDeleteConfirm(null)}>
+          <div className="admin-user-card" style={{ maxWidth: '360px', textAlign: 'center' }} onClick={e => e.stopPropagation()}>
+            <h3 className="page-title" style={{ fontSize: '18px', marginBottom: '8px' }}>Удалить плейлист?</h3>
+            <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>"{isDeleteConfirm.title}" исчезнет навсегда.</p>
+            <div className="quick-actions-bar" style={{ marginTop: '24px' }}>
+               <button className="btn-action danger" onClick={handleDelete}>Да, удалить</button>
+               <button className="btn-action" onClick={() => setIsDeleteConfirm(null)}>Отмена</button>
             </div>
           </div>
         </div>

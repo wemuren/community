@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react'; // Добавили useCallback
 import axios from 'axios';
-import '../assets/styles/home.css';
 import VideoCard from '../components/VideoCard';
 import VideoModals from '../components/VideoModals';
 import { useVideoActions } from '../hooks/useVideoActions'; // Проверь путь!
+import '../assets/styles/grid.css';
 
 import { API_BASE_URL } from '@/config/api';
 
@@ -14,18 +14,27 @@ const Home = () => {
 
   const authUser = JSON.parse(localStorage.getItem('user'));
 
-  const fetchData = useCallback(async () => {
-    try {
-      const videoParams = selectedTag ? `?tag=${encodeURIComponent(selectedTag)}` : '';
-      const videoRes = await axios.get(`${API_BASE_URL}/video/get_all_videos.php${videoParams}`);
-      setVideos(Array.isArray(videoRes.data) ? videoRes.data : []);
-
-      const tagsRes = await axios.get(`${API_BASE_URL}/video/get_active_tags.php`);
-      setDbTags(tagsRes.data);
-    } catch (err) {
-      console.error("Ошибка загрузки данных в Home:", err);
+  // Найди этот блок в Home.jsx
+const fetchData = useCallback(async () => {
+  try {
+    // Вытаскиваем ID авторизованного пользователя для проверки лайков
+    const currentUserId = authUser?.id ? authUser.id : 0;
+    
+    // Формируем параметры запроса со сквозной передачей user_id
+    let queryParams = `?user_id=${currentUserId}`;
+    if (selectedTag) {
+      queryParams += `&tag=${encodeURIComponent(selectedTag)}`;
     }
-  }, [selectedTag]);
+
+    const videoRes = await axios.get(`${API_BASE_URL}/video/get_all_videos.php${queryParams}`);
+    setVideos(Array.isArray(videoRes.data) ? videoRes.data : []);
+
+    const tagsRes = await axios.get(`${API_BASE_URL}/video/get_active_tags.php`);
+    setDbTags(tagsRes.data);
+  } catch (err) {
+    console.error("Ошибка загрузки данных в Home:", err);
+  }
+}, [selectedTag]);
 
   const va = useVideoActions(fetchData);
 
@@ -49,17 +58,22 @@ const Home = () => {
 
       {/* ТЕГИ */}
       <div className="tags-container">
-        <button className={`tag-btn ${!selectedTag ? 'active' : ''}`} onClick={() => setSelectedTag(null)}>Все</button>
-        {dbTags.map(tag => (
-          <button 
-            key={tag.id} 
-            className={`tag-btn ${selectedTag === tag.name ? 'active' : ''}`}
-            onClick={() => setSelectedTag(tag.name)}
-          >
-            {tag.name}
-          </button>
-        ))}
-      </div>
+  <button 
+    className={`tag-btn ${!selectedTag ? 'active' : ''}`} 
+    onClick={() => setSelectedTag(null)}
+  >
+    Все
+  </button>
+  {dbTags.map(tag => (
+    <button 
+      key={tag.id} 
+      className={`tag-btn ${selectedTag === tag.name ? 'active' : ''}`}
+      onClick={() => setSelectedTag(tag.name)}
+    >
+      {tag.name}
+    </button>
+  ))}
+</div>
 
       {/* СЕТКА ВИДЕО */}
       <div className="video-grid">
@@ -73,7 +87,7 @@ const Home = () => {
             onToggleLater={va.handleToggleSystem}
             onReport={va.handleReport}
           />
-        )) : <p>Видео не найдены...</p>}
+        )) : <p>Видео загружаются или были удалены...</p>}
       </div>
     </div>
   );

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import '../assets/styles/auth.css';
+import logo from '../assets/img/logo.svg';
 
 import { API_BASE_URL } from '@/config/api';
 
@@ -121,7 +122,7 @@ navigate('/login', { replace: true });
 
   return (
     <div className="auth-container">
-      <div className="logo-main">COMMUN<span>iTY</span></div>
+      <div className="logo-main"><img src={logo} alt="Community Logo" /></div>
       <div className="auth-card">
         <h2>ВОССТАНОВЛЕНИЕ</h2>
 

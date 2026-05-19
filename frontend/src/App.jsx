@@ -46,19 +46,25 @@ const AdminRoute = ({ children }) => {
   }
   return children;
 };
+// Корневой редирект: незалогинен → лендинг, залогинен → главная
+const RootRedirect = () => {
+  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+  return isLoggedIn ? <Navigate to="/home" replace /> : <Navigate to="/landing" replace />;
+};
 
 function App() {
   return (
     <Router>
       <Routes>
         {/* 1. ПУБЛИЧНЫЕ СТРАНИЦЫ */}
+        <Route path="/" element={<RootRedirect />} />
+        <Route path="/landing" element={<Landing />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="*" element={<NotFound />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<Privacy />} />
-        <Route path="/landing" element={<Landing />} />
+        <Route path="*" element={<NotFound />} />
 
         {/* 2. ЗОНА ВИДЕОПЛАТФОРМЫ (с обычным сайдбаром) */}
         <Route element={<ProtectedRoute />}>

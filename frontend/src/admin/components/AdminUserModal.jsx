@@ -32,7 +32,7 @@ const AdminUserModal = ({
           <div className="admin-preview-header">
             <UserAvatar user={user} sizeClass={`avatar-large ${user.is_paid == 1 ? 'premium' : ''}`} />
             <div className="admin-preview-info">
-              <h3>{user.full_name} {user.is_paid == 1 && '💎'}</h3>
+              <h3>{user.full_name} {user.is_paid == 1 }</h3>
               <p className="sub-text">@{user.username} • Регистрация: {new Date(user.created_at).toLocaleDateString()}</p>
             </div>
             

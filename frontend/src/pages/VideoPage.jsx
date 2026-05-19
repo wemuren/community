@@ -9,6 +9,14 @@ import { useVideoActions } from '../hooks/useVideoActions';
 import { API_BASE_URL } from '@/config/api';
 import { VIDEO_URL } from '@/config/api';
 import { THUMB_URL } from '@/config/api';
+
+import {
+  ThumbsUp,
+  Bookmark,
+  TriangleAlert,
+  Send,
+} from 'lucide-react';
+
 const COMMENT_LIMIT = 500;
 
 const getAuthUser = () => JSON.parse(localStorage.getItem('user'));
@@ -52,9 +60,7 @@ const VideoPage = () => {
 
   const handleCommentChange = (e) => {
     const value = e.target.value;
-    if (value.length <= COMMENT_LIMIT) {
-      setNewComment(value);
-    }
+    if (value.length <= COMMENT_LIMIT) setNewComment(value);
   };
 
   const fetchComments = useCallback(async () => {
@@ -92,12 +98,10 @@ const VideoPage = () => {
         fetchSimilar(id);
         checkSubscription(videoData.user_id);
 
-        // +1 к счётчику просмотров (без лога — лог ниже отдельно)
         axios.post(`${API_BASE_URL}/video/view_increment.php`, {
           video_id: id
         }).catch(e => console.error('Ошибка просмотра:', e));
 
-        // История просмотров — только для авторизованных, только лог
         if (authUser) {
           axios.post(`${API_BASE_URL}/history/log_view.php`, {
             user_id: authUser.id,
@@ -138,7 +142,7 @@ const VideoPage = () => {
       });
       setNewComment('');
       fetchComments();
-    } catch (err) { alert(err.response?.data?.message || "Ошибка"); }
+    } catch (err) { alert(err.response?.data?.message || 'Ошибка'); }
   };
 
   if (!video) return <div className="loader">Загрузка...</div>;
@@ -157,7 +161,10 @@ const VideoPage = () => {
         setActiveVideo={() => {}}
       />
 
+      {/* ── ЛЕВАЯ КОЛОНКА ── */}
       <div className="video-main-content">
+
+        {/* Плеер */}
         <div className="player-wrapper">
           <video
             controls
@@ -168,26 +175,45 @@ const VideoPage = () => {
           />
         </div>
 
+        {/* Детали */}
         <div className="video-details">
-          <div className="tags-row">
-            {video.tags?.map(tag => (
-              <Link key={tag} to={`/search?q=%23${tag}`} className="tag-label">#{tag}</Link>
-            ))}
+
+          {/* Теги */}
+          {video.tags?.length > 0 && (
+            <div className="tags-row">
+              {video.tags.map(tag => (
+                <Link key={tag} to={`/search?q=%23${tag}`} className="tag-label">#{tag}</Link>
+              ))}
+            </div>
+          )}
+
+          {/* Заголовок */}
+          <h1 className="vp-title">{video.title}</h1>
+
+          {/* Статистика */}
+          <div className="vp-stats-row">
+            <span className="vp-stat">
+              {formatViews(video.views)}{' '}
+              {getPluralForm(video.views, ['просмотр', 'просмотра', 'просмотров'])}
+            </span>
+            <span className="vp-stat-dot" />
+            <span className="vp-stat">{new Date(video.created_at).toLocaleDateString()}</span>
           </div>
 
-          <h1 className="video-title">{video.title}</h1>
-
+          {/* Панель: автор + действия */}
           <div className="video-meta-bar">
+
+            {/* Автор */}
             <div className="author-info">
-              <Link to={`/profile/${video.user_id}`}>
+              <Link to={`/profile/${video.user_id}`} onClick={e => e.stopPropagation()}>
                 <img
                   src={video.avatar ? `${API_BASE_URL}/uploads/avatars/${video.avatar}` : '/default-avatar.png'}
                   alt={video.username}
-                  className="author-avatar-link"
+                  className="author-avatar-img"
                 />
               </Link>
 
-              <div>
+              <div className="author-text">
                 <Link to={`/profile/${video.user_id}`} className="author-name">
                   {video.full_name || video.username}
                 </Link>
@@ -197,8 +223,7 @@ const VideoPage = () => {
               {isMyVideo ? (
                 <button className="btn-sub btn-me" disabled>Это вы</button>
               ) : (
-                <button
-                  className={`btn-sub ${isSubscribed ? 'btn-subscribed' : 'btn-subscribe'}`}
+                <button className={`btn-sub ${isSubscribed ? 'btn-subscribed' : 'btn-subscribe'}`}
                   onClick={handleSubscribeToggle}
                   disabled={subLoading}
                 >
@@ -207,98 +232,110 @@ const VideoPage = () => {
               )}
             </div>
 
+            {/* Действия */}
             <div className="video-actions">
               <button
-                className={`action-btn ${isLiked ? 'active-like' : ''}`}
+                className={`action-pill ${isLiked ? 'action-pill--active' : ''}`}
                 onClick={(e) => va.handleToggleSystem(e, 'liked', video.id)}
+                title="Нравится"
               >
-                <span className="icon">👍</span>
-                <span className="count">{video.likes_count || 0}</span>
+                <ThumbsUp size={16} strokeWidth={2} />
+                <span>{video.likes_count || 0}</span>
               </button>
 
               <button
-                className="action-btn"
+                className="action-pill"
                 onClick={(e) => va.openPlaylistModal(e, video.id)}
+                title="Сохранить"
               >
-                <span className="icon">💾</span>
-                <span className="count">{video.saves_count || 0}</span>
-                <span className="label">Сохранить</span>
+                <Bookmark size={16} strokeWidth={2} />
+                <span>{video.saves_count || 0}</span>
+                <span className="action-pill__label">Сохранить</span>
               </button>
 
-              {/* Кнопка жалобы — только для чужих видео */}
               {!isMyVideo && (
                 <button
-                  className="action-btn"
+                  className="action-pill"
                   onClick={(e) => va.handleReport(e, video.id, 'video')}
                   title="Пожаловаться"
                 >
-                  <span className="icon">⚠️</span>
-                  <span className="label">Жалоба</span>
+                  <TriangleAlert size={16} strokeWidth={2} />
+                  <span className="action-pill__label">Жалоба</span>
                 </button>
               )}
             </div>
           </div>
 
-          <div className="video-description">
-            <div className="desc-stats">
-              <span>
-                {formatViews(video.views)}{' '}
-                {getPluralForm(video.views, ['просмотр', 'просмотра', 'просмотров'])}
-              </span>
-              <span>{new Date(video.created_at).toLocaleDateString()}</span>
+          {/* Описание */}
+          {video.description && (
+            <div className="video-description">
+              <p>{video.description}</p>
             </div>
-            <p>{video.description}</p>
-          </div>
+          )}
         </div>
 
-        {/* КОММЕНТАРИИ */}
+        {/* ── КОММЕНТАРИИ ── */}
         <div className="comments-section">
-          <h3>
-            {comments.length} {getPluralForm(comments.length, ['комментарий', 'комментария', 'комментариев'])}
-          </h3>
+          <h2 className="comments-heading">
+            {comments.length}{' '}
+            {getPluralForm(comments.length, ['комментарий', 'комментария', 'комментариев'])}
+          </h2>
 
-          <div className="comment-input-block" style={{ position: 'relative' }}>
-            {isPremiumActive(authUser) && (
-              <span className={`char-counter ${newComment.length >= COMMENT_LIMIT ? 'limit' : ''}`}
-                    style={{ position: 'absolute', right: '90px', top: '-22px', fontSize: '11px' }}>
-                {newComment.length}/{COMMENT_LIMIT}
-              </span>
-            )}
-
-            <input
-              type="text"
-              placeholder={isPremiumActive(authUser) ? "Оставьте комментарий..." : "Только для Premium-пользователей 🔒"}
-              disabled={!isPremiumActive(authUser)}
-              value={newComment}
-              onChange={handleCommentChange}
-            />
+          {/* Поле ввода */}
+          <div className="comment-input-block">
+            <div className="comment-input-inner">
+              <input
+                type="text"
+                placeholder={
+                  isPremiumActive(authUser)
+                    ? 'Оставьте комментарий...'
+                    : 'Только для Premium-пользователей'
+                }
+                disabled={!isPremiumActive(authUser)}
+                value={newComment}
+                onChange={handleCommentChange}
+                onKeyDown={(e) => e.key === 'Enter' && handleSendComment()}
+              />
+              {isPremiumActive(authUser) && newComment.length > 0 && (
+                <span className={`char-counter ${newComment.length >= COMMENT_LIMIT ? 'char-counter--limit' : ''}`}>
+                  {newComment.length}/{COMMENT_LIMIT}
+                </span>
+              )}
+            </div>
             <button
+              className="comment-send-btn"
               onClick={handleSendComment}
               disabled={!isPremiumActive(authUser) || !newComment.trim()}
+              title="Отправить"
             >
-              Отправить
+              <Send size={16} strokeWidth={2} />
+              <span>Отправить</span>
             </button>
           </div>
 
+          {/* Список комментариев */}
           <div className="comments-list">
             {comments.map(c => (
               <div key={c.id} className="comment-item">
-                <Link to={`/profile/${c.user_id}`}>
+                <Link to={`/profile/${c.user_id}`} onClick={e => e.stopPropagation()}>
                   <img
                     src={c.avatar ? `${API_BASE_URL}/uploads/avatars/${c.avatar}` : '/default-avatar.png'}
                     alt=""
+                    className="comment-avatar"
                   />
                 </Link>
 
-                <div className="comment-text-content">
-                  <header>
-                    <Link to={`/profile/${c.user_id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                      <strong>{c.full_name || c.username}</strong>
+                <div className="comment-body">
+                  <div className="comment-meta">
+                    <Link to={`/profile/${c.user_id}`} className="comment-author">
+                      {c.full_name || c.username}
                     </Link>
                     {c.is_paid == 1 && <span className="premium-badge">✨</span>}
-                    <span className="comment-date">{new Date(c.created_at).toLocaleDateString()}</span>
-                  </header>
-                  <p>{c.text}</p>
+                    <span className="comment-date">
+                      {new Date(c.created_at).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <p className="comment-text">{c.text}</p>
                 </div>
               </div>
             ))}
@@ -306,24 +343,36 @@ const VideoPage = () => {
         </div>
       </div>
 
+      {/* ── ПРАВЫЙ САЙДБАР ── */}
       <aside className="video-sidebar">
-        <h4>Следующие видео</h4>
+        <h2 className="sidebar-heading">Следующие видео</h2>
+
         <div className="sidebar-grid">
           {similarVideos.length > 0 ? (
             similarVideos.map(sv => (
-              <div key={sv.id} className="sidebar-video-card" onClick={() => navigate(`/video/${sv.id}`)}>
-                <div className="side-thumb">
+              <div
+                key={sv.id}
+                className="sidebar-video-card"
+                onClick={() => navigate(`/video/${sv.id}`)}
+              >
+                {/* Превью 16:9 */}
+                <div className="sidebar-thumb">
                   <img src={`${THUMB_URL}${sv.thumbnail}`} alt={sv.title} />
                 </div>
-                <div className="side-info">
-                  <h5 className="side-title">{sv.title}</h5>
-                  <p className="side-author">{sv.full_name || sv.username}</p>
-                  <p className="side-stats">{formatViews(sv.views)} просмотров</p>
+
+                {/* Инфо */}
+                <div className="sidebar-info">
+                  <span className="sidebar-title">{sv.title}</span>
+                  <div className="sidebar-meta">
+                    <span>{sv.full_name || sv.username}</span>
+                    <span className="sidebar-meta-dot" />
+                    <span>{formatViews(sv.views)} просмотров</span>
+                  </div>
                 </div>
               </div>
             ))
           ) : (
-            <p style={{ color: '#888', fontSize: '13px' }}>Похожих видео пока нет...</p>
+            <p className="sidebar-empty">Похожих видео пока нет...</p>
           )}
         </div>
       </aside>

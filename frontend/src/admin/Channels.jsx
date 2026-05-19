@@ -180,8 +180,8 @@ const toggleStatus = async (userId, type, currentVal) => {
               </div>
             </div>
             <div className="table-col col-actions" onClick={e => e.stopPropagation()}>
-               <button className={`btn-icon ${u.is_paid == 1 ? 'active' : ''}`} onClick={() => toggleStatus(u.id, 'premium', u.is_paid)} title="Premium">💎</button>
-               <button className={`btn-icon ${u.is_active == 0 ? 'danger' : ''}`} onClick={() => toggleStatus(u.id, 'block', u.is_active)} title="Бан">🚫</button>
+               <button className={`btn-icon ${u.is_paid == 1 ? 'active' : ''}`} onClick={() => toggleStatus(u.id, 'premium', u.is_paid)} title="Premium"></button>
+               <button className={`btn-icon ${u.is_active == 0 ? 'danger' : ''}`} onClick={() => toggleStatus(u.id, 'block', u.is_active)} title="Бан"></button>
                <button className="btn-icon" onClick={() => handleResetName(u.id)} title="Сбросить имя">✍️</button>
             </div>
           </div>

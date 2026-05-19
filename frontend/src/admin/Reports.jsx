@@ -191,7 +191,7 @@ const Reports = () => {
               <div className="admin-preview-header">
                 <UserAvatar user={selectedUser} sizeClass={`avatar-large ${selectedUser.is_paid == 1 ? 'premium' : ''}`} />
                 <div className="admin-preview-info">
-                  <h3>{selectedUser.full_name} {selectedUser.is_paid == 1 && '💎'}</h3>
+                  <h3>{selectedUser.full_name} {selectedUser.is_paid == 1}</h3>
                   <p className="sub-text">@{selectedUser.username} • Регистрация: {selectedUser.created_at ? new Date(selectedUser.created_at).toLocaleDateString() : '...'}</p>
                 </div>
                 

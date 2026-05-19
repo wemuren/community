@@ -175,7 +175,7 @@ const Layout = () => {
   <div className="premium-info">
     {activePremium ? (
       <>
-        <div className="premium-header-flex" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div className="premium-header-flex">
           <p className="premium-title">Premium активен</p>
           {daysLeft <= 5 && <span className="urgent-badge">!</span>}
         </div>
@@ -196,7 +196,7 @@ const Layout = () => {
     )}
   </div>
   <button className="premium-button" onClick={() => navigate('/premium')}>
-    {activePremium ? 'Продлить' : expiredPremium ? 'Разблокировать' : 'Оформить'}
+    {activePremium ? 'ПРОДЛИТЬ' : expiredPremium ? 'РАЗБЛОКИРОВАТЬ' : 'ОФОРМИТЬ'}
   </button>
 </div>
 
@@ -212,16 +212,10 @@ const Layout = () => {
             </button>
           </nav>
           <div className="footer-links">
-                      <NavLink to="/landing">
-                        <span>О сервисе</span>
-                      </NavLink>
-                      <NavLink to="/privacy">
-                        <span>Политика конфиденциальности</span>
-                      </NavLink>
-                      <NavLink to="/terms">
-                        <span>Пользовательское соглашение</span>
-                      </NavLink>
-                    </div>
+            <NavLink to="/landing"><span>О сервисе</span></NavLink>
+            <NavLink to="/privacy"><span>Политика конфиденциальности</span></NavLink>
+            <NavLink to="/terms"><span>Пользовательское соглашение</span></NavLink>
+          </div>
         </div>
       </aside>
 

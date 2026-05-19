@@ -125,7 +125,7 @@ const Premium = () => {
         </div>
 
         {/* Купить */}
-        <div className="premium-card featured-card">
+        <div className="page-premium-card featured-card">
           <h3>Месячная подписка</h3>
           <div className="price-display">{subPrice}</div>
           <button className="premium-btn primary" onClick={() => setIsPayModalOpen(true)}>Купить</button>

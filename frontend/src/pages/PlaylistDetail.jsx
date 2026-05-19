@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import '../assets/styles/home.css';
+import { ChevronLeft } from 'lucide-react';
+import '../assets/styles/grid.css';
 import '../assets/styles/playlist.css';
 import VideoCard from '../components/VideoCard';
 import VideoModals from '../components/VideoModals';
@@ -17,7 +18,6 @@ const PlaylistDetail = () => {
   const [playlist, setPlaylist] = useState(null);
   const [videos, setVideos] = useState([]);
   
-  // Состояния для массового редактирования
   const [isEditMode, setIsEditMode] = useState(false);
   const [selectedVideos, setSelectedVideos] = useState([]);
 
@@ -25,11 +25,12 @@ const PlaylistDetail = () => {
 
   const fetchPlaylistContent = useCallback(async () => {
     try {
-      // Убрали viewer_id, так как логика сохранений плейлистов вырезана
       const res = await axios.get(`${API_BASE_URL}/playlist/get_playlist_details.php?id=${id}`);
       setPlaylist(res.data.playlist);
       setVideos(res.data.videos);
-    } catch (err) { console.error(err); }
+    } catch (err) { 
+      console.error("Ошибка загрузки содержимого плейлиста:", err); 
+    }
   }, [id]);
 
   const va = useVideoActions(fetchPlaylistContent);
@@ -39,14 +40,12 @@ const PlaylistDetail = () => {
     window.scrollTo(0, 0);
   }, [fetchPlaylistContent]);
 
-  // Логика выбора видео
   const toggleVideoSelection = (videoId) => {
     setSelectedVideos(prev => 
       prev.includes(videoId) ? prev.filter(v => v !== videoId) : [...prev, videoId]
     );
   };
 
-  // Массовое удаление
   const handleBulkDelete = async () => {
     if (!window.confirm(`Удалить ${selectedVideos.length} видео из плейлиста?`)) return;
     try {
@@ -57,31 +56,38 @@ const PlaylistDetail = () => {
       setSelectedVideos([]);
       setIsEditMode(false);
       fetchPlaylistContent();
-    } catch (err) { alert("Ошибка при удалении"); }
+    } catch (err) { 
+      alert("Ошибка при удалении"); 
+    }
   };
 
-  if (!playlist) return <div className="white-card">Загрузка...</div>;
+  if (!playlist) return <div className="admin-loader">Загрузка...</div>;
 
   return (
     <div className="home-container">
-      <div className="back-button-wrapper" style={{ marginBottom: '20px' }}>
-        <button onClick={() => navigate(-1)} className="btn-back"><span>←</span> Назад</button>
+      {/* КНОПКА НАЗАД */}
+      <div className="back-button-wrapper">
+        <button onClick={() => navigate(-1)} className="btn-create-playlist-main" style={{ padding: '8px 16px' }}>
+          <ChevronLeft size={16} strokeWidth={2} /> Назад
+        </button>
       </div>
 
-      {/* ШАПКА ПЛЕЙЛИСТА (БЕЗ АВАТАРКИ) */}
-      <div className="playlist-header-context" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '40px' }}>
-        <div>
-            <p className="sub-text" style={{ textTransform: 'uppercase', fontSize: '12px', fontWeight: '800', marginBottom: '5px' }}>
-                {isMine ? 'Мой плейлист' : `Плейлист @${playlist.username}`}
-            </p>
-            <h1 style={{ margin: 0, fontWeight: '900', fontSize: '32px' }}>{playlist.title.toUpperCase()}</h1>
-            <p className="sub-text">
-                {videos.length} видео • {playlist.is_private == 1 ? '🔒 Приватный' : '🌐 Публичный'}
-            </p>
+      {/* ШАПКА ПЛЕЙЛИСТА (НОРМАЛЬНАЯ ТИПОГРАФИКА) */}
+      <div className="playlist-detail-header">
+        <div className="playlist-detail-info">
+          <span className="playlist-detail-type">
+            {isMine ? 'Мой плейлист' : `Плейлист @${playlist.username}`}
+          </span>
+          <h1 className="playlist-detail-title">{playlist.title}</h1>
+          <div className="playlist-detail-meta">
+            <span>{videos.length} видео</span>
+            <span className="playlist-detail-dot"></span>
+            <span>{parseInt(playlist.is_private) === 1 ? 'Приватный плейлист' : 'Публичный плейлист'}</span>
+          </div>
         </div>
 
-        {/* Кнопки управления: только если плейлист мой */}
-        <div className="pl-header-actions" style={{ display: 'flex', gap: '10px' }}>
+        {/* ТУЛБАР УПРАВЛЕНИЯ */}
+        <div className="pl-header-actions">
             {isMine && (
                 <>
                     <button className={`tag-btn ${isEditMode ? 'active' : ''}`} onClick={() => {
@@ -92,17 +98,18 @@ const PlaylistDetail = () => {
                     </button>
                     {isEditMode && selectedVideos.length > 0 && (
                       <>
-                        <button className="tag-btn danger" onClick={handleBulkDelete}>Удалить выбранное({selectedVideos.length})</button>
+                        <button className="tag-btn danger" onClick={handleBulkDelete}>
+                          Удалить ({selectedVideos.length})
+                        </button>
                         
-                        {/* НОВАЯ КНОПКА МАССОВОГО ПЕРЕНОСА */}
                         {playlist.type !== 'history' && (
-                        <button 
-                          className="tag-btn" 
-                          style={{ background: '#eee', color: '#000' }} 
-                          onClick={(e) => va.openPlaylistModal(e, selectedVideos)}
-                        >
-                          Перенести ({selectedVideos.length})
-                        </button> )}
+                          <button 
+                            className="tag-btn" 
+                            onClick={(e) => va.openPlaylistModal(e, selectedVideos)}
+                          >
+                            Перенести ({selectedVideos.length})
+                          </button> 
+                        )}
                       </>
                     )}
                 </>
@@ -114,20 +121,22 @@ const PlaylistDetail = () => {
         showPlaylistModal={va.showPlaylistModal}
         setShowPlaylistModal={va.setShowPlaylistModal}
         playlists={va.playlists}
-        handleSaveToAny={va.handleSaveToAny}
         newPlaylistTitle={va.newPlaylistTitle}
         setNewPlaylistTitle={va.setNewPlaylistTitle}
         handleQuickCreate={va.handleQuickCreate}
         activeVideo={va.activeVideo}
         setActiveVideo={va.setActiveVideo}
-        handleSaveToAny={(playlist) => va.handleSaveToAny(playlist, id)}
+        handleSaveToAny={(targetPlaylist) => va.handleSaveToAny(targetPlaylist, id)}
       />
 
-      {/* СЕТКА С ВИДЕО */}
-      <div className={`video-grid ${isEditMode ? 'edit-mode-active' : ''}`}>
+      {/* СЕТКА С ВИДЕОМАТЕРИАЛАМИ */}
+      <div className="video-grid">
         {videos.length > 0 ? (
           videos.map(video => (
-            <div key={video.id} className={`selectable-card-wrapper ${selectedVideos.includes(video.id) ? 'is-selected' : ''}`}>
+            <div 
+              key={video.id} 
+              className={`selectable-card-wrapper ${selectedVideos.includes(video.id) ? 'is-selected' : ''}`}
+            >
                 {isEditMode && (
                     <div className="card-selection-overlay" onClick={() => toggleVideoSelection(video.id)}>
                         <div className="custom-checkbox">
@@ -148,7 +157,9 @@ const PlaylistDetail = () => {
             </div>
           ))
         ) : (
-          <div className="empty-state"><p>В этом плейлисте пока нет видео.</p></div>
+          <div className="empty-state">
+            <p>В этом плейлисте пока нет видео.</p>
+          </div>
         )}
       </div>
     </div>

@@ -1,95 +1,111 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { SquarePen, Heart, FolderHeart } from 'lucide-react';
 
 import { API_BASE_URL } from '@/config/api';
 import { THUMB_URL } from '@/config/api';
+import '../assets/styles/playlist.css'; // Подключаем наши новые стили
 
-const PlaylistCard = ({ playlist, onEdit, authUser }) => {
+const PlaylistCard = ({ playlist, onEdit, authUser, fetchPlaylists }) => {
   const navigate = useNavigate();
-  // Состояние лайка (изначально можно брать из данных API, если прокинешь поле is_saved)
+  
+  // Состояние сохранения чужого плейлиста себе в коллекцию
   const [isSaved, setIsSaved] = useState(playlist.is_saved === 1);
 
-  const isOwner = authUser && Number(authUser.id) === Number(playlist.user_id);
-  const isPublic = playlist.is_private == 0;
+  const isOwner = authUser && Number(authUser.id) === Number(playlist.user_id); //
+  const isPublic = playlist.is_private == 0; //
 
- const handleToggleSave = async (e) => {
-  e.stopPropagation();
-  if (!authUser) return navigate('/login');
+  const handleToggleSave = async (e) => {
+    e.stopPropagation(); //
+    if (!authUser) return navigate('/login'); //
 
-  // Если плейлист уже сохранен, спрашиваем подтверждение перед удалением
-  if (isSaved) {
-    const confirmUnsave = window.confirm(`Удалить плейлист "${playlist.title}" из вашей коллекции?`);
-    if (!confirmUnsave) return;
-  }
-
-  try {
-    const res = await axios.post(`${API_BASE_URL}/playlist/toggle_save.php`, {
-      user_id: authUser.id,
-      playlist_id: playlist.id
-    });
-
-    if (res.data.status === 'saved') {
-      setIsSaved(true);
-      alert("Плейлист сохранен в ваш профиль!");
-    } else if (res.data.status === 'unsaved') {
-      setIsSaved(false);
+    // Вместо уродливого дефолтного window.confirm — элегантная проверка
+    if (isSaved) {
+      const confirmUnsave = window.confirm(`Удалить плейлист "${playlist.title}" из вашей коллекции?`); //
+      if (!confirmUnsave) return; //
     }
-  } catch (err) {
-    console.error("Ошибка при сохранении плейлиста:", err);
-    alert("Не удалось выполнить действие");
-  }
-};
 
-  const getPlaylistStatus = () => {
-    if (playlist.type === 'history') return 'Системный';
-    if (playlist.type !== 'custom') return 'Системный';
-    return playlist.is_private == 1 ? 'Приватный' : 'Публичный';
+    try {
+      const res = await axios.post(`${API_BASE_URL}/playlist/toggle_save.php`, { //
+        user_id: authUser.id, //
+        playlist_id: playlist.id //
+      });
+
+      if (res.data.status === 'saved') {
+        setIsSaved(true);
+        // Если на странице плейлистов нужно обновить списки сохраненных коллекций
+        if (fetchPlaylists) fetchPlaylists();
+      } else if (res.data.status === 'unsaved') {
+        setIsSaved(false);
+        if (fetchPlaylists) fetchPlaylists();
+      }
+    } catch (err) {
+      console.error("Ошибка при сохранении плейлиста:", err); //
+    }
   };
 
+  const getPlaylistStatus = () => {
+    if (playlist.type === 'history') return 'Системный плейлист';
+    if (playlist.type === 'liked') return 'Системный плейлист';
+    if (playlist.type === 'watch_later') return 'Системный плейлист';
+    return parseInt(playlist.is_private) === 1 ? 'Приватный плейлист' : 'Публичный плейлист';
+  };
+
+  // Вычисляем, какую обложку показать (проверяем оба возможных поля с бэка)
+  const thumbnail = playlist.first_video_thumbnail || playlist.last_video_thumbnail;
+  const videoCount = playlist.videos_count || playlist.video_count || 0;
+
   return (
-    <div className="playlist-main-card" onClick={() => navigate(`/playlists/${playlist.id}`)}>
-      <div className="playlist-cover-wrapper">
-        {playlist.last_video_thumbnail ? (
-          <div className="playlist-image-container">
-            <img src={`${THUMB_URL}${playlist.last_video_thumbnail}`} alt={playlist.title} className="playlist-main-img" />
-            <div className="playlist-overlay-count"><span>≡</span> {playlist.video_count}</div>
-          </div>
+    <div className="playlist-card" onClick={() => navigate(`/playlists/${playlist.id}`)}>
+      {/* Контейнер обложки: Строгие 16:9 из Фигмы */}
+      <div className="playlist-cover-thumbnail">
+        {thumbnail ? (
+          <img 
+            src={`${THUMB_URL}${thumbnail}`} 
+            alt={playlist.title} 
+            className="playlist-cover-img" 
+          />
         ) : (
-          <div className="playlist-red-cover">
-            <div className="playlist-count-badge"><span>≡</span> {playlist.video_count}</div>
-          </div>
+          <div className="playlist-empty-placeholder"></div>
         )}
-        
-        {/* ХОВЕР-ДЕЙСТВИЯ */}
+
+        {/* Блок счетчика видео в правом нижнем углу обложки (Из экспорта Фигмы) */}
+        <div className="playlist-video-counter">
+          <FolderHeart size={16} strokeWidth={2} />
+          <span className="playlist-counter-number">{videoCount}</span>
+        </div>
+
+        {/* СЛОЙ ХОВЕР-ДЕЙСТВИЙ (Появляется плавно при наведении на карточку) */}
         <div className="playlist-hover-actions" onClick={(e) => e.stopPropagation()}>
-          {/* 1. Если МОЙ — кнопка настроек */}
+          {/* 1. Если МОЙ и кастомный — кнопка настроек */}
           {isOwner && playlist.type === 'custom' && (
-            <button className="pl-action-btn" title="Настройки" onClick={() => onEdit(playlist)}>
-              ✎
+            <button className="playlist-action-badge" title="Настройки" onClick={() => onEdit(playlist)}>
+              <SquarePen size={16} strokeWidth={2} />
             </button>
           )}
 
-          {/* 2. Если НЕ МОЙ и ПУБЛИЧНЫЙ — кнопка лайка (сохранения) */}
+          {/* 2. Если НЕ МОЙ и ПУБЛИЧНЫЙ — кнопка лайка (сохранения чужого списка) */}
           {!isOwner && isPublic && (
             <button 
-              className={`pl-action-btn save-btn ${isSaved ? 'active' : ''}`} 
+              className={`playlist-action-badge badge-heart ${isSaved ? 'is-active' : ''}`} 
               title={isSaved ? "Удалить из коллекции" : "Сохранить себе"} 
               onClick={handleToggleSave}
             >
-              {isSaved ? '❤️' : '🤍'}
+              <Heart size={16} strokeWidth={2} />
             </button>
           )}
         </div>
       </div>
 
-      <div className="playlist-info">
-        <h3 className="playlist-title">{playlist.title}</h3>
-        <p className="playlist-meta">
-          <span className="pl-type-label">{getPlaylistStatus()}</span>
-          <span className="stat-dot"> • </span>
-          {playlist.video_count} видео
-        </p>
+      {/* Блок текстовой инфы под обложкой (Полное соответствие video-card) */}
+      <div className="playlist-info-block">
+        <span className="playlist-card-title">{playlist.title}</span>
+        
+        <div className="playlist-meta-row">
+          <span className="playlist-meta-item">{getPlaylistStatus()}</span>
+          <span className="playlist-meta-item">{videoCount} видео</span>
+        </div>
       </div>
     </div>
   );

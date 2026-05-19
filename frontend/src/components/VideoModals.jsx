@@ -2,6 +2,7 @@ import React from 'react';
 import UserAvatar from './UserAvatar';
 
 import { VIDEO_URL as UPLOADS_URL } from '@/config/api';
+import { Bookmark, Heart, Clock, TriangleAlert, Lock, Folder } from 'lucide-react';
 
 const VideoModals = ({ 
   // Состояние плейлистов
@@ -34,36 +35,63 @@ const VideoModals = ({
     return forms[2];
   };
 
+  // Функция-хелпер для рендера системных иконок вместо эмодзи
+  const renderPlaylistIcon = (type, isPrivate) => {
+    if (type === 'liked') return <Heart size={18} className="pl-icon-heart" style={{ color: 'var(--primary-red)' }} />;
+    if (type === 'watch_later') return <Clock size={18} style={{ color: 'var(--text-muted)' }} />;
+    if (isPrivate == 1) return <Lock size={18} style={{ color: 'var(--text-muted)' }} />;
+    return <Folder size={18} style={{ color: 'var(--text-muted)' }} />;
+  };
+
   return (
     <>
       {showPlaylistModal && (
-        <div className="video-modal-overlay" onClick={() => setShowPlaylistModal(false)}>
-          <div className="playlist-modal-content" onClick={e => e.stopPropagation()} style={{maxWidth: '380px'}}>
-            <div className="modal-header-flex">
-               <h3>Сохранить в...</h3>
-               <button className="close-mini" onClick={() => setShowPlaylistModal(false)}>&times;</button>
+        <div className="admin-modal-overlay" onClick={() => setShowPlaylistModal(false)}>
+          <div className="playlist-modal-content" onClick={e => e.stopPropagation()}>
+            <div className="admin-header-flex" style={{ marginBottom: '20px' }}>
+               <h3 className="page-title" style={{ fontSize: '20px' }}>Сохранить в...</h3>
+               <button className="close-btn" onClick={() => setShowPlaylistModal(false)} style={{ fontSize: '24px' }}>&times;</button>
             </div>
             
-            <div className="playlist-scroll-area" style={{maxHeight: '250px', overflowY: 'auto', margin: '15px 0'}}>
+            <div className="playlist-scroll-area">
               {playlists.map(pl => (
-                <div key={pl.id} className="playlist-row-item" onClick={() => handleSaveToAny(pl)} 
-                     style={{padding: '12px', borderBottom: '1px solid #eee', cursor: 'pointer', display: 'flex', gap: '12px', alignItems: 'center'}}>
-                  <span style={{fontSize: '18px'}}>{pl.type === 'liked' ? '❤️' : pl.type === 'watch_later' ? '🕒' : (pl.is_private == 1 ? '🔒' : '📁')}</span>
-                  <span style={{fontWeight: 600, fontSize: '14px'}}>{pl.title}</span>
+                <div 
+                  key={pl.id} 
+                  className="playlist-row-item" 
+                  onClick={() => handleSaveToAny(pl)} 
+                >
+                  <div className="row-icon-wrapper" style={{ display: 'flex', alignItems: 'center', shrink: 0 }}>
+                    {renderPlaylistIcon(pl.type, pl.is_private)}
+                  </div>
+                  <span className="summary-count" style={{ fontSize: '15px', fontWeight: 400 }}>{pl.title}</span>
                 </div>
               ))}
             </div>
 
-            <div className="create-pl-footer" style={{display: 'flex', gap: '8px', paddingTop: '15px', borderTop: '2px solid #f5f5f5'}}>
+            <div className="create-pl-inline">
                <input 
                 type="text" 
                 placeholder="Название нового..." 
                 value={newPlaylistTitle}
                 onChange={(e) => setNewPlaylistTitle(e.target.value)}
-                style={{flex: 1, padding: '10px', borderRadius: '10px', border: '1px solid #ddd', fontSize: '14px'}}
+                className="edit-input-field"
+                style={{ padding: '10px 12px' }}
                />
-               <button className="plus-btn-create" onClick={handleQuickCreate} 
-                       style={{background: '#C20000', color: '#fff', border: 'none', borderRadius: '10px', width: '42px', height: '42px', fontSize: '20px', cursor: 'pointer'}}>
+               <button 
+                className="plus-btn-create" 
+                onClick={handleQuickCreate}
+                style={{
+                  background: 'var(--primary-red)',
+                  color: 'var(--white)',
+                  borderRadius: '8px',
+                  width: '42px',
+                  height: '42px',
+                  fontSize: '22px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+               >
                  +
                </button>
             </div>

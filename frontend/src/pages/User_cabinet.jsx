@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
+import '../assets/styles/grid.css';
 import '../assets/styles/user.css';
 import UserAvatar from '../components/UserAvatar';
 import VideoCard from '../components/VideoCard';
 import VideoModals from '../components/VideoModals';
 import { useVideoActions } from '../hooks/useVideoActions';
 import PlaylistCard from '../components/PlaylistCard';
+import { TriangleAlert, Settings } from 'lucide-react';
 
 import { API_BASE_URL } from '@/config/api';
 import { BANNER_URL } from '@/config/api';
@@ -25,12 +27,29 @@ const User_cabinet = () => {
   const [profilePlaylists, setProfilePlaylists] = useState([]);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [subCount, setSubCount] = useState(0);
+  const [subLoading, setSubLoading] = useState(false);
 
   const isPremiumActive = (user) => {
     if (!user || parseInt(user.is_paid) === 0) return false;
     if (!user.premium_until) return false;
     return new Date(user.premium_until).getTime() > Date.now();
   };
+
+  // Функция для очистки имени от смайликов и эмодзи
+const stripEmojis = (text) => {
+  if (!text) return '';
+  return text.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F900}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F1E6}-\u{1F1FF}\u{1F191}-\u{1F19A}\u{1F200}-\u{1F2FF}\u{2B50}\u{2B55}\u{231A}\u{231B}\u{23E9}-\u{23EC}\u{23F0}\u{23F3}\u{25AA}\u{25AB}\u{25B6}\u{25C0}\u{25FB}-\u{25FE}\u{2B05}-\u{2B07}\u{2B1B}\u{2B1C}\u{2B50}\u{2B55}\u{3030}\u{303D}\u{3297}\u{3299}]/gu, '').trim();
+};
+
+// Функция для правильного склонения числительных (ИСПРАВЛЕНО: добавлена сюда)
+const getPluralForm = (number, forms) => {
+  const n = Math.abs(number) % 100;
+  const n1 = n % 10;
+  if (n > 10 && n < 20) return forms[2];
+  if (n1 > 1 && n1 < 5) return forms[1];
+  if (n1 === 1) return forms[0];
+  return forms[2];
+};
 
   const fetchProfileData = useCallback(async () => {
     const targetId = isMyProfile ? authUser?.id : parseInt(id);
@@ -110,6 +129,28 @@ const User_cabinet = () => {
     } catch (err) { console.error(err); }
   };
 
+  const handleSubscribeToggle = async () => {
+    if (!authUser) return navigate('/login');
+    if (subLoading) return;
+    setSubLoading(true);
+    try {
+      const res = await axios.post(`${API_BASE_URL}/user/subscribe.php`, {
+        follower_id: authUser.id, 
+        followed_id: profileUser.id
+      });
+      if (res.data.status === 'subscribed') {
+        setIsSubscribed(true);
+        setSubCount(prev => prev + 1);
+      } else {
+        setIsSubscribed(false);
+        setSubCount(prev => Math.max(0, prev - 1));
+      }
+    } catch (err) { 
+      console.error(err); 
+    } finally { 
+      setSubLoading(false); 
+    }
+  };
   // Кнопка ОК при уведомлении о сбросе имени
   const handleDismissNotice = async (userId) => {
     try {
@@ -171,7 +212,7 @@ const User_cabinet = () => {
       {/* УВЕДОМЛЕНИЕ О СБРОСЕ ИМЕНИ */}
       {isMyProfile && profileUser.name_reset == 1 && (
         <div className="moderation-notice">
-          <span>⚠️ Имя профиля было сброшено модератором.</span>
+          <span>Имя профиля было сброшено модератором.</span>
           <button onClick={() => handleDismissNotice(profileUser.id)}>ОК</button>
         </div>
       )}
@@ -179,7 +220,7 @@ const User_cabinet = () => {
       {/* УВЕДОМЛЕНИЕ О БЛОКИРОВКЕ — только для владельца */}
       {isMyProfile && isBanned && (
         <div className="moderation-notice" style={{ background: '#fff0f0', borderColor: '#C20000' }}>
-          <span>🚫 Вы были заблокированы за нарушение Правил сообщества.</span>
+          <span>Вы были заблокированы за нарушение Правил сообщества.</span>
           <a href="https://t.me/wemurr" style={{ color: '#C20000', fontWeight: 600 }}>
             Обратиться в поддержку
           </a>
@@ -196,7 +237,7 @@ const User_cabinet = () => {
             >
               {!isPremiumActive(profileUser) && isMyProfile && (
                 <div className="banner-lock-overlay" onClick={() => navigate('/premium')}>
-                  <span>🔒 Premium истек. Продлите, чтобы разблокировать баннер</span>
+                  <span>Premium истек. Продлите, чтобы разблокировать баннер</span>
                 </div>
               )}
             </div>
@@ -205,11 +246,11 @@ const User_cabinet = () => {
               <div className="profile-banner default-bg">
                 {!isPremiumActive(profileUser) ? (
                   <div className="banner-lock-overlay" onClick={() => navigate('/premium')}>
-                    <span>🔒 Оплатите PREMIUM для баннера</span>
+                    <span>Оплатите PREMIUM для баннера</span>
                   </div>
                 ) : (
                   <div className="banner-upload-prompt" onClick={() => navigate('/studio/profile')}>
-                    <span>🖼️ Настройте оформление канала в Студии</span>
+                    <span>Настройте оформление канала в Студии</span>
                   </div>
                 )}
               </div>
@@ -223,15 +264,19 @@ const User_cabinet = () => {
         <div className="user-main-info">
           <UserAvatar user={profileUser} sizeClass="avatar-profile-main" />
           <div className="user-text-block">
-            <h1 className="user-name">
-              {profileUser.full_name || profileUser.username} {profileUser.is_paid == 1 && '💎'}
-            </h1>
+            <h2>
+              {profileUser.full_name || profileUser.username} {profileUser.is_paid == 1}
+            </h2>
             <p className="user-handle">@{profileUser.username}</p>
             {profileUser.channel_created == 1 && (
               <div className="user-stats">
-                <span>{videos.length} видео</span>
+                <span>
+                  {videos.length} {getPluralForm(videos.length, ['видео', 'видео', 'видео'])}
+                </span>
                 <span className="stat-dot"> • </span>
-                <span>{subCount} подписчиков</span>
+                <span>
+                  {subCount} {getPluralForm(subCount, ['подписчик', 'подписчика', 'подписчиков'])}
+                </span>
               </div>
             )}
           </div>
@@ -239,13 +284,28 @@ const User_cabinet = () => {
 
         <div className="profile-actions">
           {isMyProfile ? (
-            <button className="btn-edit-profile" onClick={() => navigate('/studio/profile')}>Настроить канал</button>
+            <button className="btn-create-playlist-main" onClick={() => navigate('/studio/profile')}>
+              <Settings size={16} strokeWidth={2} /> Настроить канал
+            </button>
           ) : profileUser.channel_created == 1 && !isBanned && (
             <>
-              <button className={isSubscribed ? 'btn-subscribed' : 'btn-subscribe'} onClick={handleSubscribe}>
-                {isSubscribed ? 'Подписаны' : 'Подписаться'}
+            <div className='row'>
+              <button className={`btn-sub ${isSubscribed ? 'btn-subscribed' : 'btn-subscribe'}`}
+                  onClick={handleSubscribeToggle}
+                  disabled={subLoading}
+                >
+                {subLoading ? '...' : (isSubscribed ? 'Вы подписаны' : 'Подписаться')}
               </button>
-              <button className="report-user-btn" onClick={(e) => va.handleReport(e, profileUser.id, 'user')}>⚠️</button>
+              
+              <button 
+                className="profile-report-badge-btn" 
+                style={{ borderRadius: '50%' }}
+                title="Пожаловаться" 
+                onClick={(e) => va.handleReport(e, profileUser.id, 'user')}
+              >
+                <TriangleAlert size={16} strokeWidth={2} />
+              </button>
+            </div>
             </>
           )}
         </div>

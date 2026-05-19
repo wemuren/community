@@ -243,7 +243,7 @@ const VideoUpload = () => {
             <input type="file" accept=".mp4,.mov,.mkv" onChange={(e) => handleFileChange(e, 'video')} required />
           </div>
           <p className="sub-text" style={{color: IS_PREMIUM ? '#28a745' : '#888'}}>
-            {IS_PREMIUM ? '💎 Premium: до 2ГБ' : '💡 Базовый: до 100МБ'}
+            {IS_PREMIUM ? 'Premium: до 2ГБ' : 'Базовый: до 100МБ'}
           </p>
         </div>
 
