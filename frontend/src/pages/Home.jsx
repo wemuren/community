@@ -87,7 +87,8 @@ const fetchData = useCallback(async () => {
             onToggleLater={va.handleToggleSystem}
             onReport={va.handleReport}
           />
-        )) : <p>Видео загружаются или были удалены...</p>}
+        )) : 
+        <p>Видео загружаются или были удалены...</p>}
       </div>
     </div>
   );

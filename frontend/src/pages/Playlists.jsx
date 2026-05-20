@@ -105,9 +105,9 @@ const Playlists = () => {
       {/* СЕКЦИЯ: СОХРАНЕННЫЕ КОЛЛЕКЦИИ */}
       {savedPlaylists.length > 0 && (
         <section style={{ marginTop: '60px', borderTop: '2px solid var(--bg-main)', paddingTop: '40px' }}>
-          <h2 className="section-title" style={{ marginBottom: '24px', fontSize: '16px', color: 'var(--text-muted)' }}>
-            СОХРАНЕННЫЕ КОЛЛЕКЦИИ
-          </h2>
+          <div className="pl-top-bar">
+            <h2>Сохраненные коллекции</h2>
+          </div>
           <div className="video-grid">
             {savedPlaylists.map(pl => (
               <PlaylistCard 

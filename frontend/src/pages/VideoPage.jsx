@@ -188,7 +188,7 @@ const VideoPage = () => {
           )}
 
           {/* Заголовок */}
-          <h1 className="vp-title">{video.title}</h1>
+          <h2 className="vp-title">{video.title}</h2>
 
           {/* Статистика */}
           <div className="vp-stats-row">

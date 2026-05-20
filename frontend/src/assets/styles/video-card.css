@@ -194,11 +194,11 @@
 .video-meta-row {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: center; /* Выравнивает и текст, и точки строго по одной оси */
   flex-wrap: wrap;
-  gap: 0; /* Сбрасываем лишние зазоры */
+  gap: 0;
   color: var(--text-muted);
-  font-size: var(--descr); /* 16px */
+  font-size: var(--descr);
   font-weight: 400;
   line-height: 1.2;
 }
@@ -210,13 +210,23 @@
 }
 
 .video-meta-item:not(:last-child)::after {
-  content: "";
+  /* Вставляем честный юникод точки вместо пустого блока с фоном */
+  content: "·"; 
   display: inline-block;
-  width: 3px;
-  height: 3px;
-  background: var(--text-muted);
-  border-radius: 50%;
-  margin: 0 8px; /* Симметричные отступы у точек */
-  vertical-align: middle;
+  
+  /* Симметричные отступы по бокам */
+  margin: 0 8px; 
+  
+  /* Задаем цвет и легкую прозрачность, как у остального muted текста */
+  color: var(--text-muted); 
   opacity: 0.6;
+  
+  /* Идеальное центрирование относительно базовой линии шрифта */
+  vertical-align: middle; 
+  
+  /* Сбрасываем старые свойства, чтобы они не конфликтовали */
+  width: auto;
+  height: auto;
+  background: none;
+  border-radius: 0;
 }

@@ -16,7 +16,6 @@
   justify-content: flex-start;
   align-items: center;
   gap: 16px;
-  margin-bottom: 24px;
   width: 100%;
   
   /* Включаем горизонтальную прокрутку вместо wrap */
@@ -25,7 +24,7 @@
   
   /* Прячем уродливый дефолтный скроллбар браузера, чтобы сохранить минимализм */
   scrollbar-width: none; /* Firefox */
-  padding-bottom: 4px; /* Небольшой зазор под тени при скролле */
+  padding-bottom: 16px; /* Небольшой зазор под тени при скролле */
 }
 
 .tags-container::-webkit-scrollbar {

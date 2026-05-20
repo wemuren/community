@@ -67,23 +67,22 @@ const PlaylistDetail = () => {
     <div className="home-container">
       {/* КНОПКА НАЗАД */}
       <div className="back-button-wrapper">
-        <button onClick={() => navigate(-1)} className="btn-create-playlist-main" style={{ padding: '8px 16px' }}>
-          <ChevronLeft size={16} strokeWidth={2} /> Назад
+        <button onClick={() => navigate(-1)} className="nav-link" style={{ padding: '8px 16px' }}>
+          <ChevronLeft size={18} strokeWidth={2} /> Назад
         </button>
       </div>
 
       {/* ШАПКА ПЛЕЙЛИСТА (НОРМАЛЬНАЯ ТИПОГРАФИКА) */}
       <div className="playlist-detail-header">
         <div className="playlist-detail-info">
-          <span className="playlist-detail-type">
-            {isMine ? 'Мой плейлист' : `Плейлист @${playlist.username}`}
-          </span>
-          <h1 className="playlist-detail-title">{playlist.title}</h1>
-          <div className="playlist-detail-meta">
-            <span>{videos.length} видео</span>
-            <span className="playlist-detail-dot"></span>
-            <span>{parseInt(playlist.is_private) === 1 ? 'Приватный плейлист' : 'Публичный плейлист'}</span>
-          </div>
+            <h2>{playlist.title}</h2>
+            <div className="playlist-detail-meta">
+              <span>{videos.length} видео</span>
+              <span className="user-item"> · </span>
+              <span>{isMine ? 'Мой плейлист' : `Плейлист @${playlist.username}`}</span>
+              <span className="user-item"> · </span>
+              <span>{parseInt(playlist.is_private) === 1 ? 'Приватный плейлист' : 'Публичный плейлист'}</span>
+            </div>
         </div>
 
         {/* ТУЛБАР УПРАВЛЕНИЯ */}

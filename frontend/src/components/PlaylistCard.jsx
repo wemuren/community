@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { SquarePen, Heart, FolderHeart } from 'lucide-react';
+import { SquarePen, Heart, Folder } from 'lucide-react';
 
 import { API_BASE_URL } from '@/config/api';
 import { THUMB_URL } from '@/config/api';
@@ -72,7 +72,7 @@ const PlaylistCard = ({ playlist, onEdit, authUser, fetchPlaylists }) => {
 
         {/* Блок счетчика видео в правом нижнем углу обложки (Из экспорта Фигмы) */}
         <div className="playlist-video-counter">
-          <FolderHeart size={16} strokeWidth={2} />
+          <Folder size={16} strokeWidth={2} />
           <span className="playlist-counter-number">{videoCount}</span>
         </div>
 

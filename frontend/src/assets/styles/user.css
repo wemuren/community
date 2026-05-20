@@ -80,6 +80,7 @@
     display: flex;
     gap: 40px;
     border-bottom: 1px solid rgba(0,0,0,0.06);
+    margin-bottom: 24px;
 }
 
 .nav-tab {
@@ -234,6 +235,23 @@
 .meta-separator {
     font-weight: bold;
     color: #ccc;
+}
+
+.user-item {
+  display: inline-flex;
+  align-items: center;
+  color: var(--text-muted);
+}
+
+.user-stats{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: var(--descr);
+    font-weight: 400;
+    line-height: 1.2;
 }
 
 /* Общий ограничитель для всех контейнеров аватарок */

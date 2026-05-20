@@ -59,12 +59,12 @@ const Subscriptions = () => {
         setActiveVideo={va.setActiveVideo}
       />
 
-      <h2>Подписки</h2>
+      <div className="pl-top-bar"><h2>Подписки</h2></div>
 
       {channels.length > 0 ? (
         <>
           {/* ЛЕНТА КАНАЛОВ (Скролл-кружочки по ТЗ) */}
-          <div className="tags-container" style={{ paddingBottom: '12px', marginBottom: '32px' }}>
+          <div className="tags-container">
             {channels.map(channel => (
               <Link 
                 key={channel.id} 

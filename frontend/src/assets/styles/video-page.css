@@ -1,7 +1,3 @@
-/* ═══════════════════════════════════════════════
-   VIDEO PAGE — aligned with index.css tokens
-   ═══════════════════════════════════════════════ */
-
 /* ── Основной контейнер страницы ── */
 .video-page-container {
   background: var(--white);
@@ -30,7 +26,6 @@
   background: #000;
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
 }
 
 .main-video-player {
@@ -69,8 +64,8 @@
 
 /* Заголовок видео */
 .vp-title {
-  font-size: var(--h1);        /* 32px */
-  font-weight: 700;
+  font-size: var(--h2);        /* 32px */
+  font-weight: 600;
   color: var(--text-main);
   line-height: 1.2;
   text-transform: uppercase;   /* Соответствует h1 из index.css */
@@ -504,6 +499,7 @@
   line-height: 1.3;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }

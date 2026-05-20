@@ -264,17 +264,17 @@ const getPluralForm = (number, forms) => {
         <div className="user-main-info">
           <UserAvatar user={profileUser} sizeClass="avatar-profile-main" />
           <div className="user-text-block">
-            <h2>
+            <p className='author-name'>
               {profileUser.full_name || profileUser.username} {profileUser.is_paid == 1}
-            </h2>
-            <p className="user-handle">@{profileUser.username}</p>
+            </p>
+            <p className="user-item">@{profileUser.username}</p>
             {profileUser.channel_created == 1 && (
               <div className="user-stats">
-                <span>
+                <span className='user-item'>
                   {videos.length} {getPluralForm(videos.length, ['видео', 'видео', 'видео'])}
                 </span>
-                <span className="stat-dot"> • </span>
-                <span>
+                <span className="user-item"> · </span>
+                <span className='user-item'>
                   {subCount} {getPluralForm(subCount, ['подписчик', 'подписчика', 'подписчиков'])}
                 </span>
               </div>
