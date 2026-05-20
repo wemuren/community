@@ -142,3 +142,13 @@ a {
   display: flex;
   flex-direction: row;
 }
+
+/* 5. Размер для горизонтальной ленты подписок/каналов (56px) */
+.avatar-subs-list {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+}
+.avatar-subs-list.avatar-initials span {
+  font-size: 18px;
+}

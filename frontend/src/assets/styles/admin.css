@@ -32,21 +32,6 @@ body {
     min-height: 100vh;
 }
 
-/* --- SIDEBAR --- */
-.sidebar {
-    width: 280px;
-    min-width: 280px;
-    background: var(--bg-card);
-    padding: 32px 24px;
-    display: flex;
-    flex-direction: column;
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    border-right: 1px solid var(--border-color);
-    z-index: 100;
-}
-
 .admin-logo {
     font-size: 22px;
     font-weight: 800;

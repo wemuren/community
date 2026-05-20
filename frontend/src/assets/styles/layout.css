@@ -13,18 +13,19 @@
 .sidebar {
   width: 315px;
   min-width: 280px;
-  background: var(--white);
-  padding: var(--sidebar-padding);
+  background: white;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   gap: 20px;
-  height: 100%;
   box-sizing: border-box;
-  border-right: 1px solid rgba(0, 0, 0, 0.04);
   
   overflow-y: auto;
   scrollbar-width: none;
+  min-width: 280px;
+  padding: 32px 24px;
+  
+  height: 100vh;
 }
 
 .sidebar-top{
@@ -112,7 +113,7 @@ button.nav-link {
 }
 
 .nav-link.disabled-link span {
-  font-size: var(--p);
+  font-size: 14px;
   font-weight: 500;
 }
 

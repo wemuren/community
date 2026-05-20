@@ -1,0 +1,155 @@
+/* ==========================================================================
+   GLOBAL SEARCH RESULTS SPEC (INDUSTRIAL UI)
+   ========================================================================== */
+
+.search-results-header {
+  margin-bottom: 32px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  padding-bottom: 16px;
+}
+
+/* Красивое монохромное выделение поискового запроса */
+.query-highlight {
+  color: var(--primary-red);
+  text-transform: none !important;
+  font-weight: 700;
+}
+
+.search-section {
+  margin-top: 48px;
+}
+
+.search-results-section:first-of-type {
+  margin-top: 24px;
+}
+
+
+/* --- СЕТКА ДЛЯ ОТОБРАЖЕНИЯ НАЙДЕННЫХ КАНАЛОВ --- */
+.search-authors-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  width: 100%;
+}
+
+/* Карточка автора в поиске */
+.search-author-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: var(--bg-card); /* #F4F4F4 */
+  border-radius: 16px;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.search-author-card:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  transform: translateY(-1px);
+}
+
+.search-avatar-wrapper {
+  flex-shrink: 0;
+}
+
+.search-author-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow: hidden;
+}
+
+.search-author-name {
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  color: var(--text-main);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.search-author-handle {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* --- СОСТОЯНИЕ ОТСУТСТВИЯ РЕЗУЛЬТАТОВ (EMPTY STATE) --- */
+.search-empty-state {
+  padding: 80px 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: var(--bg-main);
+  border-radius: var(--border-radius-lg);
+  margin-top: 24px;
+}
+
+.search-empty-state p {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.search-empty-state span {
+  font-size: 15px;
+  color: var(--text-muted);
+}
+
+.sub-channel-item{
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
+
+  align-items: center;
+  gap: 8px;
+}
+
+/* Вертикальная обертка для текста под аватаркой */
+.sub-channel-text-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px; /* Минимальный аккуратный зазор между именем и юзером */
+  width: 100%;
+}
+
+/* Первая строчка: Отображаемое имя */
+.sub-channel-name {
+  font-size: 13px;
+  font-weight: 600; /* Делаем чуть плотнее, чтобы выделить */
+  color: var(--text-main);
+  width: 100%;
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+}
+
+/* Вторая строчка: Уникальный @username */
+.sub-channel-handle {
+  font-size: 11px; /* Чуть помельче */
+  font-weight: 400;
+  color: var(--text-muted); /* Твой rgba(0, 0, 0, 0.50) */
+  width: 100%;
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+}
+
+.search-channels-scroll-row{
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+}

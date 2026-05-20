@@ -4,6 +4,7 @@ import axios from 'axios';
 import '../assets/styles/layout.css';
 import '../assets/styles/search-dropdown.css';
 import logo from '../assets/img/logo.svg';
+import UserAvatar from '../components/UserAvatar';
 import { House, Users, ListVideo, User, PaintbrushVertical, Plus, Settings, LogOut, Search } from 'lucide-react';
 
 import { API_BASE_URL } from '@/config/api';
@@ -163,42 +164,42 @@ const Layout = () => {
             )}
 
             {hasChannel && !isBanned && (
-              <button className="nav-link" onClick={() => navigate('studio/upload')}>
-                <Plus size={16} strokeWidth={2.5} />
+              <NavLink title="Загрузить новое видео" to="/studio/upload" className="nav-link">
+                <Plus size={18} strokeWidth={2} />
                 <span>Загрузить видео</span>
-              </button>
+              </NavLink>
             )}
           </nav>
         </div>
 
         <div className={`premium-card ${activePremium ? 'is-premium' : ''} ${expiredPremium ? 'is-expired' : ''}`}>
-  <div className="premium-info">
-    {activePremium ? (
-      <>
-        <div className="premium-header-flex">
-          <p className="premium-title">Premium активен</p>
-          {daysLeft <= 5 && <span className="urgent-badge">!</span>}
+          <div className="premium-info">
+            {activePremium ? (
+              <>
+                <div className="premium-header-flex">
+                  <p className="premium-title">Premium активен</p>
+                  {daysLeft <= 5 && <span className="urgent-badge">!</span>}
+                </div>
+                <p className="premium-days">
+                  Осталось: <strong>{daysLeft} {getPluralForm(daysLeft, ['день', 'дня', 'дней'])}</strong>
+                </p>
+              </>
+            ) : expiredPremium ? (
+              <>
+                <p className="premium-title">Premium истек</p>
+                <p className="premium-days">Функции ограничены</p>
+              </>
+            ) : (
+              <>
+                <p className="premium-title">Полный доступ к контенту</p>
+                <p className="premium-price">Всего за {price} единиц валюты!</p>
+              </>
+            )}
+          </div>
+          <button className="premium-button" onClick={() => navigate('/premium')}>
+            {activePremium ? 'ПРОДЛИТЬ' : expiredPremium ? 'РАЗБЛОКИРОВАТЬ' : 'ОФОРМИТЬ'}
+          </button>
         </div>
-        <p className="premium-days">
-          Осталось: <strong>{daysLeft} {getPluralForm(daysLeft, ['день', 'дня', 'дней'])}</strong>
-        </p>
-      </>
-    ) : expiredPremium ? (
-      <>
-        <p className="premium-title">Premium истек</p>
-        <p className="premium-days">Функции ограничены</p>
-      </>
-    ) : (
-      <>
-        <p className="premium-title">Полный доступ к контенту</p>
-        <p className="premium-price">Всего за {price} единиц валюты!</p>
-      </>
-    )}
-  </div>
-  <button className="premium-button" onClick={() => navigate('/premium')}>
-    {activePremium ? 'ПРОДЛИТЬ' : expiredPremium ? 'РАЗБЛОКИРОВАТЬ' : 'ОФОРМИТЬ'}
-  </button>
-</div>
 
         <div className="sidebar-bottom">
           <nav className="nav-menu">
@@ -207,7 +208,7 @@ const Layout = () => {
               <span>Настройки</span>
             </NavLink>
             <button onClick={handleLogout} className="nav-link">
-              <LogOut size={18} strokeWidth={2} transform="rotate(180)"/>
+              <LogOut size={18} strokeWidth={2} transform="rotate(180)" />
               <span>Выйти</span>
             </button>
           </nav>
@@ -229,7 +230,7 @@ const Layout = () => {
                 setShowDropdown(false);
               }
             }}>
-              <Search size={18} strokeWidth={2.5} color='grey'/>
+              <Search size={18} strokeWidth={2.5} color='grey' />
             </div>
             <input
               type="text"

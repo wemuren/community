@@ -1,27 +1,35 @@
 <?php
 header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Headers: *");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Content-Type: application/json; charset=UTF-8");
 require_once '../db.php';
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
 
 if (isset($_GET['id'])) {
     $id = (int)$_GET['id'];
     
-    // Добавляем все недостающие поля: avatar, banner, is_paid, is_active, name_reset
-   $sql = "SELECT 
-                id, 
-                username, 
-                full_name, 
-                avatar, 
-                banner, 
-                is_paid, 
-                is_admin, 
-                is_active, 
-                channel_created, 
-                name_reset,
-                premium_until, -- ВОТ ЭТОГО НЕ ХВАТАЛО!
+    // ИСПРАВЛЕНО: Добавлено поле u.email в выборку!
+    $sql = "SELECT 
+                u.id, 
+                u.username, 
+                u.full_name, 
+                u.email, -- ВОТ ЭТО ПОЛЕ ОШЕЙНИК И ВОЗВРАЩАЕТ!
+                u.avatar, 
+                u.banner, 
+                u.is_paid, 
+                u.is_admin, 
+                u.is_active, 
+                u.channel_created, 
+                u.name_reset,
+                u.premium_until,
                 (SELECT COUNT(*) FROM subscriptions WHERE followed_id = u.id) as subscribers 
             FROM users u 
-            WHERE id = ?";
+            WHERE u.id = ?";
             
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$id]);
@@ -41,4 +49,7 @@ if (isset($_GET['id'])) {
         http_response_code(404);
         echo json_encode(["status" => "error", "message" => "User not found"]);
     }
+} else {
+    http_response_code(400);
+    echo json_encode(["status" => "error", "message" => "Missing id parameter"]);
 }

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
-import '../assets/styles/user.css';
-import '../assets/styles/auth.css';
+import { Eye, EyeOff, ChevronLeft, PaintbrushVertical } from 'lucide-react';
+import '../assets/styles/settings.css'; 
+import '../assets/styles/auth.css'; // Импортируем базу стилей инпутов регистрации
 
 import { API_BASE_URL } from '@/config/api';
 
@@ -14,7 +15,6 @@ const Settings = () => {
     return data ? JSON.parse(data) : null;
   });
   const navigate = useNavigate();
-
 
   // ── ПАРОЛЬ ──────────────────────────────────────────────
   const [passData, setPassData] = useState({ old: '', new: '', confirm: '' });
@@ -33,440 +33,400 @@ const Settings = () => {
   const [emailServerError, setEmailServerError] = useState('');
   const [timer, setTimer] = useState(0);
 
-  const limits = { password: 32, email: 50, code: 6 };
+  const limits = { password: 32, email: 50 };
 
-  // Таймер для кода
   useEffect(() => {
-    let interval;
-    if (timer > 0) interval = setInterval(() => setTimer(t => t - 1), 1000);
-    return () => clearInterval(interval);
+    if (timer > 0) {
+      const t = setTimeout(() => setTimer(timer - 1), 1000);
+      return () => clearTimeout(t);
+    }
   }, [timer]);
 
-  // Синхронизация authUser из localStorage
-  useEffect(() => {
-    const data = localStorage.getItem('user');
-    if (data) {
-      setAuthUser(JSON.parse(data));
-    }
-  }, []);
+  if (!authUser) {
+    return (
+      <div className="settings-white-wrapper">
+        <p className="error-label">Пожалуйста, войдите в аккаунт.</p>
+      </div>
+    );
+  }
 
-  // ── ВАЛИДАЦИЯ ПАРОЛЯ ─────────────────────────────────────
-  const validatePass = (name, value, all) => {
-    let err = '';
-    if (name === 'new' && value.length > 0 && value.length < 6) err = 'Минимум 6 символов';
-    if (name === 'confirm' && value !== all.new) err = 'Пароли не совпадают';
-    setPassErrors(prev => ({ ...prev, [name]: err }));
+  // Обработчики валидации
+  const validatePass = (field, val, all) => {
+    if (!val) return 'Обязательное поле';
+    if (val.length > limits.password) return `Максимум ${limits.password} символов`;
+    if (field === 'confirm' && val !== all.new) return 'Пароли не совпадают';
+    return '';
   };
 
-  const handlePassInput = (e) => {
+  const handlePassChange = (e) => {
     const { name, value } = e.target;
     if (value.length > limits.password) return;
-    const newData = { ...passData, [name]: value };
-    setPassData(newData);
-    validatePass(name, value, newData);
-    setPassServerError('');
-    setPassSuccess('');
+    const next = { ...passData, [name]: value };
+    setPassData(next);
+    if (passTouched[name]) {
+      setPassErrors(prev => ({ ...prev, [name]: validatePass(name, value, next) }));
+    }
   };
 
-  const isPassFormValid = () =>
-    passData.old &&
-    passData.new &&
-    passData.confirm &&
-    passData.new.length >= 6 &&
-    passData.new === passData.confirm;
+  const handlePassBlur = (e) => {
+    const { name, value } = e.target;
+    setPassTouched(prev => ({ ...prev, [name]: true }));
+    setPassErrors(prev => ({ ...prev, [name]: validatePass(name, value, passData) }));
+  };
 
-  const onUpdatePassword = async (e) => {
+  const handlePasswordSubmit = async (e) => {
     e.preventDefault();
-    setPassServerError('');
-    setPassSuccess('');
-    if (!isPassFormValid()) return;
+    setPassServerError(''); setPassSuccess('');
+    const fields = ['old', 'new', 'confirm'];
+    const nextTouched = {}; const nextErrors = {};
+    let hasErr = false;
+
+    fields.forEach(f => {
+      nextTouched[f] = true;
+      const err = validatePass(f, passData[f], passData);
+      nextErrors[f] = err;
+      if (err) hasErr = true;
+    });
+
+    setPassTouched(nextTouched); setPassErrors(nextErrors);
+    if (hasErr) return;
+
     try {
-      await axios.post(`${API_BASE_URL}/user/change_password.php`, {
+      const res = await axios.post(`${API_BASE_URL}/user/change_password.php`, {
         user_id: authUser.id,
         old_password: passData.old,
-        new_password: passData.new,
+        new_password: passData.new
       });
-      setPassSuccess('Пароль успешно изменён!');
-      setPassData({ old: '', new: '', confirm: '' });
-      setPassTouched({});
-      setPassErrors({});
-    } catch (err) {
-      setPassServerError(err.response?.data?.message || 'Ошибка сервера');
+      if (res.data.success) {
+        setPassSuccess('Пароль успешно изменен');
+        setPassData({ old: '', new: '', confirm: '' });
+        setPassTouched({});
+      } else {
+        setPassServerError(res.data.message || 'Ошибка сервера');
+      }
+    } catch {
+      setPassServerError('Сбой сети или сервера');
     }
   };
 
-  // ── ВАЛИДАЦИЯ ПОЧТЫ ──────────────────────────────────────
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-  const validateEmail = (name, value) => {
-    let err = '';
-    const val = normalize(value);
-    const current = normalize(authUser?.email);
-
-    if (name === 'current') {
-      if (!emailRegex.test(value)) err = 'Некорректный формат почты';
-      else if (val !== current) err = 'Не совпадает с текущим адресом';
+  const validateEmail = (field, val) => {
+    if (!val) return 'Обязательное поле';
+    if (val.length > limits.email) return `Максимум ${limits.email} символов`;
+    if (field === 'current' && normalize(val) !== normalize(authUser.email)) {
+      return 'Не совпадает с текущим email';
     }
-
-    if (name === 'next') {
-      if (!emailRegex.test(value)) err = 'Некорректный формат почты';
-      else if (val === current) err = 'Это ваша текущая почта';
+    if (field === 'next') {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!re.test(val)) return 'Некорректный формат email';
+      if (normalize(val) === normalize(authUser.email)) return 'Новый email совпадает с текущим';
     }
-
-    setEmailErrors(prev => ({ ...prev, [name]: err }));
-    return err;
+    return '';
   };
 
-  const handleEmailInput = (e) => {
+  const handleEmailChange = (e) => {
     const { name, value } = e.target;
-    if ((name === 'current' || name === 'next') && value.length > limits.email) return;
-    if (name === 'code' && value.length > limits.code) return;
+    if (value.length > limits.email) return;
     setEmailData(prev => ({ ...prev, [name]: value }));
-    if (name !== 'code') validateEmail(name, value);
-    setEmailServerError('');
-    setEmailSuccess('');
+    if (emailTouched[name]) {
+      setEmailErrors(prev => ({ ...prev, [name]: validateEmail(name, value) }));
+    }
   };
 
-  // ── ХЕНДЛЕРЫ ПОЧТЫ ──────────────────────────────────────
-  const onRequestCode = async (e) => {
-    e?.preventDefault();
-    setEmailServerError('');
+  const handleEmailBlur = (e) => {
+    const { name, value } = e.target;
+    setEmailTouched(prev => ({ ...prev, [name]: true }));
+    setEmailErrors(prev => ({ ...prev, [name]: validateEmail(name, value) }));
+  };
+
+  const handleEmailStep1 = async (e) => {
+    e.preventDefault();
+    setEmailServerError(''); setEmailSuccess('');
+    setEmailTouched(p => ({ ...p, current: true }));
     const err = validateEmail('current', emailData.current);
-    if (err || !emailData.current) return;
-    const normalizedEmail = normalize(emailData.current);
+    setEmailErrors(p => ({ ...p, current: err }));
+    if (err) return;
+
     try {
-      const res = await axios.post(`${API_BASE_URL}/user/email_change_request.php`, {
+      // ИСПРАВЛЕНО: Передаём current_email, который требует бэкенд
+      const res = await axios.post(`${API_BASE_URL}/user/email_change_request.php`, { 
         user_id: authUser.id,
-        current_email: normalizedEmail,
+        current_email: normalize(emailData.current)
       });
-      if (res.data.status === 'success') {
-        setEmailStep(2);
-        setTimer(59);
-        if (res.data.code_for_test) console.log('Код для теста:', res.data.code_for_test);
+      if (res.data.success) {
+        setEmailStep(2); setTimer(60);
+      } else {
+        setEmailServerError(res.data.message || 'Ошибка отправки кода');
       }
-    } catch (err) {
-      setEmailServerError(err.response?.data?.message || 'Ошибка сервера');
-    }
+    } catch { setEmailServerError('Ошибка сети или сервера'); }
   };
 
-  const onVerifyCode = async (e) => {
+  const handleEmailStep2 = async (e) => {
     e.preventDefault();
     setEmailServerError('');
+    if (!emailData.code) {
+      setEmailErrors(p => ({ ...p, code: 'Введите код' })); return;
+    }
     try {
+      // ИСПРАВЛЕНО: Передаём email и code, как ждёт verify_settings_code.php
       const res = await axios.post(`${API_BASE_URL}/user/verify_settings_code.php`, {
-        email: normalize(emailData.current),
-        code: emailData.code.trim(),
+        email: normalize(emailData.current), 
+        code: emailData.code
       });
-      if (res.data.status === 'success') {
-        setEmailStep(3);
-      }
-    } catch (err) {
-      setEmailServerError('Неверный код или истекло время ожидания');
-    }
+      if (res.data.success) { setEmailStep(3); } else { setEmailServerError(res.data.message || 'Неверный код'); }
+    } catch { setEmailServerError('Ошибка проверки кода'); }
   };
 
-  const onUpdateEmail = async (e) => {
+  const handleEmailStep3 = async (e) => {
     e.preventDefault();
     setEmailServerError('');
-    setEmailSuccess('');
+    setEmailTouched(p => ({ ...p, next: true }));
     const err = validateEmail('next', emailData.next);
-    if (err || !emailData.next) return;
-    console.log('Отправляю на сервер:', {
-      user_id: authUser.id,
-      new_email: normalize(emailData.next),
-    });
-    console.log('authUser целиком:', authUser);
+    setEmailErrors(p => ({ ...p, next: err }));
+    if (err) return;
+
     try {
+      // ИСПРАВЛЕНО: Передаём user_id и new_email для обновления записи в БД
       const res = await axios.post(`${API_BASE_URL}/user/email_change_confirm.php`, {
-        user_id: authUser.id,
-        new_email: normalize(emailData.next),
+        user_id: authUser.id, 
+        new_email: normalize(emailData.next)
       });
-      if (res.data.status === 'success') {
+      if (res.data.success) {
         const updated = { ...authUser, email: normalize(emailData.next) };
         localStorage.setItem('user', JSON.stringify(updated));
         setAuthUser(updated);
-        setEmailStep(1);
-        setEmailData({ current: '', code: '', next: '' });
-        setEmailTouched({});
-        setEmailErrors({});
-        setEmailSuccess('Почта успешно обновлена!');
+        setEmailSuccess('Email успешно изменен');
+        setEmailStep(1); setEmailData({ current: '', code: '', next: '' }); setEmailTouched({});
+      } else {
+        setEmailServerError(res.data.message || 'Этот email уже занят');
       }
-    } catch (err) {
-      setEmailServerError(err.response?.data?.message || 'Ошибка сервера');
-    }
+    } catch { setEmailServerError('Ошибка сохранения новой почты'); }
   };
 
-  const resetEmailFlow = () => {
-    setEmailStep(1);
-    setEmailData({ current: '', code: '', next: '' });
-    setEmailTouched({});
-    setEmailErrors({});
+  const resendCode = async () => {
+    if (timer > 0) return;
     setEmailServerError('');
-    setEmailSuccess('');
-    setTimer(0);
+    try {
+      const res = await axios.post(`${API_BASE_URL}/auth/change_email_step1.php`, { user_id: authUser.id });
+      if (res.data.success) { setTimer(60); } else { setEmailServerError(res.data.message || 'Ошибка переотправки'); }
+    } catch { setEmailServerError('Ошибка сети'); }
   };
 
   const handleDeleteChannel = async () => {
-    if (window.confirm("Вы уверены? Это скроет ваш канал, но сам аккаунт останется. Видео и плейлисты могут стать недоступны.")) {
-      try {
-        const res = await axios.post(`${API_BASE_URL}/user/delete_channel.php`, {
-          user_id: authUser.id
-        });
-
-        if (res.data.status === 'success') {
-          // Обновляем локальные данные юзера
-          const updatedUser = { ...authUser, channel_created: 0 };
-          localStorage.setItem('user', JSON.stringify(updatedUser));
-          alert("Канал успешно удален. Вы всё еще можете смотреть видео других авторов.");
-          // Перенаправляем в профиль, чтобы увидеть изменения
-          navigate(`/profile/${authUser.id}`);
-        }
-      } catch (err) {
-        console.error("Ошибка при удалении канала:", err);
-        alert("Не удалось удалить канал.");
-      }
-    }
+    if (!window.confirm('Вы уверены, что хотите удалить свой канал? Это действие сотрет все видео и плейлисты.')) return;
+    try {
+      const res = await axios.post(`${API_BASE_URL}/user/delete_channel.php`, { user_id: authUser.id });
+      if (res.data.success) {
+        const nextUser = { ...authUser, channel_created: 0, channel_id: null };
+        localStorage.setItem('user', JSON.stringify(nextUser));
+        setAuthUser(nextUser);
+        alert('Канал успешно удален.');
+      } else { alert(res.data.message || 'Ошибка удаления канала'); }
+    } catch { alert('Ошибка при выполнении запроса'); }
   };
 
-
-
-  const handleDeleteAccount = async () => {
-    if (window.confirm("Вы уверены? Это удалит все ваши видео и плейлисты навсегда!")) {
-      try {
-        // 1. Сначала стучимся в базу
-        const res = await axios.post(`${API_BASE_URL}/user/delete_account.php`, {
-          user_id: authUser.id
-        });
-
-        if (res.data.status === 'success') {
-          // 2. Если база подтвердила — чистим фронт
-          localStorage.clear();
-          alert("Прощай, ковбой! Аккаунт удален.");
-          navigate('/register'); // Или на лендинг
-        }
-      } catch (err) {
-        console.error("Не удалось удалить аккаунт:", err);
-        alert("Ошибка сервера при удалении.");
-      }
-    }
+  const handleAccountDelete = async () => {
+    if (!window.confirm('ВНИМАНИЕ! Вы полностью удаляете свой профиль с платформы. Это действие необратимо. Продолжить?')) return;
+    try {
+      const res = await axios.post(`${API_BASE_URL}/user/delete_account.php`, { user_id: authUser.id });
+      if (res.data.success) {
+        localStorage.clear(); alert('Ваш аккаунт был успешно удален.'); navigate('/login');
+      } else { alert(res.data.message || 'Ошибка при удалении аккаунта'); }
+    } catch { alert('Ошибка соединения с сервером'); }
   };
 
-  if (!authUser) return null;
+  // Проверка активности кнопок на основе валидности заполнения полей
+  const isPassFormValid = passData.old && passData.new && passData.confirm && !passErrors.old && !passErrors.new && !passErrors.confirm;
 
   return (
-    <div className="auth-container settings-page-v2">
-      <div className="settings-header">
-        <button onClick={() => navigate(-1)} className="btn-back">← Назад</button>
-        <h2 className="user-name">Настройки аккаунта</h2>
+    <div className="settings-white-wrapper">
+      {/* КНОПКА ВОЗВРАТА НАЗАД */}
+      <div className="settings-back-action" onClick={() => navigate(-1)}>
+        <ChevronLeft size={16} strokeWidth={2} /> Назад
       </div>
 
-      <div className="auth-card" style={{ width: '100%', maxWidth: '500px', marginTop: '20px' }}>
+      <div className="pl-top-bar"><h2>Настройки учетной записи</h2></div>
 
-        <section className='row'>
-          {/* ── СЕКЦИЯ ПАРОЛЯ ── */}
-          <section className="settings-form-block">
-            <h3>БЕЗОПАСНОСТЬ</h3>
-            <form onSubmit={onUpdatePassword} noValidate>
-              {[
-                { field: 'old', label: 'СТАРЫЙ ПАРОЛЬ' },
-                { field: 'new', label: 'НОВЫЙ ПАРОЛЬ' },
-                { field: 'confirm', label: 'ПОВТОР НОВОГО' },
-              ].map(({ field, label }) => (
-                <div className="input-group password-group" key={field}>
-                  <label>{label}</label>
-                  <input
-                    type={showPass ? 'text' : 'password'}
-                    name={field}
-                    className={`auth-input ${passErrors[field] && passTouched[field] ? 'invalid' : ''}`}
-                    value={passData[field]}
-                    onChange={handlePassInput}
-                    onBlur={() => setPassTouched(p => ({ ...p, [field]: true }))}
-                    autoComplete={field === 'old' ? 'current-password' : 'new-password'}
-                  />
-                  {field === 'old' && (
-                    <span
-                      className="eye-icon"
-                      onClick={() => setShowPass(s => !s)}
-                      style={{ cursor: 'pointer' }}
-                    >
-                      {showPass ? '👁️' : '🙈'}
-                    </span>
-                  )}
-                  {passErrors[field] && passTouched[field] && (
-                    <span className="error-label">{passErrors[field]}</span>
-                  )}
-                </div>
-              ))}
-              {passServerError && <div className="error-message">{passServerError}</div>}
-              {passSuccess && <div className="success-message">{passSuccess}</div>}
-              <button
-                type="submit"
-                className={`btn-auth ${isPassFormValid() ? 'active' : ''}`}
-                disabled={!isPassFormValid()}
-              >
-                обновить пароль
-              </button>
-            </form>
-          </section>
+      {/* ОСНОВНОЙ ДВУХКОЛОНОЧНЫЙ БЛОК НАСТРОЕК */}
+      <div className="settings-columns-grid">
+        
+        {/* КОЛОНКА 1: БЕЗОПАСНОСТЬ */}
+        <section className="settings-col-section">
+  <h3>Безопасность</h3>
+  
+  <form onSubmit={handlePasswordSubmit} className="auth-body" noValidate>
+    {/* ИСПРАВЛЕНО: Глазик переехал сюда, в первый инпут */}
+    <div className="input-group password-group">
+      <label>Текущий пароль</label>
+      <input
+        type={showPass ? 'text' : 'password'}
+        name="old"
+        className={`auth-input ${passTouched.old && passErrors.old ? 'invalid' : ''}`}
+        value={passData.old}
+        onChange={handlePassChange}
+        onBlur={handlePassBlur}
+      />
+      <span className="char-counter">{passData.old.length}/{limits.password}</span>
+      <span className="eye-icon" onClick={() => setShowPass(!showPass)}>
+        {showPass ? <EyeOff size={20} /> : <Eye size={20} />}
+      </span>
+      {passTouched.old && passErrors.old && <span className="error-label">{passErrors.old}</span>}
+    </div>
 
-          {/* ── СЕКЦИЯ ПОЧТЫ ── */}
-          <section className="settings-form-block">
-            <h3>EMAIL АДРЕС</h3>
-            <p style={{ fontSize: '0.8rem', opacity: 0.6, marginBottom: '12px' }}>
-              Текущий: <strong>{authUser.email}</strong>
-            </p>
+    <div className="input-group password-group">
+      <label>Новый пароль</label>
+      <input
+        type={showPass ? 'text' : 'password'}
+        name="new"
+        className={`auth-input ${passTouched.new && passErrors.new ? 'invalid' : ''}`}
+        value={passData.new}
+        onChange={handlePassChange}
+        onBlur={handlePassBlur}
+      />
+      <span className="char-counter">{passData.new.length}/{limits.password}</span>
+      {passTouched.new && passErrors.new && <span className="error-label">{passErrors.new}</span>}
+      <span className="eye-icon" onClick={() => setShowPass(!showPass)}>
+        {showPass ? <EyeOff size={20} /> : <Eye size={20} />}
+      </span>
+    </div>
 
-            {/* Шаг 1 — подтвердить текущую почту */}
+    <div className="input-group password-group">
+      <label>Подтвердите пароль</label>
+      <input
+        type={showPass ? 'text' : 'password'}
+        name="confirm"
+        className={`auth-input ${passTouched.confirm && passErrors.confirm ? 'invalid' : ''}`}
+        value={passData.confirm}
+        onChange={handlePassChange}
+        onBlur={handlePassBlur}
+      />
+      <span className="char-counter">{passData.confirm.length}/{limits.password}</span>
+      {passTouched.confirm && passErrors.confirm && <span className="error-label">{passErrors.confirm}</span>}
+      <span className="eye-icon" onClick={() => setShowPass(!showPass)}>
+        {showPass ? <EyeOff size={20} /> : <Eye size={20} />}
+      </span>
+    </div>
+
+    {passServerError && <div className="error-message">{passServerError}</div>}
+    {passSuccess && <div className="error-message neutral">{passSuccess}</div>}
+
+    <button type="submit" className={`btn-auth ${isPassFormValid ? 'active' : ''}`} disabled={!isPassFormValid}>
+      Обновить пароль
+    </button>
+  </form>
+</section>
+
+        {/* КОЛОНКА 2: ИЗМЕНЕНИЕ EMAIL */}
+        <section className="settings-col-section">
+          <h3>Смена почтового адреса</h3>
+          <p className="settings-current-info">Текущий адрес электронной почты: <strong>{authUser.email}</strong></p>
+
+          <div className="auth-body">
             {emailStep === 1 && (
-
-              <form onSubmit={onRequestCode} noValidate>
+              <form onSubmit={handleEmailStep1} noValidate style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
                 <div className="input-group">
-                  <label>ПОДТВЕРДИТЕ ТЕКУЩИЙ EMAIL</label>
+                  <label>Подтвердите текущий Email</label>
                   <input
                     type="email"
                     name="current"
-                    className={`auth-input ${emailErrors.current && emailTouched.current ? 'invalid' : ''}`}
+                    className={`auth-input ${emailTouched.current && emailErrors.current ? 'invalid' : ''}`}
                     value={emailData.current}
-                    onChange={handleEmailInput}
-                    onBlur={() => {
-                      setEmailTouched(p => ({ ...p, current: true }));
-                      validateEmail('current', emailData.current);
-                    }}
-                    placeholder={authUser.email}
-                    autoComplete="email"
+                    onChange={handleEmailChange}
+                    onBlur={handleEmailBlur}
+                    placeholder="example@mail.com"
                   />
-                  {emailErrors.current && emailTouched.current && (
-                    <span className="error-label">{emailErrors.current}</span>
-                  )}
+                  <span className="char-counter">{emailData.current.length}/{limits.email}</span>
+                  {emailTouched.current && emailErrors.current && <span className="error-label">{emailErrors.current}</span>}
                 </div>
-                {emailServerError && <div className="error-message">{emailServerError}</div>}
-                {emailSuccess && <div className="success-message">{emailSuccess}</div>}
-                <button
-                  type="submit"
-                  className={`btn-auth ${!emailErrors.current && emailData.current ? 'active' : ''}`}
-                  disabled={!!emailErrors.current || !emailData.current}
-                >
-                  получить код
+                <button type="submit" className={`btn-auth ${emailData.current && !emailErrors.current ? 'active' : ''}`} disabled={!emailData.current || !!emailErrors.current}>
+                  Получить код
                 </button>
               </form>
             )}
 
-            {/* Шаг 2 — ввести код */}
             {emailStep === 2 && (
-              <form onSubmit={onVerifyCode} noValidate>
+              <form onSubmit={handleEmailStep2} noValidate style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
                 <div className="input-group">
-                  <label>КОД ИЗ ПИСЬМА (на {emailData.current})</label>
+                  <label>Код из письма</label>
                   <input
                     type="text"
                     name="code"
                     className="auth-input"
                     value={emailData.code}
-                    onChange={handleEmailInput}
-                    maxLength={6}
-                    inputMode="numeric"
-                    autoComplete="one-time-code"
+                    onChange={handleEmailChange}
+                    placeholder="6-значный код"
                   />
-                  <div className="code-info">
-                    {timer > 0 ? (
-                      <span className="timer-text">Повтор через {timer}с</span>
-                    ) : (
-                      <button type="button" className="resend-link" onClick={onRequestCode}>
-                        Переотправить
-                      </button>
-                    )}
-                  </div>
+                  {emailErrors.code && <span className="error-label">{emailErrors.code}</span>}
                 </div>
-                {emailServerError && <div className="error-message">{emailServerError}</div>}
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <button
-                    type="button"
-                    className="btn-auth"
-                    onClick={resetEmailFlow}
-                    style={{ flex: '0 0 auto', opacity: 0.6 }}
-                  >
-                    ←
-                  </button>
-                  <button
-                    type="submit"
-                    className={`btn-auth ${emailData.code.length === 6 ? 'active' : ''}`}
-                    disabled={emailData.code.length !== 6}
-                    style={{ flex: 1 }}
-                  >
-                    подтвердить код
-                  </button>
+                <div className="code-info" style={{ alignItems: 'flex-start' }}>
+                  {timer > 0 ? (
+                    <span className="timer-text" style={{ fontSize: '14px', color: 'rgba(0,0,0,0.4)' }}>Отправить снова через {timer}с</span>
+                  ) : (
+                    <button type="button" className="resend-link" style={{ fontSize: '14px', textDecoration: 'underline' }} onClick={resendCode}>Переотправить код</button>
+                  )}
                 </div>
+                <button type="submit" className={`btn-auth ${emailData.code.length >= 4 ? 'active' : ''}`} disabled={!emailData.code}>
+                  Подтвердить код
+                </button>
               </form>
             )}
 
-            {/* Шаг 3 — ввести новую почту */}
             {emailStep === 3 && (
-              <form onSubmit={onUpdateEmail} noValidate>
+              <form onSubmit={handleEmailStep3} noValidate style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
                 <div className="input-group">
-                  <label>ВВЕДИТЕ НОВЫЙ EMAIL</label>
+                  <label>Введите новый Email</label>
                   <input
                     type="email"
                     name="next"
-                    className={`auth-input ${emailErrors.next && emailTouched.next ? 'invalid' : ''}`}
+                    className={`auth-input ${emailTouched.next && emailErrors.next ? 'invalid' : ''}`}
                     value={emailData.next}
-                    onChange={handleEmailInput}
-                    onBlur={() => {
-                      setEmailTouched(p => ({ ...p, next: true }));
-                      validateEmail('next', emailData.next);
-                    }}
-                    autoComplete="email"
+                    onChange={handleEmailChange}
+                    onBlur={handleEmailBlur}
+                    placeholder="new-email@mail.com"
                   />
-                  {emailErrors.next && emailTouched.next && (
-                    <span className="error-label">{emailErrors.next}</span>
-                  )}
+                  <span className="char-counter">{emailData.next.length}/{limits.email}</span>
+                  {emailTouched.next && emailErrors.next && <span className="error-label">{emailErrors.next}</span>}
                 </div>
-                {emailServerError && <div className="error-message">{emailServerError}</div>}
-                {emailSuccess && <div className="success-message">{emailSuccess}</div>}
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <button
-                    type="button"
-                    className="btn-auth"
-                    onClick={resetEmailFlow}
-                    style={{ flex: '0 0 auto', opacity: 0.6 }}
-                  >
-                    ←
-                  </button>
-                  <button
-                    type="submit"
-                    className={`btn-auth ${emailData.next && !emailErrors.next ? 'active' : ''}`}
-                    disabled={!emailData.next || !!emailErrors.next}
-                    style={{ flex: 1 }}
-                  >
-                    сохранить почту
-                  </button>
-                </div>
+                <button type="submit" className={`btn-auth ${emailData.next && !emailErrors.next ? 'active' : ''}`} disabled={!emailData.next || !!emailErrors.next}>
+                  Привязать почту
+                </button>
               </form>
             )}
-          </section>
+            
+            {emailServerError && <div className="error-message">{emailServerError}</div>}
+            {emailSuccess && <div className="error-message neutral">{emailSuccess}</div>}
+          </div>
         </section>
+      </div>
 
-        {/* СЕКЦИЯ: УПРАВЛЕНИЕ КАНАЛОМ (показываем, только если канал есть) */}
+      {/* РАЗДЕЛИТЕЛЬНЫЙ СЕПАРАТОР */}
+      <div className="settings-horizontal-separator"></div>
+
+      {/* НИЖНЯЯ КОМПАКТНАЯ СТРОКА С ДЕСТРУКТИВНЫМИ ДЕЙСТВИЯМИ */}
+      <div className="settings-compact-footer-row">
+        {/* УДАЛЕНИЕ КАНАЛА */}
         {authUser.channel_created == 1 && (
-          <section className="settings-section" style={{ padding: '20px', border: '1px solid #eee', borderRadius: '16px' }}>
-            <h3>Настройки канала</h3>
-            <p style={{ fontSize: '14px', color: 'gray' }}>Вы можете удалить свой канал. Ваши подписки и профиль сохранятся.</p>
-            <button
-              className="btn-cancel"
-              style={{ width: 'auto', padding: '10px 20px', background: '#f5f5f5', color: '#333', border: '1px solid #ddd' }}
-              onClick={handleDeleteChannel}
-            >
-              Удалить мой канал
-            </button>
-          </section>
+          <div className="settings-footer-card">
+            <h4>Управление каналом</h4>
+            <p>Вы можете полностью удалить свой канал. Ваши подписки и профиль пользователя при этом сохранятся.</p>
+            <div className='row'>
+             <Link to="/studio/profile" className="btn-settings-footer-action secondary-outline" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
+                Редактировать профиль
+              </Link>
+              <button className="btn-settings-footer-action secondary-outline" onClick={handleDeleteChannel}>
+                Удалить канал
+              </button>
+            </div>
+          </div>
         )}
 
-        {/* СЕКЦИЯ: ОПАСНАЯ ЗОНА */}
-        <section className="settings-section" style={{ marginTop: '20px', padding: '20px', border: '1px solid #ffebeb', borderRadius: '16px' }}>
-          <h3 style={{ color: '#C20000' }}>Опасная зона</h3>
-          <p style={{ fontSize: '14px', color: 'gray' }}>Удаление аккаунта приведет к безвозвратной потере всех данных.</p>
-          <button className="action-btn delete" style={{ width: 'auto', padding: '10px 20px' }} onClick={handleDeleteAccount}>
-            Удалить мой аккаунт
+        {/* УДАЛЕНИЕ АККАУНТА */}
+        <div className="settings-footer-card">
+          <h4 className="danger-title">Удаление учетной записи</h4>
+          <p>Удаление аккаунта приведет к безвозвратной и полной потере всех данных вашего профиля без возможности восстановления.</p>
+          <button className="btn-settings-footer-action danger-outline" onClick={handleAccountDelete}>
+            Удалить аккаунт навсегда
           </button>
-        </section>
+        </div>
       </div>
     </div>
   );

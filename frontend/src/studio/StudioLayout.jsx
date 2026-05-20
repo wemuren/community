@@ -45,13 +45,13 @@ const StudioLayout = () => {
 
             {hasChannel && isBanned && (
               <div className="nav-link disabled-link" title="Публикация недоступна из-за блокировки">
-                <span style={{ opacity: 0.5 }}>🚫 Публикация заблокирована</span>
+                <span style={{ opacity: 0.5 }}>Публикация заблокирована</span>
               </div>
             )}
 
             {!hasChannel && (
               <div className="nav-link disabled-link" title="Сначала создайте канал в профиле">
-                <span style={{ opacity: 0.5 }}>🚀 Загрузка (🔒)</span>
+                <span style={{ opacity: 0.5 }}>Остальные разделы <br/> доступны только Авторам</span>
               </div>
             )}
           </nav>

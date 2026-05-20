@@ -2,7 +2,7 @@
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: *");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
-header("Content-Type: application/json");
+header("Content-Type: application/json; charset=UTF-8");
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { http_response_code(200); exit; }
 
@@ -14,7 +14,7 @@ $code = isset($data->code) ? trim($data->code) : '';
 
 if (empty($email) || empty($code)) {
     http_response_code(400);
-    echo json_encode(["status" => "error", "message" => "Данные не полные"]);
+    echo json_encode(["success" => false, "message" => "Данные не полные"]);
     exit;
 }
 
@@ -22,9 +22,8 @@ $stmt = $pdo->prepare("SELECT * FROM email_verifications WHERE LOWER(email) = ? 
 $stmt->execute([$email, $code]);
 
 if ($stmt->fetch()) {
-    echo json_encode(["status" => "success"]);
+    echo json_encode(["success" => true]);
 } else {
     http_response_code(400);
-    echo json_encode(["status" => "error", "message" => "Код не найден для адреса $email"]);
+    echo json_encode(["success" => false, "message" => "Неверный код подтверждения"]);
 }
-?>

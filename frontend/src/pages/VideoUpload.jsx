@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { ChevronLeft, Image as ImageIcon, Video, X } from 'lucide-react';
 import '../assets/styles/studio.css';
-import '../assets/styles/auth.css'; // Для счетчиков и ошибок
+import '../assets/styles/settings.css';
+import '../assets/styles/auth.css';
 
 import { API_BASE_URL } from '@/config/api';
 
@@ -11,18 +13,20 @@ const VideoUpload = () => {
   const user = JSON.parse(localStorage.getItem('user'));
   const dropdownRef = useRef(null);
 
-  // Состояния для полей и прогресса
+  // Основные стейты данных
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [videoFile, setVideoFile] = useState(null);
   const [coverFile, setCoverFile] = useState(null);
   const [coverPreview, setCoverPreview] = useState(null);
+
+  // Стейты процесса отправки
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Состояния для ТЕГОВ
+  // Стейты управления тегами
   const [allTags, setAllTags] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
   const [tagSearch, setTagSearch] = useState('');
@@ -33,18 +37,18 @@ const VideoUpload = () => {
   const MAX_SIZE_MB = IS_PREMIUM ? 2048 : 100;
   const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
 
-  // --- ЛОГИКА ТЕГОВ ---
+  // Подгрузка системных тегов
   useEffect(() => {
     const fetchTags = async () => {
       try {
         const res = await axios.get(`${API_BASE_URL}/admin/manage_tags.php`);
         setAllTags(res.data);
-      } catch (err) { console.error("Ошибка тегов:", err); }
+      } catch (err) { console.error("Ошибка загрузки тегов:", err); }
     };
     fetchTags();
   }, []);
 
-  const filteredTags = allTags.filter(tag => 
+  const filteredTags = allTags.filter(tag =>
     tag.name.toLowerCase().includes(tagSearch.toLowerCase()) &&
     !selectedTags.find(s => s.id === tag.id)
   );
@@ -53,9 +57,9 @@ const VideoUpload = () => {
     if (selectedTags.find(s => s.id === tag.id)) {
       setSelectedTags(prev => prev.filter(t => t.id !== tag.id));
     } else {
-      if (selectedTags.length >= 3) return; 
+      if (selectedTags.length >= 3) return;
       setSelectedTags(prev => [...prev, tag]);
-      setTagSearch(''); 
+      setTagSearch('');
     }
   };
 
@@ -67,8 +71,7 @@ const VideoUpload = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // --- ОБРЕЗКА ФОТО В КВАДРАТ ---
-  // --- ЛОГИКА ОБРЕЗКИ ФОТО 16:9 ---
+  // Жесткое кадрирование обложки в 16:9
   const processImage = (file) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -77,34 +80,26 @@ const VideoUpload = () => {
       img.src = event.target.result;
       img.onload = () => {
         const canvas = document.createElement('canvas');
-        const targetWidth = 1280; // HD стандарт
+        const targetWidth = 1280;
         const targetHeight = 720;
         canvas.width = targetWidth;
         canvas.height = targetHeight;
 
         const ctx = canvas.getContext('2d');
-
-        // Вычисляем коэффициенты, чтобы вырезать центр без искажений
         const imgRatio = img.width / img.height;
         const targetRatio = targetWidth / targetHeight;
 
         let sourceX = 0, sourceY = 0, sourceWidth = img.width, sourceHeight = img.height;
 
         if (imgRatio > targetRatio) {
-          // Исходник шире — режем бока
           sourceWidth = img.height * targetRatio;
           sourceX = (img.width - sourceWidth) / 2;
         } else {
-          // Исходник выше — режем верх/низ
           sourceHeight = img.width / targetRatio;
           sourceY = (img.height - sourceHeight) / 2;
         }
 
-        ctx.drawImage(
-          img, 
-          sourceX, sourceY, sourceWidth, sourceHeight, 
-          0, 0, targetWidth, targetHeight
-        );
+        ctx.drawImage(img, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, targetWidth, targetHeight);
 
         canvas.toBlob((blob) => {
           const cropped = new File([blob], file.name, { type: file.type });
@@ -122,19 +117,22 @@ const VideoUpload = () => {
 
     if (type === 'video') {
       const ext = file.name.split('.').pop().toLowerCase();
-      if (!['mp4', 'mov', 'mkv'].includes(ext)) return setError('Только MP4, MOV, MKV');
-      if (file.size > MAX_SIZE_BYTES) return setError(`Лимит превышен. Доступно: ${MAX_SIZE_MB}МБ`);
+      if (!['mp4', 'mov', 'mkv'].includes(ext)) return setError('Разрешены только форматы MP4, MOV, MKV');
+      if (file.size > MAX_SIZE_BYTES) return setError(`Превышен лимит размера файла. Вам доступно: ${MAX_SIZE_MB}МБ`);
       setVideoFile(file);
     } else {
       const ext = file.name.split('.').pop().toLowerCase();
-      if (!['jpg', 'jpeg', 'png'].includes(ext)) return setError('Только JPG/PNG');
+      if (!['jpg', 'jpeg', 'png'].includes(ext)) return setError('Только графические файлы JPG/PNG');
       processImage(file);
     }
   };
 
   const handleUpload = async (e) => {
     e.preventDefault();
-    if (!videoFile || !coverFile || title.length < 3) return setError('Заполните данные');
+    // Защита: публикация заблокирована, если нет хотя бы 1 тега
+    if (!videoFile || !coverFile || title.length < 3 || selectedTags.length === 0) {
+      return setError('Заполните обязательные поля и выберите минимум один тег');
+    }
 
     setLoading(true);
     setIsUploading(true);
@@ -144,8 +142,8 @@ const VideoUpload = () => {
     formData.append('video', videoFile);
     formData.append('thumbnail', coverFile);
     formData.append('user_id', user.id);
-    formData.append('title', title);
-    formData.append('description', description);
+    formData.append('title', title.trim());
+    formData.append('description', description.trim());
     formData.append('tags', JSON.stringify(selectedTags.map(t => t.id)));
 
     try {
@@ -154,116 +152,185 @@ const VideoUpload = () => {
       });
       navigate(`/profile/${user.id}`);
     } catch (err) {
-      setError(err.response?.data?.message || "Ошибка загрузки");
+      setError(err.response?.data?.message || "Критическая ошибка при загрузке на сервер");
       setIsUploading(false);
     } finally { setLoading(false); }
   };
 
+  // Валидация кнопки: Название >= 3 символов, видео есть, обложка есть, и ТЕГИ ОБЯЗАТЕЛЬНО (хотя бы 1)
+  const isFormValid = title.trim().length >= 3 && videoFile && coverFile && selectedTags.length > 0;
+
   return (
-    <div className="content-card studio-page">
-      <h2 className="page-title">Создание контента</h2>
-      
-      <form onSubmit={handleUpload} className="admin-form">
-        <div className="form-group" style={{position:'relative'}}>
-          <label>Название видео</label>
-          <span className={`char-counter ${title.length >= limits.title ? 'limit' : ''}`}>
-            {title.length}/{limits.title}
-          </span>
-          <input 
-            type="text" className="auth-input" value={title} 
-            onChange={(e) => setTitle(e.target.value.slice(0, limits.title))} required 
-          />
-        </div>
+    <div className="settings-white-wrapper">
+      {/* КНОПКА НАЗАД */}
+      <div className="settings-back-action" onClick={() => navigate(-1)}>
+        <ChevronLeft size={16} strokeWidth={2} /> Назад
+      </div>
 
-        <div className="form-group" style={{position:'relative'}}>
-          <label>Описание</label>
-          <span className={`char-counter ${description.length >= limits.description ? 'limit' : ''}`}>
-            {description.length}/{limits.description}
-          </span>
-          <input 
-            className="auth-input" style={{minHeight:'100px', paddingTop:'10px'}}
-            value={description} onChange={(e) => setDescription(e.target.value.slice(0, limits.description))}
-          />
-        </div>
+      <div className="pl-top-bar"><h2>Создание контента</h2></div>
 
-        {/* ВЫПАДАШКА ТЕГОВ */}
-        <div className="form-group">
-          <label>Теги (макс. 3)</label>
-          <div className="tags-custom-select" ref={dropdownRef}>
-            <div className={`select-input-wrapper ${isDropdownOpen ? 'focused' : ''}`}>
-              <div className="selected-chips-inline">
-                {selectedTags.map(tag => (
-                  <span key={tag.id} className="mini-tag-chip">
-                    {tag.name} <button type="button" onClick={() => toggleTag(tag)}>&times;</button>
-                  </span>
-                ))}
-              </div>
-              {selectedTags.length < 3 && (
-                <input 
-                  type="text" placeholder={selectedTags.length === 0 ? "Найти теги..." : ""}
-                  value={tagSearch} onFocus={() => setIsDropdownOpen(true)}
-                  onChange={(e) => { setTagSearch(e.target.value); setIsDropdownOpen(true); }}
-                />
-              )}
+      <form onSubmit={handleUpload} className="studio-upload-grid" noValidate>
+
+        <section className="settings-col-section">
+          <h3>Информация о видео</h3>
+          <div className="auth-body">
+
+            {/* НАЗВАНИЕ ВИДЕО */}
+            <div className="input-group">
+              <label>Название видео</label>
+              <input
+                type="text"
+                className="auth-input"
+                value={title}
+                onChange={(e) => setTitle(e.target.value.slice(0, limits.title))}
+                placeholder="Придумайте емкое название"
+                required
+              />
+              <span className="char-counter">{title.length}/{limits.title}</span>
             </div>
-            {isDropdownOpen && filteredTags.length > 0 && (
-              <div className="tags-dropdown-list">
-                {filteredTags.map(tag => (
-                  <div key={tag.id} className="dropdown-item" onClick={() => toggleTag(tag)}>
-                    <span className="plus-icon">+</span> {tag.name}
+
+            {/* ОПИСАНИЕ ВИДЕО */}
+            <div className="input-group">
+              <label>Описание видео</label>
+              <textarea
+                id="description"
+                className="auth-input area"
+                value={description}
+                onChange={(e) => setDescription(e.target.value.slice(0, limits.description))}
+                placeholder="Расскажите зрителям, о чем ваш ролик"
+              />
+              <span className="char-counter">{description.length}/{limits.description}</span>
+            </div>
+
+
+            {/* КАТЕГОРИИ И ТЕГИ (ОБЯЗАТЕЛЬНО) */}
+            <div className="input-group">
+              <label>Теги категории (минимум 1, макс. 3)</label>
+              <div className="tags-custom-select" ref={dropdownRef}>
+                <div className={`select-input-wrapper ${isDropdownOpen ? 'focused' : ''}`}>
+                  <div className="selected-chips-inline">
+                    {selectedTags.map(tag => (
+                      <span key={tag.id} className="mini-tag-chip">
+                        {tag.name}
+                        <button type="button" onClick={() => toggleTag(tag)}><X size={12} /></button>
+                      </span>
+                    ))}
                   </div>
-                ))}
+                  {selectedTags.length < 3 && (
+                    <input
+                      type="text"
+                      className="auth-input"
+                      placeholder={selectedTags.length === 0 ? "Начните вводить для поиска тегов..." : ""}
+                      value={tagSearch}
+                      onFocus={() => setIsDropdownOpen(true)}
+                      onChange={(e) => { setTagSearch(e.target.value); setIsDropdownOpen(true); }}
+                    />
+                  )}
+                </div>
+                {isDropdownOpen && filteredTags.length > 0 && (
+                  <div className="tags-dropdown-list">
+                    {filteredTags.map(tag => (
+                      <div key={tag.id} className="dropdown-item" onClick={() => toggleTag(tag)}>
+                        {tag.name}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        </div>
+            </div>
 
-        {/* ОБЛОЖКА */}
-        <div className="form-group">
-          <label>Обложка</label>
-          <div className="thumbnail-upload-container">
-            {coverPreview ? (
-              <div className="thumbnail-preview-wrapper square">
-                <img src={coverPreview} alt="Превью" className="thumbnail-preview-img" />
-                <button type="button" className="change-cover-btn" onClick={() => setCoverPreview(null)}>Заменить</button>
-              </div>
-            ) : (
-              <label className="thumbnail-dropzone">
-                <input type="file" accept=".jpg,.jpeg,.png" onChange={(e) => handleFileChange(e, 'thumb')} hidden />
-                <div className="dropzone-content"><p>🖼️ Выберите фото</p></div>
+            {/* ВЫБОР ВИДЕОФАЙЛА */}
+            
+            <div className="input-group">
+              <h3>Видеофайл</h3>
+              <label className={`studio-file-dropzone ${videoFile ? 'is-success' : ''}`}>
+                <input
+                  type="file"
+                  accept=".mp4,.mov,.mkv"
+                  onChange={(e) => handleFileChange(e, 'video')}
+                  style={{ display: 'none' }}
+                />
+                <div className="dropzone-content-center">
+                  <Video size={32} strokeWidth={1} className="dropzone-icon" />
+                  <span className="studio-field-subtext">
+                    {videoFile ? "Файл успешно выбран" : "Выберите файл на устройстве"}
+                  </span>
+                </div>
+                {videoFile && (
+                  <div className="studio-file-name-badge">
+                    <span>{videoFile.name}</span>
+                  </div>
+                )}
               </label>
+              <p className="studio-field-subtext" style={{ color: IS_PREMIUM ? '#00B341' : 'rgba(0,0,0,0.4)' }}>
+                {IS_PREMIUM ? 'Premium аккаунт: лимит до 2 ГБ' : 'Базовый тариф: лимит файла до 100 МБ'}
+              </p>
+            </div>
+
+            {/* ПРОГРЕСС БАР ЗАГРУЗКИ ФАЙЛА */}
+            {isUploading && (
+              <div className="upload-progress-container">
+                <div className="progress-info">
+                  <span>{uploadProgress < 100 ? `Загрузка пакета: ${uploadProgress}%` : 'Обработка медиа-потока сервером...'}</span>
+                </div>
+                <div className="progress-bar-bg">
+                  <div className="progress-bar-fill" style={{ width: `${uploadProgress}%` }}></div>
+                </div>
+              </div>
             )}
-          </div>
-        </div>
 
-        {/* ВИДЕО */}
-        <div className="form-group">
-          <label>Файл (MP4, MOV, MKV)</label>
-          <div className="file-upload-wrapper">
-            <input type="file" accept=".mp4,.mov,.mkv" onChange={(e) => handleFileChange(e, 'video')} required />
-          </div>
-          <p className="sub-text" style={{color: IS_PREMIUM ? '#28a745' : '#888'}}>
-            {IS_PREMIUM ? 'Premium: до 2ГБ' : 'Базовый: до 100МБ'}
-          </p>
-        </div>
+            {error && <p className="error-label" style={{ marginTop: '8px' }}>{error}</p>}
 
-        {/* PROGRESS BAR */}
-        {isUploading && (
-          <div className="upload-progress-container">
-            <div className="progress-info">
-              <span>{uploadProgress < 100 ? `Загрузка: ${uploadProgress}%` : 'Обработка...'}</span>
+           
+
+          </div>
+        </section>
+
+        <section className="settings-col-section">
+          <h3>Превью</h3>
+          <div className="auth-body">
+            {/* ОБЛОЖКА ВИДЕО 16:9 С АВТО-КАДРИРОВАНИЕМ */}
+            <div className="input-group">
+              <label>Рекомендуем использовать формат 16:9</label>
+              <div className="thumbnail-upload-container">
+                {coverPreview ? (
+                  <div className="studio-banner-preview-rectangle is-success" style={{ aspectRatio: '16 / 9' }}>
+                    <img src={coverPreview} alt="Кадрированное превью обложки" />
+                    <button
+                      type="button"
+                      className="change-cover-btn"
+                      onClick={() => { setCoverFile(null); setCoverPreview(null); }}
+                    >
+                      Заменить фото
+                    </button>
+                  </div>
+                ) : (
+                  <label className="thumbnail-dropzone" style={{ margin: 0 }}>
+                    <input type="file" accept=".jpg,.jpeg,.png" onChange={(e) => handleFileChange(e, 'thumb')} hidden />
+                    <div className="dropzone-content-center">
+                      <ImageIcon size={32} strokeWidth={1} className="dropzone-icon" />
+                      <p className="studio-field-subtext">Загрузить изображение</p>
+                    </div>
+                  </label>
+                )}
+              </div>
+              <p className="studio-field-subtext">Рекомендуется горизонтальное фото высокого разрешения. Система автоматически обрежет его под пропорции плеера.</p>
             </div>
-            <div className="progress-bar-bg">
-              <div className="progress-bar-fill" style={{ width: `${uploadProgress}%` }}></div>
-            </div>
+
+             <button
+              type="submit"
+              className={`btn-auth ${isFormValid && !loading ? 'active' : ''}`}
+              disabled={!isFormValid || loading}
+            >
+              {loading ? 'ПУБЛИКУЕМ...' : 'ОПУБЛИКОВАТЬ ВИДЕО'}
+            </button>
+
           </div>
-        )}
+        </section>
 
-        {error && <p className="error-label">{error}</p>}
 
-        <button type="submit" className={`btn-create ${!loading ? 'active' : ''}`} disabled={loading}>
-          {loading ? 'ПОДОЖДИТЕ...' : 'ОПУБЛИКОВАТЬ'}
-        </button>
+
+        
       </form>
     </div>
   );

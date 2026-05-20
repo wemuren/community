@@ -1,167 +1,279 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Eye, ChevronLeft, Trash2, Image as ImageIcon, User } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import '../assets/styles/studio.css';
+import '../assets/styles/auth.css'; // Переиспользуем базу инпутов
 
-import { API_BASE_URL } from '@/config/api';
+import { API_BASE_URL, THUMB_URL, BANNER_URL } from '@/config/api';
+
+const normalize = (str) => (str || '').trim().toLowerCase();
 
 const StudioProfile = () => {
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')));
+  const navigate = useNavigate();
+  const [user, setUser] = useState(() => JSON.parse(localStorage.getItem('user')));
   const [editData, setEditData] = useState({ 
-    full_name: user.full_name || '', 
-    username: user.username || '' 
+    full_name: user?.full_name || '', 
+    username: user?.username || '' 
   });
   
   const [avatarFile, setAvatarFile] = useState(null);
   const [bannerFile, setBannerFile] = useState(null);
+  
+  // Стейты для локального предпросмотра картинок перед отправкой
+  const [avatarPreview, setAvatarPreview] = useState(user?.avatar ? `${API_BASE_URL}/uploads/avatars/${user.avatar}` : null);
+  const [bannerPreview, setBannerPreview] = useState(user?.banner ? `${BANNER_URL}${user.banner}` : null);
+  
   const [loading, setLoading] = useState(false);
+  const [usernameError, setUsernameError] = useState('');
 
-  // Лимиты для полей
   const limits = { full_name: 50, username: 30 };
 
   const handleInputChange = (e, field) => {
     let value = e.target.value;
-
     if (field === 'username') {
-      // 1. Приводим к нижнему регистру (по желанию, но для ников это стандарт)
-      // 2. Убираем ВСЕ пробелы (даже внутри текста)
-      // 3. Вырезаем всё, кроме латиницы, цифр и нижнего подчеркивания
-      value = value.toLowerCase()
-                   .replace(/\s/g, '') 
-                   .replace(/[^a-z0-9_]/g, '');
+      value = value.toLowerCase().replace(/\s/g, '').replace(/[^a-z0-9_]/g, '');
     }
-
     if (value.length <= limits[field]) {
       setEditData({ ...editData, [field]: value });
     }
   };
 
+  // Обработка выбора файлов с генерацией локальных Blob-ссылок для превью
+  const handleFileChange = (e, type) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Срочно пишем лог в консоль — проверяем, видит ли JS файл вообще
+    console.log(`Выбран файл для ${type}:`, file.name, file.size);
+
+    if (type === 'avatar') {
+      setAvatarFile(file);
+      setAvatarPreview(URL.createObjectURL(file));
+    } else if (type === 'banner') {
+      setBannerFile(file);
+      setBannerPreview(URL.createObjectURL(file));
+    }
+  };
+
+  // Метод удаления аватарки или баннера с сервера
+  const handleDeleteMedia = async (type) => {
+    if (!window.confirm(`Вы уверены, что хотите удалить ${type === 'avatar' ? 'аватарку' : 'баннер'} канала?`)) return;
+    try {
+      const res = await axios.post(`${API_BASE_URL}/user/delete_profile_media.php`, {
+        user_id: user.id,
+        type: type
+      });
+      if (res.data.success) {
+        localStorage.setItem('user', JSON.stringify(res.data.user));
+        setUser(res.data.user);
+        if (type === 'avatar') {
+          setAvatarFile(null); setAvatarPreview(null);
+        } else {
+          setBannerFile(null); setBannerPreview(null);
+        }
+      }
+    } catch (err) {
+      alert("Ошибка при удалении медиа-файла");
+    }
+  };
+
+  const checkUsername = async () => {
+    if (editData.username === user.username) {
+      setUsernameError(''); return;
+    }
+    if (editData.username.length < 3) {
+      setUsernameError('Ник слишком короткий'); return;
+    }
+    try {
+      const res = await axios.post(`${API_BASE_URL}/user/check_username.php`, {
+        username: editData.username,
+        user_id: user.id
+      });
+      if (res.data.status === 'taken') {
+        setUsernameError(res.data.message);
+      } else {
+        setUsernameError('');
+      }
+    } catch { console.error("Ошибка проверки ника"); }
+  };
+
   const handleUpdate = async (e) => {
     e.preventDefault();
+    if (usernameError || loading) return;
     setLoading(true);
 
+    // СОЗДАЕМ ЧИСТЫЙ ОБЪЕКТ FORMDATA БЕЗ ЛИШНИХ КОСТЫЛЕЙ
     const formData = new FormData();
-    formData.append('id', user.id);
-    formData.append('full_name', editData.full_name);
-    formData.append('username', editData.username);
-    if (avatarFile) formData.append('avatar', avatarFile);
-    if (bannerFile) formData.append('banner', bannerFile);
+    formData.append('id', Number(user.id));
+    formData.append('full_name', editData.full_name.trim());
+    formData.append('username', editData.username.trim());
+    
+    if (avatarFile) {
+      formData.append('avatar', avatarFile);
+    }
+    if (bannerFile) {
+      formData.append('banner', bannerFile);
+    }
 
     try {
       const res = await axios.post(`${API_BASE_URL}/user/update_user.php`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+        headers: { 
+          'Content-Type': 'multipart/form-data'
+        }
       });
       
-      if (res.data.status === 'success') {
+      // Ловим ответ от PHP
+      if (res.data.status === 'success' && res.data.user) {
         localStorage.setItem('user', JSON.stringify(res.data.user));
         setUser(res.data.user);
-        alert("Профиль обновлен! ✨");
+        
+        // Обнуляем файлы, чтобы не слать их повторно при изменении текста
+        setAvatarFile(null);
+        setBannerFile(null);
+        
+        alert("Настройки канала успешно сохранены! ✨");
+      } else {
+        alert(res.data.message || "Неизвестная ошибка сервера");
       }
     } catch (err) { 
-      alert(err.response?.data?.message || "Ошибка при обновлении"); 
+      console.error("Полная ошибка сохранения:", err);
+      alert(err.response?.data?.message || "Ошибка соединения с сервером"); 
     } finally { 
       setLoading(false); 
     }
   };
 
-
-  const [usernameError, setUsernameError] = useState('');
-
-// 2. Функция проверки
-const checkUsername = async () => {
-  if (editData.username === user.username) {
-    setUsernameError(''); // Если это наш текущий ник — всё ок
-    return;
-  }
-  
-  if (editData.username.length < 3) {
-    setUsernameError('Ник слишком короткий');
-    return;
-  }
-
-  try {
-    const res = await axios.post(`${API_BASE_URL}/user/check_username.php`, {
-      username: editData.username,
-      user_id: user.id
-    });
-    
-    if (res.data.status === 'taken') {
-      setUsernameError(res.data.message);
-    } else {
-      setUsernameError('');
-    }
-  } catch (err) {
-    console.error("Ошибка проверки ника");
-  }
-};
+  const isFormValid = editData.full_name && editData.username && !usernameError;
 
   return (
-    <div className="content-card">
-      <h2 className="page-title">Настройки канала</h2>
-      
-      <form onSubmit={handleUpdate} className="admin-form" style={{maxWidth: '600px'}}>
+    <div className="settings-white-wrapper">
+      {/* КНОПКА НАЗАД */}
+      <div className="settings-back-action" onClick={() => navigate(-1)}>
+        <ChevronLeft size={16} strokeWidth={2} /> Назад
+      </div>
+
+     <div className="pl-top-bar"><h2>Настройки канала</h2></div>
+
+      <form onSubmit={handleUpdate} className="settings-columns-grid" noValidate>
         
-        {/* ИМЯ */}
-        <div className="form-group" style={{position: 'relative'}}>
-          <label>Отображаемое имя</label>
-          <span className={`char-counter ${editData.full_name.length >= limits.full_name ? 'limit' : ''}`}>
-            {editData.full_name.length}/{limits.full_name}
-          </span>
-          <input 
-            type="text" 
-            className="auth-input" // Используем класс из auth.css для стиля
-            value={editData.full_name} 
-            onChange={e => handleInputChange(e, 'full_name')} 
-          />
-        </div>
+        {/* ЛЕВАЯ КОЛОНКА: ТЕКСТОВЫЕ ДАННЫЕ */}
+        <section className="settings-col-section">
+          <h3>Основная информация</h3>
+          <div className="auth-body">
+            
+            {/* ОТОБРАЖАЕМОЕ ИМЯ */}
+            <div className="input-group">
+              <label>Отображаемое имя</label>
+              <input 
+                type="text" 
+                className="auth-input"
+                value={editData.full_name} 
+                onChange={e => handleInputChange(e, 'full_name')} 
+              />
+              <span className="char-counter">{editData.full_name.length}/{limits.full_name}</span>
+            </div>
 
-        {/* USERNAME */}
-       <div className="form-group" style={{position: 'relative'}}>
-          <label>Уникальный @username</label>
-          <span className={`char-counter ${editData.username.length >= limits.username ? 'limit' : ''}`}>
-            {editData.username.length}/{limits.username}
-          </span>
-          <input 
-            type="text" 
-            className={`auth-input ${usernameError ? 'invalid' : ''}`}
-            value={editData.username} 
-            onChange={e => handleInputChange(e, 'username')}
-            onBlur={checkUsername} // Проверяем, когда юзер закончил ввод
-          />
-          {/* Выводим ошибку "Занято" */}
-          {usernameError && <p className="error-label">{usernameError}</p>}
-          <p className="sub-text">Только латиница, цифры и нижнее подчеркивание</p>
-        </div>
+            {/* USERNAME */}
+            <div className="input-group">
+              <label>Уникальный @username</label>
+              <input 
+                type="text" 
+                className={`auth-input ${usernameError ? 'invalid' : ''}`}
+                value={editData.username} 
+                onChange={e => handleInputChange(e, 'username')}
+                onBlur={checkUsername}
+              />
+              <span className="char-counter">{editData.username.length}/{limits.username}</span>
+              {usernameError && <span className="error-label">{usernameError}</span>}
+              <p className="studio-field-subtext">Только латиница, цифры и нижнее подчеркивание</p>
+            </div>
 
-        <div className="form-group">
-          <label>Аватарка канала</label>
-          <div className="file-input-wrapper">
-             <input type="file" accept="image/*" onChange={e => setAvatarFile(e.target.files[0])} />
-             <p className="sub-text">Рекомендуется: 400x400px</p>
+            <button 
+              type="submit" 
+              className={`btn-auth ${isFormValid && !loading ? 'active' : ''}`} 
+              disabled={!isFormValid || loading}
+            >
+              {loading ? 'Сохраняем...' : 'Обновить настройки канала'}
+            </button>
           </div>
-        </div>
+        </section>
 
-        <div className="form-group">
-          <label>Баннер канала {user.is_paid == 0 && '🔒'}</label>
-          <div className="file-input-wrapper">
-             <input type="file" accept="image/*" 
-                    disabled={user.is_paid == 0}
-                    onChange={e => setBannerFile(e.target.files[0])} />
-             {user.is_paid == 0 ? (
-               <p style={{color: 'var(--brand-red)', fontSize: '12px', fontWeight: '500'}}>
-                 Требуется PREMIUM подписка
-               </p>
-             ) : (
-               <p className="sub-text">Рекомендуется: 1500x400px</p>
-             )}
+        {/* ПРАВАЯ КОЛОНКА: КАСТОМИЗАЦИЯ И ОФОРМЛЕНИЕ КАНАЛА */}
+        <section className="settings-col-section">
+          <h3>Визуальное оформление</h3>
+          
+          <div className="studio-media-upload-body">
+            
+            {/* БЛОК АВАТАРКИ */}
+            <div className="input-group">
+              <label>Аватар профиля</label>
+              <div className="studio-avatar-row-ctx">
+                <div className="studio-avatar-preview-circle">
+                  {avatarPreview ? (
+                    <img src={avatarPreview} alt="Avatar preview" />
+                  ) : (
+                    <User size={32} color="rgba(0,0,0,0.2)" />
+                  )}
+                </div>
+                <div className="studio-upload-controls-block">
+                  <label className="btn-settings-footer-action secondary-outline" style={{margin: 0, cursor: 'pointer'}}>
+                    Загрузить фото
+                    <input type="file" accept="image/*" style={{display: 'none'}} onChange={e => handleFileChange(e, 'avatar')} />
+                  </label>
+                  {avatarPreview && (
+                    <button type="button" className="studio-media-delete-btn" title="Удалить аватар" onClick={() => handleDeleteMedia('avatar')}>
+                      <Trash2 size={16} />
+                    </button>
+                  )}
+                </div>
+              </div>
+              <p className="studio-field-subtext" style={{marginTop: '8px'}}>Квадратное изображение, рекомендуемый размер 400x400px</p>
+            </div>
+
+            {/* БЛОК БАННЕРА */}
+            <div className="input-group" style={{marginTop: '32px'}}>
+              <label>Баннер канала {user.is_paid == 0}</label>
+              
+              <div className="studio-banner-preview-rectangle">
+                {bannerPreview ? (
+                  <img src={bannerPreview} alt="Banner preview" />
+                ) : (
+                  <div className="studio-banner-empty-placeholder">
+                    <ImageIcon size={40} color="rgba(0,0,0,0.15)" />
+                  </div>
+                )}
+              </div>
+
+              <div className="studio-upload-controls-block" style={{marginTop: '12px'}}>
+                <label className={`btn-settings-footer-action secondary-outline ${user.is_paid == 0 ? 'disabled-label' : ''}`} style={{margin: 0, cursor: user.is_paid == 0 ? 'not-allowed' : 'pointer'}}>
+                  Загрузить баннер
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    style={{display: 'none'}} 
+                    disabled={user.is_paid == 0} 
+                    onChange={e => handleFileChange(e, 'banner')} 
+                  />
+                </label>
+                {bannerPreview && (
+                  <button type="button" className="studio-media-delete-btn" title="Удалить баннер" onClick={() => handleDeleteMedia('banner')}>
+                    <Trash2 size={16} />
+                  </button>
+                )}
+              </div>
+              
+              {user.is_paid == 0 ? (
+                <p className="error-label" style={{marginTop: '8px', fontSize: '13px'}}>
+                  Загрузка кастомных баннеров доступна только пользователям с тарифом PREMIUM
+                </p>
+              ) : (
+                <p className="studio-field-subtext" style={{marginTop: '8px'}}>Широкоформатный баннер, рекомендуемый размер 1500x400px</p>
+              )}
+            </div>
+
           </div>
-        </div>
-
-        <button 
-          type="submit" 
-          className={`btn-create ${(!usernameError && !loading) ? 'active' : ''}`} 
-          disabled={loading || !!usernameError} // Кнопка гаснет, если ник занят
-        >
-          {loading ? 'СОХРАНЯЕМ...' : 'ОБНОВИТЬ КАНАЛ'}
-        </button>
+        </section>
       </form>
     </div>
   );

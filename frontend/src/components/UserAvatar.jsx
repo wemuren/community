@@ -1,7 +1,7 @@
 import React from 'react';
 import { AVATAR_URL } from '@/config/api';
+import '../assets/styles/avatar.css';
 
-// Выносим палитру и логику цвета наружу, чтобы не пересоздавать при каждом рендере
 const getAvatarStyle = (username) => {
   const colors = [
     '#FF5733', '#26cb44', '#3357FF', '#F333FF', 
@@ -15,27 +15,24 @@ const getAvatarStyle = (username) => {
 
 const UserAvatar = ({ user, sizeClass }) => {
   
-  // 1. Умная проверка: есть ли реальный файл аватарки
   const hasAvatar = user?.avatar && 
                     user.avatar.trim() !== "" && 
                     user.avatar !== "null" && 
-                    user.avatar !== "default.png" && // Игнорируем заглушку из базы
+                    user.avatar !== "default.png" && 
                     user.avatar !== null;
 
-  // 2. Если аватарка — это реальный файл, выводим изображение
   if (hasAvatar) {
     return (
-      <div className={sizeClass}>
+      <div className={`avatar-base ${sizeClass}`}>
         <img 
           src={`${AVATAR_URL}${user.avatar}`} 
           alt="" 
-          onError={(e) => { e.target.style.display = 'none'; }} // На случай, если файл удален с сервера
+          onError={(e) => { e.target.style.display = 'none'; }} 
         />
       </div>
     );
   }
 
-  // 3. Если аватарки нет (или там default.png) — рисуем круг с буквами
   const firstLetter = user?.full_name 
     ? user.full_name.charAt(0) 
     : (user?.username?.charAt(0) || '?');
@@ -44,19 +41,10 @@ const UserAvatar = ({ user, sizeClass }) => {
 
   return (
     <div 
-      className={`${sizeClass} avatar-initials`} 
-      style={{ 
-        backgroundColor: bgColor,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: '#fff',
-        fontWeight: 'bold',
-        textTransform: 'uppercase',
-        userSelect: 'none'
-      }}
+      className={`avatar-base avatar-initials ${sizeClass}`} 
+      style={{ backgroundColor: bgColor }} // Оставляем только динамический фоновый цвет
     >
-      {firstLetter}
+      <span>{firstLetter}</span>
     </div>
   );
 };

@@ -1,0 +1,202 @@
+/* --- СТРАНИЦА НАСТРОЕК В AUTH-СТИЛЕ (1:1 FIGMA REGISTRATION) --- */
+
+.settings-white-wrapper {
+  background: var(--white);
+  border-radius: var(--border-radius-lg); /* 24px */
+  padding: 40px;
+  min-height: 100%;
+  box-sizing: border-box;
+}
+
+/* Кнопка возврата обратно */
+.settings-back-action {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--descr);
+  color: rgba(0, 0, 0, 0.48);
+  cursor: pointer;
+  margin-bottom: 24px;
+  width: max-content;
+  transition: color 0.2s ease;
+}
+.settings-back-action:hover {
+  color: var(--text-main);
+}
+
+/* Двухколоночный тулбокс форм */
+.settings-columns-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: start;
+  margin-top: 32px;
+}
+
+.settings-col-section h3 {
+  font-size: var(--p); /* 24px */
+  font-weight: 400;
+  text-transform: uppercase;
+  color: var(--text-main);
+  margin-bottom: 32px;
+  letter-spacing: 0.5px;
+}
+
+/* Компактный информационный текст для текущей почты */
+.settings-current-info, strong {
+  font-size: var(--descr);
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.48);
+  margin-bottom: 32px;
+  margin-top: -16px;
+}
+
+/* Линейный горизонтальный сепаратор зон */
+.settings-horizontal-separator {
+  width: 100%;
+  height: 1px;
+  background-color: rgba(0, 0, 0, 0.08);
+  margin: 48px 0 32px 0;
+}
+
+/* Компактная строчка деструктивных действий (не жрёт место) */
+.settings-compact-footer-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 48px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.settings-footer-card {
+  flex: 1;
+  min-width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.settings-footer-card h4 {
+  font-size: var(--descr); /* 16px */
+  font-weight: 700;
+  color: var(--text-main);
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.settings-footer-card h4.danger-title {
+  color: var(--primary-red);
+}
+
+.settings-footer-card p {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.48);
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Кнопки вызова удаления */
+.btn-settings-footer-action {
+  width: max-content;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.btn-settings-footer-action.secondary-outline {
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  color: var(--text-main);
+  background: transparent;
+}
+
+.btn-settings-footer-action.secondary-outline:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.btn-settings-footer-action.danger-outline {
+  border: 1px solid rgba(194, 0, 0, 0.2);
+  color: var(--primary-red);
+  background: transparent;
+}
+
+.btn-settings-footer-action.danger-outline:hover {
+  background-color: rgba(194, 0, 0, 0.04);
+  border-color: var(--primary-red);
+}
+
+/* Адаптивная перестройка колонок под мелкие экраны ноутбуков */
+@media (max-width: 960px) {
+  .settings-columns-grid {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+  
+  .settings-compact-footer-row {
+    flex-direction: column;
+    gap: 32px;
+  }
+}
+
+/* --- СИНХРОНИЗАЦИЯ И МАСШТАБИРОВАНИЕ AUTH-ИНПУТОВ ПОД СЕТКУ НАСТРОЕК --- */
+
+/* Уменьшаем гигантские лейблы до аккуратного индастриал-размера */
+.settings-columns-grid .input-group label {
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  color: rgba(0, 0, 0, 0.56);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+/* Корректируем внутренние отступы, чтобы линия подчеркивания приподнялась */
+.settings-columns-grid .auth-input {
+  padding: 6px 40px 6px 0px !important; /* Больше места справа под глазик и счетчик */
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+/* Смещаем расстояние между полями внутри блока (.auth-body по дефолту имеет 32px) */
+.settings-columns-grid .auth-body {
+  gap: 24px !important;
+}
+
+/* Ювелирно выравниваем глазик по новой базовой линии уменьшенного инпута */
+.settings-columns-grid .password-group {
+  position: relative;
+}
+
+.settings-columns-grid .eye-icon {
+  position: absolute;
+  right: 0;
+  bottom: 6px; /* Идеально садится на нижнюю линию */
+  top: auto;
+  cursor: pointer;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+}
+
+/* Корректируем положение счетчика символов в правом верхнем углу инпута */
+.settings-columns-grid .char-counter {
+  position: absolute;
+  right: 0;
+  top: 2px;
+  font-size: 11px;
+  color: rgba(0, 0, 0, 0.32);
+}
+
+/* Стилизация неактивного состояния кнопок обновления */
+.settings-columns-grid .btn-auth {
+  padding: 16px 24px;
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-top: 8px;
+}

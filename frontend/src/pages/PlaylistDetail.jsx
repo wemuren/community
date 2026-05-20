@@ -66,10 +66,8 @@ const PlaylistDetail = () => {
   return (
     <div className="home-container">
       {/* КНОПКА НАЗАД */}
-      <div className="back-button-wrapper">
-        <button onClick={() => navigate(-1)} className="nav-link" style={{ padding: '8px 16px' }}>
-          <ChevronLeft size={18} strokeWidth={2} /> Назад
-        </button>
+      <div className="settings-back-action" onClick={() => navigate(-1)}>
+        <ChevronLeft size={16} strokeWidth={2} /> Назад
       </div>
 
       {/* ШАПКА ПЛЕЙЛИСТА (НОРМАЛЬНАЯ ТИПОГРАФИКА) */}

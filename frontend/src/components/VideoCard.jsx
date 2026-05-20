@@ -26,10 +26,36 @@ const VideoCard = ({
     return num;
   };
 
-  // Проверяем флаги из бэкенда (подставь свои переменные, если они называются иначе)
- // Конвертируем строки/числа из PHP в чистый boolean для Lucide иконок
-const isLiked = video.is_liked && parseInt(video.is_liked) === 1;
-const isWatchLater = video.in_later && parseInt(video.in_later) === 1;
+  // ФУНКЦИЯ ДЛЯ ВЫБОРА ПРАВИЛЬНОГО СКЛОНЕНИЯ СЛОВ
+  const getPluralForm = (count, one, two, many) => {
+    const num = Math.abs(parseInt(count)) || 0;
+    let mod10 = num % 10;
+    let mod100 = num % 100;
+
+    // Если число оканчивается на k или M (после форматирования), возвращаем форму для "множества"
+    if (count.toString().includes('k') || count.toString().includes('M')) {
+      return many;
+    }
+
+    if (mod100 > 10 && mod100 < 20) {
+      return many;
+    }
+    if (mod10 > 1 && mod10 < 5) {
+      return two;
+    }
+    if (mod10 === 1) {
+      return one;
+    }
+    return many;
+  };
+
+  const isLiked = video.is_liked && parseInt(video.is_liked) === 1;
+  const isWatchLater = video.in_later && parseInt(video.in_later) === 1;
+
+  const viewsCount = parseInt(video.views) || 0;
+  const viewsString = formatViews(viewsCount);
+  // Определяем правильное окончание: 1 просмотр, 2 просмотра, 5 просмотров
+  const viewsPlural = getPluralForm(viewsCount, 'просмотр', 'просмотра', 'просмотров');
 
   return (
     <div className="video-card" onClick={() => onVideoClick(video)}>
@@ -43,47 +69,45 @@ const isWatchLater = video.in_later && parseInt(video.in_later) === 1;
         
         {/* Слой ховер-действий */}
         <div className="hover-actions" onClick={e => e.stopPropagation()}>
-  {isMyProfile ? (
-    <>
-      <button className="action-btn-badge" title="Редактировать" onClick={(e) => onEdit(e, video.id)}>
-        <SquarePen size={16} strokeWidth={2} />
-      </button>
-      {onDelete && (
-        <button className="action-btn-badge" title="Удалить" onClick={(e) => onDelete(e, video.id)}>
-          <Trash size={16} strokeWidth={2} />
-        </button>
-      )}
-    </>
-  ) : (
-    <>
-      <button className="action-btn-badge" title="В плейлист" onClick={(e) => onPlaylistOpen(e, video.id)}>
-        <Bookmark size={16} strokeWidth={2} />
-      </button>
-      
-      {/* Динамический класс is-active для лайка */}
-      <button 
-        className={`action-btn-badge badge-heart ${isLiked ? 'is-active' : ''}`} 
-        title="Нравится" 
-        onClick={(e) => onToggleLiked(e, 'liked', video.id)}
-      >
-        <Heart size={16} strokeWidth={2} />
-      </button>
-      
-      {/* Динамический класс is-active для смотреть позже */}
-      <button 
-        className={`action-btn-badge badge-clock ${isWatchLater ? 'is-active' : ''}`} 
-        title="Позже" 
-        onClick={(e) => onToggleLater(e, 'watch_later', video.id)}
-      >
-        <Clock size={16} strokeWidth={2} />
-      </button>
-      
-      <button className="action-btn-badge" title="Пожаловаться" onClick={(e) => onReport(e, video.id, 'video')}>
-        <TriangleAlert size={16} strokeWidth={2} />
-      </button>
-    </>
-  )}
-</div>
+          {isMyProfile ? (
+            <>
+              <button className="action-btn-badge" title="Редактировать" onClick={(e) => onEdit(e, video.id)}>
+                <SquarePen size={16} strokeWidth={2} />
+              </button>
+              {onDelete && (
+                <button className="action-btn-badge" title="Удалить" onClick={(e) => onDelete(e, video.id)}>
+                  <Trash size={16} strokeWidth={2} />
+                </button>
+              )}
+            </>
+          ) : (
+            <>
+              <button className="action-btn-badge" title="В плейлист" onClick={(e) => onPlaylistOpen(e, video.id)}>
+                <Bookmark size={16} strokeWidth={2} />
+              </button>
+              
+              <button 
+                className={`action-btn-badge badge-heart ${isLiked ? 'is-active' : ''}`} 
+                title="Нравится" 
+                onClick={(e) => onToggleLiked(e, 'liked', video.id)}
+              >
+                <Heart size={16} strokeWidth={2} />
+              </button>
+              
+              <button 
+                className={`action-btn-badge badge-clock ${isWatchLater ? 'is-active' : ''}`} 
+                title="Позже" 
+                onClick={(e) => onToggleLater(e, 'watch_later', video.id)}
+              >
+                <Clock size={16} strokeWidth={2} />
+              </button>
+              
+              <button className="action-btn-badge" title="Пожаловаться" onClick={(e) => onReport(e, video.id, 'video')}>
+                <TriangleAlert size={16} strokeWidth={2} />
+              </button>
+            </>
+          )}
+        </div>
       </div>
 
       {/* Блок информации под видео */}
@@ -97,7 +121,7 @@ const isWatchLater = video.in_later && parseInt(video.in_later) === 1;
             <div className="author-avatar">
               <UserAvatar 
                 user={{ avatar: video.avatar, full_name: video.full_name, username: video.username, is_paid: video.is_paid }} 
-                sizeClass="avatar-home-grid" 
+                sizeClass="avatar-medium" // Синхронизировали с твоим новым атомарным классом
               />
             </div>
           </Link>
@@ -108,7 +132,8 @@ const isWatchLater = video.in_later && parseInt(video.in_later) === 1;
           
           <div className="video-meta-row">
             {!hideAuthor && <span className="video-meta-item">{video.full_name || video.username}</span>}
-            <span className="video-meta-item">{formatViews(video.views)} просмотров</span>
+            {/* ИСПРАВЛЕНО: Выводим число и динамически подобранное русское слово */}
+            <span className="video-meta-item">{viewsString} {viewsPlural}</span>
             <span className="video-meta-item">{new Date(video.created_at).toLocaleDateString()}</span>
           </div>
         </div>

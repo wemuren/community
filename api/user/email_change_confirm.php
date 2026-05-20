@@ -2,7 +2,7 @@
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: *");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
-header("Content-Type: application/json");
+header("Content-Type: application/json; charset=UTF-8");
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { http_response_code(200); exit; }
 
@@ -11,7 +11,7 @@ $data = json_decode(file_get_contents("php://input"));
 
 if (empty($data->new_email) || empty($data->user_id)) {
     http_response_code(400);
-    echo json_encode(["status" => "error", "message" => "Данные не полные"]);
+    echo json_encode(["success" => false, "message" => "Данные не полные"]);
     exit;
 }
 
@@ -23,20 +23,18 @@ try {
     $check->execute([$new_email, $u_id]);
     if ($check->fetch()) {
         http_response_code(400);
-        echo json_encode(["status" => "error", "message" => "Email уже занят"]);
+        echo json_encode(["success" => false, "message" => "Email уже занят другим аккаунтом"]);
         exit;
     }
 
-    // Сначала удаляем верификацию — иначе FK не даст обновить email
     $pdo->prepare("DELETE FROM email_verifications WHERE LOWER(email) = LOWER((SELECT email FROM users WHERE id = ?))")
         ->execute([$u_id]);
 
     $pdo->prepare("UPDATE users SET email = ? WHERE id = ?")
         ->execute([$new_email, $u_id]);
 
-    echo json_encode(["status" => "success"]);
+    echo json_encode(["success" => true]);
 } catch (Exception $e) {
     http_response_code(500);
-    echo json_encode(["status" => "error", "message" => $e->getMessage()]);
+    echo json_encode(["success" => false, "message" => $e->getMessage()]);
 }
-?>
