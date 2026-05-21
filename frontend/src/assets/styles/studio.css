@@ -285,26 +285,6 @@
   background: rgba(0, 0, 0, 0.02);
 }
 
-.change-cover-btn {
-  position: absolute;
-  bottom: 12px;
-  right: 12px;
-  background: rgba(0, 0, 0, 0.72);
-  color: var(--white);
-  border: none;
-  padding: 8px 16px;
-  border-radius: var(--border-radius-sm);
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  transition: background-color 0.2s;
-}
-
-.change-cover-btn:hover {
-  background: var(--text-main);
-}
 
 /* --- СИСТЕМНЫЕ КНОПКИ И МОДИФИКАТОРЫ --- */
 .studio-upload-controls-block {
@@ -520,7 +500,7 @@
   bottom: 16px;
   right: 16px;
   background: rgba(0, 0, 0, 0.64);
-  color: var(--white);
+  color: var(--white) !important;
   border: none;
   padding: 10px 20px;
   border-radius: 8px;

@@ -213,7 +213,7 @@ const getPluralForm = (number, forms) => {
       {isMyProfile && profileUser.name_reset == 1 && (
         <div className="moderation-notice">
           <span>Имя профиля было сброшено модератором.</span>
-          <button onClick={() => handleDismissNotice(profileUser.id)}>ОК</button>
+          <button className="moderation-notice-btn" onClick={() => handleDismissNotice(profileUser.id)}>ОК</button>
         </div>
       )}
 

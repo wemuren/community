@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
-import { Eye, EyeOff, ChevronLeft, PaintbrushVertical } from 'lucide-react';
-import '../assets/styles/settings.css'; 
-import '../assets/styles/auth.css'; // Импортируем базу стилей инпутов регистрации
+import { Eye, EyeOff, ChevronLeft } from 'lucide-react';
+import '../assets/styles/settings.css';
+import '../assets/styles/auth.css';
 
 import { API_BASE_URL } from '@/config/api';
 
@@ -15,6 +15,9 @@ const Settings = () => {
     return data ? JSON.parse(data) : null;
   });
   const navigate = useNavigate();
+
+  // ── ТАБЫ (РАЗДЕЛЕНИЕ НА БЛОКИ) ──────────────────────────
+  const [activeTab, setActiveTab] = useState('security'); // По умолчанию активна "Безопасность"
 
   // ── ПАРОЛЬ ──────────────────────────────────────────────
   const [passData, setPassData] = useState({ old: '', new: '', confirm: '' });
@@ -147,8 +150,7 @@ const Settings = () => {
     if (err) return;
 
     try {
-      // ИСПРАВЛЕНО: Передаём current_email, который требует бэкенд
-      const res = await axios.post(`${API_BASE_URL}/user/email_change_request.php`, { 
+      const res = await axios.post(`${API_BASE_URL}/user/email_change_request.php`, {
         user_id: authUser.id,
         current_email: normalize(emailData.current)
       });
@@ -167,9 +169,8 @@ const Settings = () => {
       setEmailErrors(p => ({ ...p, code: 'Введите код' })); return;
     }
     try {
-      // ИСПРАВЛЕНО: Передаём email и code, как ждёт verify_settings_code.php
       const res = await axios.post(`${API_BASE_URL}/user/verify_settings_code.php`, {
-        email: normalize(emailData.current), 
+        email: normalize(emailData.current),
         code: emailData.code
       });
       if (res.data.success) { setEmailStep(3); } else { setEmailServerError(res.data.message || 'Неверный код'); }
@@ -185,9 +186,8 @@ const Settings = () => {
     if (err) return;
 
     try {
-      // ИСПРАВЛЕНО: Передаём user_id и new_email для обновления записи в БД
       const res = await axios.post(`${API_BASE_URL}/user/email_change_confirm.php`, {
-        user_id: authUser.id, 
+        user_id: authUser.id,
         new_email: normalize(emailData.next)
       });
       if (res.data.success) {
@@ -220,6 +220,7 @@ const Settings = () => {
         localStorage.setItem('user', JSON.stringify(nextUser));
         setAuthUser(nextUser);
         alert('Канал успешно удален.');
+        setActiveTab('security'); // Возвращаем на безопасность после удаления канала
       } else { alert(res.data.message || 'Ошибка удаления канала'); }
     } catch { alert('Ошибка при выполнении запроса'); }
   };
@@ -234,7 +235,6 @@ const Settings = () => {
     } catch { alert('Ошибка соединения с сервером'); }
   };
 
-  // Проверка активности кнопок на основе валидности заполнения полей
   const isPassFormValid = passData.old && passData.new && passData.confirm && !passErrors.old && !passErrors.new && !passErrors.confirm;
 
   return (
@@ -246,170 +246,192 @@ const Settings = () => {
 
       <div className="pl-top-bar"><h2>Настройки учетной записи</h2></div>
 
-      {/* ОСНОВНОЙ ДВУХКОЛОНОЧНЫЙ БЛОК НАСТРОЕК */}
-      <div className="settings-columns-grid">
-        
-        {/* КОЛОНКА 1: БЕЗОПАСНОСТЬ */}
-        <section className="settings-col-section">
-  <h3>Безопасность</h3>
+      {/* НАВИГАЦИЯ ПО ТАБАМ (КАК В ПРОФИЛЕ) */}
+      <nav className="channel-navigation" style={{ marginBottom: '32px' }}>
+        <span
+          className={`nav-tab ${activeTab === 'security' ? 'active' : ''}`}
+          onClick={() => setActiveTab('security')}
+        >
+          БЕЗОПАСНОСТЬ
+        </span>
+        <span
+          className={`nav-tab ${activeTab === 'email' ? 'active' : ''}`}
+          onClick={() => setActiveTab('email')}
+        >
+          СМЕНА ПОЧТОВОГО АДРЕСА
+        </span>
+        <span
+          className={`nav-tab ${activeTab === 'channel' ? 'active' : ''}`}
+          onClick={() => setActiveTab('channel')}
+        >
+          УПРАВЛЕНИЕ КАНАЛОМ
+        </span>
+      </nav>
+
+      {/* КОНТЕНТ АКТИВНОГО ТАБА */}
+<div className="settings-columns-grid">
   
-  <form onSubmit={handlePasswordSubmit} className="auth-body" noValidate>
-    {/* ИСПРАВЛЕНО: Глазик переехал сюда, в первый инпут */}
-    <div className="input-group password-group">
-      <label>Текущий пароль</label>
-      <input
-        type={showPass ? 'text' : 'password'}
-        name="old"
-        className={`auth-input ${passTouched.old && passErrors.old ? 'invalid' : ''}`}
-        value={passData.old}
-        onChange={handlePassChange}
-        onBlur={handlePassBlur}
-      />
-      <span className="char-counter">{passData.old.length}/{limits.password}</span>
-      <span className="eye-icon" onClick={() => setShowPass(!showPass)}>
-        {showPass ? <EyeOff size={20} /> : <Eye size={20} />}
-      </span>
-      {passTouched.old && passErrors.old && <span className="error-label">{passErrors.old}</span>}
-    </div>
+  {/* ТАБ 1: БЕЗОПАСНОСТЬ */}
+  {activeTab === 'security' && (
+    <section className="settings-col-section">
+      <form onSubmit={handlePasswordSubmit} className="auth-body" noValidate>
+        
+        <div className="input-group password-group">
+          <label>Текущий пароль</label>
+          <input
+            type={showPass ? 'text' : 'password'}
+            name="old"
+            className={`auth-input ${passTouched.old && passErrors.old ? 'invalid' : ''}`}
+            value={passData.old}
+            onChange={handlePassChange}
+            onBlur={handlePassBlur}
+          />
+          <span className="char-counter">{passData.old.length}/{limits.password}</span>
+          <span className="eye-icon" onClick={() => setShowPass(!showPass)}>
+            {showPass ? <EyeOff size={20} /> : <Eye size={20} />}
+          </span>
+          {passTouched.old && passErrors.old && <span className="error-label">{passErrors.old}</span>}
+        </div>
 
-    <div className="input-group password-group">
-      <label>Новый пароль</label>
-      <input
-        type={showPass ? 'text' : 'password'}
-        name="new"
-        className={`auth-input ${passTouched.new && passErrors.new ? 'invalid' : ''}`}
-        value={passData.new}
-        onChange={handlePassChange}
-        onBlur={handlePassBlur}
-      />
-      <span className="char-counter">{passData.new.length}/{limits.password}</span>
-      {passTouched.new && passErrors.new && <span className="error-label">{passErrors.new}</span>}
-      <span className="eye-icon" onClick={() => setShowPass(!showPass)}>
-        {showPass ? <EyeOff size={20} /> : <Eye size={20} />}
-      </span>
-    </div>
+        <div className="input-group password-group">
+          <label>Новый пароль</label>
+          <input
+            type={showPass ? 'text' : 'password'}
+            name="new"
+            className={`auth-input ${passTouched.new && passErrors.new ? 'invalid' : ''}`}
+            value={passData.new}
+            onChange={handlePassChange}
+            onBlur={handlePassBlur}
+          />
+          <span className="char-counter">{passData.new.length}/{limits.password}</span>
+          {passTouched.new && passErrors.new && <span className="error-label">{passErrors.new}</span>}
+          <span className="eye-icon" onClick={() => setShowPass(!showPass)}>
+            {showPass ? <EyeOff size={20} /> : <Eye size={20} />}
+          </span>
+        </div>
 
-    <div className="input-group password-group">
-      <label>Подтвердите пароль</label>
-      <input
-        type={showPass ? 'text' : 'password'}
-        name="confirm"
-        className={`auth-input ${passTouched.confirm && passErrors.confirm ? 'invalid' : ''}`}
-        value={passData.confirm}
-        onChange={handlePassChange}
-        onBlur={handlePassBlur}
-      />
-      <span className="char-counter">{passData.confirm.length}/{limits.password}</span>
-      {passTouched.confirm && passErrors.confirm && <span className="error-label">{passErrors.confirm}</span>}
-      <span className="eye-icon" onClick={() => setShowPass(!showPass)}>
-        {showPass ? <EyeOff size={20} /> : <Eye size={20} />}
-      </span>
-    </div>
+        <div className="input-group password-group">
+          <label>Подтвердите пароль</label>
+          <input
+            type={showPass ? 'text' : 'password'}
+            name="confirm"
+            className={`auth-input ${passTouched.confirm && passErrors.confirm ? 'invalid' : ''}`}
+            value={passData.confirm}
+            onChange={handlePassChange}
+            onBlur={handlePassBlur}
+          />
+          <span className="char-counter">{passData.confirm.length}/{limits.password}</span>
+          {passTouched.confirm && passErrors.confirm && <span className="error-label">{passErrors.confirm}</span>}
+          <span className="eye-icon" onClick={() => setShowPass(!showPass)}>
+            {showPass ? <EyeOff size={20} /> : <Eye size={20} />}
+          </span>
+        </div>
 
-    {passServerError && <div className="error-message">{passServerError}</div>}
-    {passSuccess && <div className="error-message neutral">{passSuccess}</div>}
+        {passServerError && <div className="error-message">{passServerError}</div>}
+        {passSuccess && <div className="error-message neutral">{passSuccess}</div>}
 
-    <button type="submit" className={`btn-auth ${isPassFormValid ? 'active' : ''}`} disabled={!isPassFormValid}>
-      Обновить пароль
-    </button>
-  </form>
-</section>
+        <button type="submit" className={`btn-auth ${isPassFormValid ? 'active' : ''}`} disabled={!isPassFormValid}>
+          Обновить пароль
+        </button>
+      </form>
+    </section>
+  )}
 
-        {/* КОЛОНКА 2: ИЗМЕНЕНИЕ EMAIL */}
-        <section className="settings-col-section">
-          <h3>Смена почтового адреса</h3>
-          <p className="settings-current-info">Текущий адрес электронной почты: <strong>{authUser.email}</strong></p>
+  {/* ТАБ 2: ИЗМЕНЕНИЕ EMAIL */}
+  {activeTab === 'email' && (
+    <section className="settings-col-section">
+      <p className="settings-current-info">Текущий адрес электронной почты: <strong>{authUser.email}</strong></p>
 
-          <div className="auth-body">
-            {emailStep === 1 && (
-              <form onSubmit={handleEmailStep1} noValidate style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-                <div className="input-group">
-                  <label>Подтвердите текущий Email</label>
-                  <input
-                    type="email"
-                    name="current"
-                    className={`auth-input ${emailTouched.current && emailErrors.current ? 'invalid' : ''}`}
-                    value={emailData.current}
-                    onChange={handleEmailChange}
-                    onBlur={handleEmailBlur}
-                    placeholder="example@mail.com"
-                  />
-                  <span className="char-counter">{emailData.current.length}/{limits.email}</span>
-                  {emailTouched.current && emailErrors.current && <span className="error-label">{emailErrors.current}</span>}
-                </div>
-                <button type="submit" className={`btn-auth ${emailData.current && !emailErrors.current ? 'active' : ''}`} disabled={!emailData.current || !!emailErrors.current}>
-                  Получить код
-                </button>
-              </form>
-            )}
+      <div className="auth-body">
+        {emailStep === 1 && (
+          <form onSubmit={handleEmailStep1} noValidate>
+            <div className="input-group">
+              <label>Подтвердите текущий Email</label>
+              <input
+                type="email"
+                name="current"
+                className={`auth-input ${emailTouched.current && emailErrors.current ? 'invalid' : ''}`}
+                value={emailData.current}
+                onChange={handleEmailChange}
+                onBlur={handleEmailBlur}
+                placeholder="example@mail.com"
+              />
+              <span className="char-counter">{emailData.current.length}/{limits.email}</span>
+              {emailTouched.current && emailErrors.current && <span className="error-label">{emailErrors.current}</span>}
+            </div>
+            <button type="submit" className={`btn-auth ${emailData.current && !emailErrors.current ? 'active' : ''}`} disabled={!emailData.current || !!emailErrors.current}>
+              Получить код
+            </button>
+          </form>
+        )}
 
-            {emailStep === 2 && (
-              <form onSubmit={handleEmailStep2} noValidate style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-                <div className="input-group">
-                  <label>Код из письма</label>
-                  <input
-                    type="text"
-                    name="code"
-                    className="auth-input"
-                    value={emailData.code}
-                    onChange={handleEmailChange}
-                    placeholder="6-значный код"
-                  />
-                  {emailErrors.code && <span className="error-label">{emailErrors.code}</span>}
-                </div>
-                <div className="code-info" style={{ alignItems: 'flex-start' }}>
-                  {timer > 0 ? (
-                    <span className="timer-text" style={{ fontSize: '14px', color: 'rgba(0,0,0,0.4)' }}>Отправить снова через {timer}с</span>
-                  ) : (
-                    <button type="button" className="resend-link" style={{ fontSize: '14px', textDecoration: 'underline' }} onClick={resendCode}>Переотправить код</button>
-                  )}
-                </div>
-                <button type="submit" className={`btn-auth ${emailData.code.length >= 4 ? 'active' : ''}`} disabled={!emailData.code}>
-                  Подтвердить код
-                </button>
-              </form>
-            )}
+        {emailStep === 2 && (
+          <form onSubmit={handleEmailStep2} noValidate>
+            <div className="input-group">
+              <label>Код из письма</label>
+              <input
+                type="text"
+                name="code"
+                className="auth-input"
+                value={emailData.code}
+                onChange={handleEmailChange}
+                placeholder="6-значный код"
+              />
+              {emailErrors.code && <span className="error-label">{emailErrors.code}</span>}
+            </div>
+            <div className="code-info">
+              {timer > 0 ? (
+                <span className="timer-text">Отправить снова через {timer}с</span>
+              ) : (
+                <button type="button" className="resend-link" onClick={resendCode}>Переотправить код</button>
+              )}
+            </div>
+            <button type="submit" className={`btn-auth ${emailData.code.length >= 4 ? 'active' : ''}`} disabled={!emailData.code}>
+              Подтвердить код
+            </button>
+          </form>
+        )}
 
-            {emailStep === 3 && (
-              <form onSubmit={handleEmailStep3} noValidate style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-                <div className="input-group">
-                  <label>Введите новый Email</label>
-                  <input
-                    type="email"
-                    name="next"
-                    className={`auth-input ${emailTouched.next && emailErrors.next ? 'invalid' : ''}`}
-                    value={emailData.next}
-                    onChange={handleEmailChange}
-                    onBlur={handleEmailBlur}
-                    placeholder="new-email@mail.com"
-                  />
-                  <span className="char-counter">{emailData.next.length}/{limits.email}</span>
-                  {emailTouched.next && emailErrors.next && <span className="error-label">{emailErrors.next}</span>}
-                </div>
-                <button type="submit" className={`btn-auth ${emailData.next && !emailErrors.next ? 'active' : ''}`} disabled={!emailData.next || !!emailErrors.next}>
-                  Привязать почту
-                </button>
-              </form>
-            )}
-            
-            {emailServerError && <div className="error-message">{emailServerError}</div>}
-            {emailSuccess && <div className="error-message neutral">{emailSuccess}</div>}
-          </div>
-        </section>
+        {emailStep === 3 && (
+          <form onSubmit={handleEmailStep3} noValidate>
+            <div className="input-group">
+              <label>Введите новый Email</label>
+              <input
+                type="email"
+                name="next"
+                className={`auth-input ${emailTouched.next && emailErrors.next ? 'invalid' : ''}`}
+                value={emailData.next}
+                onChange={handleEmailChange}
+                onBlur={handleEmailBlur}
+                placeholder="new-email@mail.com"
+              />
+              <span className="char-counter">{emailData.next.length}/{limits.email}</span>
+              {emailTouched.next && emailErrors.next && <span className="error-label">{emailErrors.next}</span>}
+            </div>
+            <button type="submit" className={`btn-auth ${emailData.next && !emailErrors.next ? 'active' : ''}`} disabled={!emailData.next || !!emailErrors.next}>
+              Привязать почту
+            </button>
+          </form>
+        )}
+
+        {emailServerError && <div className="error-message">{emailServerError}</div>}
+        {emailSuccess && <div className="error-message neutral">{emailSuccess}</div>}
       </div>
+    </section>
+  )}
 
-      {/* РАЗДЕЛИТЕЛЬНЫЙ СЕПАРАТОР */}
-      <div className="settings-horizontal-separator"></div>
-
-      {/* НИЖНЯЯ КОМПАКТНАЯ СТРОКА С ДЕСТРУКТИВНЫМИ ДЕЙСТВИЯМИ */}
-      <div className="settings-compact-footer-row">
-        {/* УДАЛЕНИЕ КАНАЛА */}
-        {authUser.channel_created == 1 && (
-          <div className="settings-footer-card">
-            <h4>Управление каналом</h4>
-            <p>Вы можете полностью удалить свой канал. Ваши подписки и профиль пользователя при этом сохранятся.</p>
-            <div className='row'>
-             <Link to="/studio/profile" className="btn-settings-footer-action secondary-outline" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
+  {/* ТАБ 3: УПРАВЛЕНИЕ КАНАЛОМ */}
+  {activeTab === 'channel' && (
+    <section className="settings-col-section">
+      <div className="auth-body">
+        {authUser.channel_created == 1 ? (
+          <div className="settings-channel-container">
+            <p className="settings-current-info">
+              Вы можете отредактировать информацию о вашем канале или полностью удалить его.
+              Ваши подписки и профиль пользователя при этом сохранятся.
+            </p>
+            <div className="row">
+              <Link to="/studio/profile" className="btn-settings-footer-action secondary-outline">
                 Редактировать профиль
               </Link>
               <button className="btn-settings-footer-action secondary-outline" onClick={handleDeleteChannel}>
@@ -417,17 +439,34 @@ const Settings = () => {
               </button>
             </div>
           </div>
+        ) : (
+          <div className="empty-state">
+            <div className="create-channel-promo">
+              <p className="settings-current-info">У вас пока нет созданного канала на платформе.</p>
+              <button className="btn-auth active" onClick={() => navigate('/profile')}>
+                Перейти в профиль для создания
+              </button>
+            </div>
+          </div>
         )}
 
-        {/* УДАЛЕНИЕ АККАУНТА */}
-        <div className="settings-footer-card">
-          <h4 className="danger-title">Удаление учетной записи</h4>
-          <p>Удаление аккаунта приведет к безвозвратной и полной потере всех данных вашего профиля без возможности восстановления.</p>
+        {/* БЛОК УДАЛЕНИЯ АККАУНТА */}
+        <div className="settings-account-delete-zone">
+          <h3 style={{ color: '#ff4d4f' }}>
+            Удаление учетной записи
+          </h3>
+          <p className="settings-current-info">
+            Удаление аккаунта приведет к безвозвратной и полной потере всех данных вашего профиля без возможности восстановления.
+          </p>
           <button className="btn-settings-footer-action danger-outline" onClick={handleAccountDelete}>
             Удалить аккаунт навсегда
           </button>
         </div>
       </div>
+    </section>
+  )}
+
+</div>
     </div>
   );
 };

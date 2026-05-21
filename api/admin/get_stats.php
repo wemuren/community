@@ -8,7 +8,7 @@ $admin_id = $_GET['admin_id'] ?? 0;
 checkAdmin($pdo, $admin_id);
 
 try {
-   // 1. Основные счетчики
+    // 1. Основные счетчики
     $total_users = $pdo->query("SELECT COUNT(*) FROM users")->fetchColumn();
     $premium_users = $pdo->query("SELECT COUNT(*) FROM users WHERE is_paid = 1")->fetchColumn();
     $total_videos = $pdo->query("SELECT COUNT(*) FROM videos")->fetchColumn();
@@ -28,7 +28,7 @@ try {
     $price = (int)($pdo->query("SELECT setting_value FROM settings WHERE setting_key = 'sub_price'")->fetchColumn() ?: 900);
     $monthly_earnings = $premium_users * $price;
 
-    // 4. ТОП-3 ТЕГА ПО ПРОСМОТРАМ
+    // 4. ТОП-3 ТЕГА ПО ПРОСМОТРАМ ЗА ВСЕ ВРЕМЯ
     $top_tags_views = $pdo->query("
         SELECT t.name, SUM(v.views) as total_views
         FROM tags t
@@ -37,7 +37,7 @@ try {
         GROUP BY t.id ORDER BY total_views DESC LIMIT 3
     ")->fetchAll(PDO::FETCH_ASSOC);
 
-    // 5. ТОП-3 ТЕГА ПО ПУБЛИКАЦИЯМ
+    // 5. ТОП-3 ТЕГА ПО ПУБЛИКАЦИЯМ ЗА ВСЕ ВРЕМЯ
     $top_tags_count = $pdo->query("
         SELECT t.name, COUNT(vt.video_id) as video_count
         FROM tags t
@@ -45,38 +45,42 @@ try {
         GROUP BY t.id ORDER BY video_count DESC LIMIT 3
     ")->fetchAll(PDO::FETCH_ASSOC);
 
-    // ... внутри get_stats.php
+    // 6. ИСПРАВЛЕНО: ТОП ЮЗЕР ЗА ПОСЛЕДНИЕ 7 ДНЕЙ (Защита от пустой базы за текущие сутки)
+    // Поле full_name теперь возвращается напрямую, чтобы состыковаться с React-компонентом
     $top_user_today = $pdo->query("
-    SELECT 
-        u.id,
-        u.username,
-        COALESCE(u.full_name, u.username) as display_name, 
-        u.avatar,
-        u.is_paid,
-        COUNT(*) as today_views
-    FROM users u
-    JOIN videos v ON u.id = v.user_id
-    JOIN video_views_log vl ON v.id = vl.video_id
-    WHERE vl.viewed_at >= CURDATE() AND vl.viewed_at < CURDATE() + INTERVAL 1 DAY
-    GROUP BY u.id, u.username, u.full_name, u.avatar, u.is_paid
-    ORDER BY today_views DESC 
-    LIMIT 1
-")->fetch(PDO::FETCH_ASSOC) ?: null;
+        SELECT 
+            u.id,
+            u.username,
+            u.full_name, 
+            u.avatar,
+            u.is_paid,
+            COUNT(*) as today_views
+        FROM users u
+        JOIN videos v ON u.id = v.user_id
+        JOIN video_views_log vl ON v.id = vl.video_id
+        WHERE vl.viewed_at >= NOW() - INTERVAL 7 DAY
+        GROUP BY u.id, u.username, u.full_name, u.avatar, u.is_paid
+        ORDER BY today_views DESC 
+        LIMIT 1
+    ")->fetch(PDO::FETCH_ASSOC) ?: null;
 
-// ТОП ТЕГОВ СЕГОДНЯ
-$top_tags_today = $pdo->query("
-    SELECT t.name, COUNT(*) as views_today
-    FROM tags t
-    JOIN video_tags vt ON t.id = vt.tag_id
-    JOIN video_views_log vl ON vt.video_id = vl.video_id
-    WHERE DATE(vl.viewed_at) = CURDATE()
-    GROUP BY t.id, t.name 
-    ORDER BY views_today DESC 
-    LIMIT 3
-")->fetchAll(PDO::FETCH_ASSOC);
+    // 7. ИСПРАВЛЕНО: ТОП ТЕГОВ ЗА ПОСЛЕДНИЕ 7 ДНЕЙ
+    $top_tags_today = $pdo->query("
+        SELECT t.name, COUNT(*) as views_today
+        FROM tags t
+        JOIN video_tags vt ON t.id = vt.tag_id
+        JOIN video_views_log vl ON vt.video_id = vl.video_id
+        WHERE vl.viewed_at >= NOW() - INTERVAL 7 DAY
+        GROUP BY t.id, t.name 
+        ORDER BY views_today DESC 
+        LIMIT 3
+    ")->fetchAll(PDO::FETCH_ASSOC);
 
+    // Вставьте перед echo json_encode([...
+$debug_count = $pdo->query("SELECT COUNT(*) FROM video_views_log WHERE viewed_at >= NOW() - INTERVAL 7 DAY")->fetchColumn();
+error_log("Views in log last 7 days: " . $debug_count);
 
-   echo json_encode([
+    echo json_encode([
         "total_users" => (int)$total_users,
         "premium_users" => (int)$premium_users,
         "total_videos" => (int)$total_videos,
@@ -90,7 +94,7 @@ $top_tags_today = $pdo->query("
         "top_tags_views" => $top_tags_views,
         "top_tags_count" => $top_tags_count,
         "top_user_today" => $top_user_today,
-        "top_tags_today" => $top_tags_today // ДОБАВИЛИ ЭТУ СТРОЧКУ
+        "top_tags_today" => $top_tags_today
     ]);
 
 } catch (Exception $e) {

@@ -15,5 +15,6 @@ if ($video_id <= 0) {
 
 // Только +1 к счётчику просмотров
 $pdo->prepare("UPDATE videos SET views = views + 1 WHERE id = ?")->execute([$video_id]);
+$pdo->prepare("INSERT INTO video_views_log (video_id, viewed_at) VALUES (?, NOW())")->execute([$video_id]);
 
 echo json_encode(["status" => "ok"]);

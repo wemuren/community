@@ -1,11 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import '../assets/styles/admin.css';
-import VideoCard from '../components/VideoCard'; // Импорт карточки
-import { useVideoActions } from '../hooks/useVideoActions'; // Импорт действий
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { ChevronLeft } from 'lucide-react';
+import VideoCard from '../components/VideoCard';
+import UserAvatar from '../components/UserAvatar';
+import { useVideoActions } from '../hooks/useVideoActions';
+import { Eye, Heart, Folder, MessageSquare, Users } from 'lucide-react';
 
-import { API_BASE_URL, AVATAR_URL } from '@/config/api';
+// Переиспользуем монолитные стили платформы и админки
+import '../assets/styles/studio.css';
+import '../assets/styles/auth.css';
+import '../assets/styles/admin.css';
+
+import { API_BASE_URL } from '@/config/api';
 
 const StudioDashboard = () => {
   const [stats, setStats] = useState(null);
@@ -13,74 +20,103 @@ const StudioDashboard = () => {
   const authUser = JSON.parse(localStorage.getItem('user'));
   const navigate = useNavigate();
 
-  // Функция обновления данных (передаем в хук)
   const fetchStudioStats = async () => {
     try {
       const res = await axios.get(`${API_BASE_URL}/studio/studio_get_stats.php?user_id=${authUser.id}`);
       if (res.data.status === 'success') {
         setStats(res.data.stats);
       }
-    } catch (err) { console.error(err); }
-    finally { setLoading(false); }
+    } catch (err) { 
+      console.error("Ошибка загрузки аналитики дашборда:", err); 
+    } finally { 
+      setLoading(false); 
+    }
   };
 
   const va = useVideoActions(fetchStudioStats);
 
   const handleEditVideo = (e, videoId) => {
-  e.stopPropagation(); // Чтобы при клике на карандаш не открылось само видео
-  navigate(`/studio/edit/${videoId}`);
-};
+    e.stopPropagation();
+    navigate(`/studio/edit/${videoId}`);
+  };
 
-  useEffect(() => { fetchStudioStats(); }, [authUser.id]);
+  useEffect(() => { 
+    if (authUser?.id) fetchStudioStats(); 
+  }, [authUser?.id]);
 
-  if (loading) return <div className="admin-loader">Загружаем показатели...</div>;
-  if (!stats) return <div className="white-card">Ошибка данных</div>;
+  if (loading) return <div className="admin-loader-container"><div className="error-label">Загружаем показатели...</div></div>;
+  if (!stats) return <div className="settings-white-wrapper"><p className="error-label">Ошибка получения данных аналитики</p></div>;
 
   return (
-    <div className="dashboard-content">
-      <div className="admin-header-flex">
-        <h2 className="page-title">АНАЛИТИКА КАНАЛА</h2>
-      </div>
-
-      {/* ГРИД С ПОКАЗАТЕЛЯМИ */}
-      <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
-        <div className="stat-card">
-          <span className="stat-label">Просмотры</span>
-          <h2 className="stat-value">{stats.total_views.toLocaleString()}</h2>
-        </div>
-
-        <div className="stat-card">
-          <span className="stat-label">Лайки</span>
-          <h2 className="stat-value" style={{color: '#ff4d4d'}}>{stats.total_likes.toLocaleString()}</h2>
-        </div>
-
-        <div className="stat-card">
-          <span className="stat-label">Сохранения</span>
-          <h2 className="stat-value" style={{color: '#27ae60'}}>{stats.total_saves.toLocaleString()}</h2>
-        </div>
-
-        <div className="stat-card">
-          <span className="stat-label">Комментарии</span>
-          <h2 className="stat-value">{stats.total_comments.toLocaleString()}</h2>
-        </div>
-
-        <div className="stat-card">
-          <span className="stat-label">Подписчики</span>
-          <h2 className="stat-value" style={{color: '#3498db'}}>{stats.total_subscribers.toLocaleString()}</h2>
-        </div>
-      </div>
-
-      <div className="admin-split-view" style={{ display: 'flex', gap: '30px', marginTop: '40px' }}>
+    <div className="settings-white-wrapper">
       
-      {/* ЛЕВО: ВАШ ГЛАВНЫЙ ХИТ */}
-      <div style={{ flex: 1 }}>
-          <h3 className="section-subtitle">Самое популярное видео</h3>
-          <div>
+      {/* КНОПКА НАЗАД */}
+      <div className="settings-back-action" onClick={() => navigate(-1)}>
+        <ChevronLeft size={16} strokeWidth={2} /> Назад
+      </div>
+
+      <div className="pl-top-bar">
+        <h2>Аналитика канала</h2>
+      </div>
+
+      {/* ГРИД С ПОКАЗАТЕЛЯМИ (ПОВТОРЯЕТ АДМИНКУ) */}
+      {/* ВЕРХНЯЯ СЕТКА КАРТОЧЕК СТАТИСТИКИ */}
+      <div className="admin-stats-grid">
+        
+        <div className="admin-stat-card">
+          <div className="admin-stat-card-header">
+            <span className="admin-stat-label">Просмотры</span>
+            <Eye size={18} className="admin-stat-icon-views" />
+          </div>
+          <h2 className="admin-stat-value">{stats.total_views.toLocaleString()}</h2>
+        </div>
+
+        <div className="admin-stat-card">
+          <div className="admin-stat-card-header">
+            <span className="admin-stat-label">Лайки</span>
+            <Heart size={18} className="admin-stat-icon-likes" />
+          </div>
+          <h2 className="admin-stat-value critical">{stats.total_likes.toLocaleString()}</h2>
+        </div>
+
+        <div className="admin-stat-card">
+          <div className="admin-stat-card-header">
+            <span className="admin-stat-label">Сохранения</span>
+            <Folder size={18} className="admin-stat-icon-saves" />
+          </div>
+          <h2 className="admin-stat-value money">{stats.total_saves.toLocaleString()}</h2>
+        </div>
+
+        <div className="admin-stat-card">
+          <div className="admin-stat-card-header">
+            <span className="admin-stat-label">Комментарии</span>
+            <MessageSquare size={18} className="admin-stat-icon-comments" />
+          </div>
+          <h2 className="admin-stat-value">{stats.total_comments.toLocaleString()}</h2>
+        </div>
+
+        <div className="admin-stat-card">
+          <div className="admin-stat-card-header">
+            <span className="admin-stat-label">Подписчики</span>
+            <Users size={18} className="admin-stat-icon-subs" />
+          </div>
+          <h2 className="admin-stat-value">{stats.total_subscribers.toLocaleString()}</h2>
+        </div>
+
+      </div>
+
+      {/* СЕТКА ИЗ STUDIO.CSS (БЕЗ ИНЛАЙН СЕТОК) */}
+      <div className="settings-columns-grid">
+      
+        {/* ЛЕВАЯ КОЛОНКА: ВАШ ГЛАВНЫЙ ХИТ */}
+        <section className="settings-col-section">
+          <h3>Самое популярное видео</h3>
+          <div className="auth-body">
             {stats.top_video ? (
               <VideoCard 
                 video={stats.top_video}
-                isMyProfile={true}    // Показывает кнопки управления (правка/удаление)
-                hideAuthor={true}     // СКРЫВАЕТ аватарку и имя автора
+                isMyProfile={true}
+                hideAuthor={true}
                 onVideoClick={va.handleVideoClick}
                 onPlaylistOpen={va.openPlaylistModal}
                 onToggleLiked={va.handleToggleSystem}
@@ -89,45 +125,56 @@ const StudioDashboard = () => {
                 onEdit={handleEditVideo}
               />
             ) : (
-              <p className="empty-txt">Видео еще не загружены</p>
+              <p className="studio-field-subtext">Видеоролики еще не загружены</p>
             )}
           </div>
-        </div>
+        </section>
 
-      {/* ПРАВО: ПОСЛЕДНИЕ КОММЕНТАРИИ */}
-      <div style={{ flex: 1.5 }}>
-        <h3 className="section-subtitle">Новые комментарии</h3>
-        <div className="summary-container" style={{ padding: '15px' }}>
-          {stats.recent_comments && stats.recent_comments.length > 0 ? (
-            stats.recent_comments.map((c, idx) => (
-              <div key={idx} className="dashboard-comment-item" style={{
-                padding: '12px 0',
-                borderBottom: idx !== stats.recent_comments.length - 1 ? '1px solid #eee' : 'none',
-                display: 'flex',
-                gap: '12px'
-              }}>
-                <img 
-                  src={c.avatar ? `${AVATAR_URL}${c.avatar}` : '/default-avatar.png'} 
-                  style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover' }}
-                  alt=""
-                />
-                <div style={{ flex: 1 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                    <strong style={{ fontSize: '13px' }}>{c.username}</strong>
-                    <span style={{ fontSize: '11px', color: '#999' }}>{new Date(c.created_at).toLocaleDateString()}</span>
+       {/* ПРАВАЯ КОЛОНКА: СВЕЖИЕ КОММЕНТАРИИ */}
+        <section className="settings-col-section">
+          <h3>Новые комментарии</h3>
+          <div className="auth-body">
+            <div className="comments-list">
+              {stats.recent_comments && stats.recent_comments.length > 0 ? (
+                stats.recent_comments.map((c, idx) => (
+                  <div key={idx} className="comment-item">
+                    
+                    {/* Аватарка автора (ссылка на профиль) */}
+                    
+                      <img
+                        src={c.avatar ? `${API_BASE_URL}/uploads/avatars/${c.avatar}` : '/default-avatar.png'}
+                        alt=""
+                        className="comment-avatar"
+                      />
+
+                    {/* Тело комментария */}
+                    <div className="comment-body">
+                      <div className="comment-meta">
+                       <span className="comment-author">
+                          {c.full_name || `@${c.username}`}
+                        </span>
+                        <span className="comment-date">
+                          {new Date(c.created_at).toLocaleDateString()}
+                        </span>
+                      </div>
+                      
+                      {/* Текст комментария */}
+                      <p className="comment-text">{c.text}</p>
+                      
+                      {/* Метка с названием видео (в том же стиле мета-данных) */}
+                      <span className="comment-date" style={{ display: 'block', marginTop: '4px' }}>
+                        Видео: <strong style={{ color: 'var(--text-main)', fontWeight: 500 }}>{c.video_title}</strong>
+                      </span>
+                    </div>
+
                   </div>
-                  <p style={{ fontSize: '14px', margin: '0 0 6px 0', color: '#333' }}>{c.text}</p>
-                  <span style={{ fontSize: '11px', background: '#f0f0f0', padding: '2px 6px', borderRadius: '4px', color: '#666' }}>
-                    Видео: {c.video_title}
-                  </span>
-                </div>
-              </div>
-            ))
-          ) : (
-            <p className="empty-txt">Здесь пока тишина...</p>
-          )}
-        </div>
-      </div>
+                ))
+              ) : (
+                <p className="studio-field-subtext">Здесь пока ничего нет...</p>
+              )}
+            </div>
+          </div>
+        </section>
 
       </div>
     </div>

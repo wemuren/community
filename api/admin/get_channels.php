@@ -1,6 +1,7 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: *");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Content-Type: application/json; charset=UTF-8");
 require_once 'admin_auth.php';
 require_once '../db.php';
@@ -8,9 +9,10 @@ require_once '../db.php';
 $admin_id = $_GET['admin_id'] ?? 0;
 $search = $_GET['search'] ?? '';
 $sort = $_GET['sort'] ?? 'newest';
-// Новые параметры для страниц
+
+// Параметры для страниц
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$limit = 9; // По 10 каналов на страницу
+$limit = 9; // По 9 каналов на страницу
 $offset = ($page - 1) * $limit;
 
 checkAdmin($pdo, $admin_id);
@@ -27,7 +29,6 @@ try {
     $orderBy = $sortOptions[$sort] ?? $sortOptions['newest'];
 
     // 1. Сначала считаем ОБЩЕЕ количество записей с учетом поиска
-    // Это нужно, чтобы фронт знал, когда остановить пагинацию
     $countSql = "SELECT COUNT(*) FROM users u WHERE u.id != ?";
     $countParams = [(int)$admin_id];
 
@@ -44,9 +45,9 @@ try {
     $totalRecords = $countStmt->fetchColumn();
     $totalPages = ceil($totalRecords / $limit);
 
-    // 2. Основной запрос с LIMIT и OFFSET
+    // 2. Основной запрос (ДОБАВЛЕНО ПОЛЕ u.email)
     $sql = "SELECT 
-                u.id, u.username, u.full_name, u.avatar, u.banner, 
+                u.id, u.username, u.full_name, u.email, u.avatar, u.banner, 
                 u.is_paid, u.is_active, u.created_at, u.name_reset,
                 (SELECT COUNT(*) FROM videos WHERE user_id = u.id) as video_count,
                 (SELECT COUNT(*) FROM subscriptions WHERE followed_id = u.id) as sub_count

@@ -169,7 +169,7 @@ const VideoUpload = () => {
 
       <div className="pl-top-bar"><h2>Создание контента</h2></div>
 
-      <form onSubmit={handleUpload} className="studio-upload-grid" noValidate>
+      <form onSubmit={handleUpload} className="settings-columns-grid" noValidate>
 
         <section className="settings-col-section">
           <h3>Информация о видео</h3>
