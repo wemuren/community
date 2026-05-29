@@ -1,0 +1,49 @@
+services:
+  community-db:
+    image: mysql:8.0
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      MYSQL_DATABASE: ${DB_NAME:-community}
+      MYSQL_USER: ${DB_USER:-community_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-change_me}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_change_me}
+    command:
+      - --default-authentication-plugin=mysql_native_password
+      - --character-set-server=${DB_CHARSET:-utf8mb4}
+      - --collation-server=utf8mb4_unicode_ci
+      - --socket=/var/run/mysqld/mysqld.sock
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - mysql_socket:/var/run/mysqld
+      - ./${SQL_DUMP_FILE:-dump.sql}:/docker-entrypoint-initdb.d/10-init.sql:ro
+
+  app:
+    build:
+      context: .
+      args:
+        VITE_API_BASE_URL: /api
+    restart: unless-stopped
+    depends_on:
+      community-db:
+        condition: service_healthy
+    env_file:
+      - .env
+    ports:
+      - ${APP_PORT:-8080}:80
+    command: >
+      sh -c "ln -sf /Applications/XAMPP/xamppfiles/var/mysql/mysqld.sock /Applications/XAMPP/xamppfiles/var/mysql/mysql.sock && exec apache2-foreground"
+    volumes:
+      - ./api/uploads:/var/www/html/api/uploads
+      - mysql_socket:/Applications/XAMPP/xamppfiles/var/mysql
+
+volumes:
+  mysql_data:
+  mysql_socket:
