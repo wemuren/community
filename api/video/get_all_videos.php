@@ -1,17 +1,19 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: *");
-// ИСПРАВЛЕНО: Добавлен GET в список разрешенных методов модерации браузера
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Content-Type: application/json; charset=UTF-8");
 require_once '../db.php';
 
-// Принимаем ID текущего залогиненного юзера с фронтенда для проверки флагов активности
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
+
 $current_user_id = isset($_GET['user_id']) ? (int)$_GET['user_id'] : 0;
 $tagFilter = $_GET['tag'] ?? null;
 
 try {
-    // ИСПРАВЛЕНО: Добавлены динамические подзапросы для вычисления is_liked и in_later по БД
     $sql = "SELECT v.*, u.username, u.full_name, u.avatar, u.is_paid,
             (SELECT GROUP_CONCAT(t.name) 
              FROM video_tags vt 
@@ -27,7 +29,7 @@ try {
              WHERE pv.video_id = v.id AND p.user_id = :current_user_2 AND p.type = 'watch_later') as in_later
             FROM videos v
             JOIN users u ON v.user_id = u.id
-            WHERE u.is_active = 1"; // Скрываем ролики забаненных авторов
+            WHERE u.is_active = 1"; // Строго скрываем ролики забаненных авторов
 
     if ($tagFilter) {
         $sql .= " AND v.id IN (
@@ -49,9 +51,15 @@ try {
     }
 
     $stmt->execute();
-    echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
+    $videos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // ИСПРАВЛЕНО: Отдаем структурированный ответ в едином стиле платформы
+    echo json_encode([
+        "status" => "success",
+        "videos" => $videos
+    ]);
 
 } catch (Exception $e) {
     http_response_code(500);
-    echo json_encode(["error" => $e->getMessage()]);
+    echo json_encode(["status" => "error", "error" => $e->getMessage()]);
 }

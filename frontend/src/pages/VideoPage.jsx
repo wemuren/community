@@ -330,7 +330,7 @@ const VideoPage = () => {
                     <Link to={`/profile/${c.user_id}`} className="comment-author">
                       {c.full_name || c.username}
                     </Link>
-                    {c.is_paid == 1 && <span className="premium-badge">✨</span>}
+                    {c.is_paid == 1}
                     <span className="comment-date">
                       {new Date(c.created_at).toLocaleDateString()}
                     </span>
