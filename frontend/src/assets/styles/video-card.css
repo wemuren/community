@@ -159,7 +159,6 @@
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
-  gap: 8px; /* Четкий шаг в 8px из Фигмы. Мета-строка прилипает к названию! */
   width: 100%;
 }
 

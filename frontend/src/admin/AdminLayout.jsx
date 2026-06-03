@@ -20,7 +20,7 @@ const AdminLayout = () => {
           <div className="logo-container" style={{ cursor: 'pointer' }}>
             <img src={logo} alt="Community Logo" />
           </div>
-          
+
           <nav className="nav-menu">
             <NavLink to="/admin" end className="nav-link">
               <LayoutDashboard size={18} strokeWidth={2} />
@@ -51,8 +51,8 @@ const AdminLayout = () => {
 
         <div className="sidebar-bottom">
           <nav className="nav-menu">
-            <button 
-              onClick={() => { localStorage.clear(); window.location.href = '/login'; }} 
+            <button
+              onClick={() => { localStorage.clear(); window.location.href = '/login'; }}
               className="nav-link"
             >
               <LogOut size={18} strokeWidth={2} transform="rotate(180)" />
@@ -60,15 +60,18 @@ const AdminLayout = () => {
             </button>
           </nav>
           <div className="footer-links">
-             <NavLink to="/landing">
-                <span>О сервисе</span>
-              </NavLink>
-            <NavLink to="/privacy">
-              <span>Политика конфиденциальности</span>
-            </NavLink>
-            <NavLink to="/terms">
-              <span>Пользовательское соглашение</span>
-            </NavLink>
+
+            <div className='row'>
+              <NavLink to="/landing"><span>О сервисе</span></NavLink>
+              <a href="https://t.me/wemurr" target="_blank" rel="noopener noreferrer">
+                <span>Поддержка</span>
+              </a>
+            </div>
+
+            <NavLink to="/terms"><span>Пользовательское соглашение</span></NavLink>
+
+            <NavLink to="/privacy"><span>Политика конфиденциальности</span></NavLink>
+
           </div>
         </div>
       </aside>

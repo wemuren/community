@@ -34,11 +34,11 @@ function getEnvConfigValue(string $key, string $default = ''): string
     return $fileConfig[$key] ?? $default;
 }
 
-$host    = getEnvConfigValue('DB_HOST', '127.0.0.1');  // ← функция вместо $_ENV
+$host    = getEnvConfigValue('DB_HOST', '127.0.0.1'); 
 $db      = getEnvConfigValue('DB_NAME', 'community');
 $user    = getEnvConfigValue('DB_USER', 'root');
 $pass    = getEnvConfigValue('DB_PASSWORD', '');
-$port    = getEnvConfigValue('DB_PORT', '3306');        // ← добавлен $port
+$port    = getEnvConfigValue('DB_PORT', '3306'); 
 $charset = getEnvConfigValue('DB_CHARSET', 'utf8mb4');
 
 $dsn = "mysql:unix_socket=/Applications/XAMPP/xamppfiles/var/mysql/mysql.sock;dbname=$db;charset=$charset";

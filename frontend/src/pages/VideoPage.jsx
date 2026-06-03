@@ -276,10 +276,10 @@ const VideoPage = () => {
 
         {/* ── КОММЕНТАРИИ ── */}
         <div className="comments-section">
-          <h2 className="comments-heading">
+          <h3 className="comments-heading">
             {comments.length}{' '}
             {getPluralForm(comments.length, ['комментарий', 'комментария', 'комментариев'])}
-          </h2>
+          </h3>
 
           {/* Поле ввода */}
           <div className="comment-input-block">

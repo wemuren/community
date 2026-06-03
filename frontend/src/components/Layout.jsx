@@ -213,9 +213,18 @@ const Layout = () => {
             </button>
           </nav>
           <div className="footer-links">
-            <NavLink to="/landing"><span>О сервисе</span></NavLink>
-            <NavLink to="/privacy"><span>Политика конфиденциальности</span></NavLink>
+            
+            <div className='row'>
+<NavLink to="/landing"><span>О сервисе</span></NavLink>
+            <a href="https://t.me/wemurr" target="_blank" rel="noopener noreferrer">
+              <span>Поддержка</span>
+            </a>
+            </div>
+            
             <NavLink to="/terms"><span>Пользовательское соглашение</span></NavLink>
+
+            <NavLink to="/privacy"><span>Политика конфиденциальности</span></NavLink>
+            
           </div>
         </div>
       </aside>
