@@ -21,7 +21,7 @@ const StudioLayout = () => {
 
           <nav className="nav-menu">
             <NavLink title="Редактировать профиль" to="/studio/profile" className="nav-link">
-              <User size={18} strokeWidth={2} /> 
+              <User size={18} strokeWidth={2} />
               <span>Профиль</span>
             </NavLink>
 
@@ -29,15 +29,15 @@ const StudioLayout = () => {
             {hasChannel && !isBanned && (
               <>
                 <NavLink title="Статистика" to="/studio/dashboard" className="nav-link">
-                  <ChartNoAxesCombined size={18} strokeWidth={2} /> 
+                  <ChartNoAxesCombined size={18} strokeWidth={2} />
                   <span>Статистика</span>
                 </NavLink>
                 <NavLink title="Управление контентом" to="/studio/video" className="nav-link">
-                  <Video size={18} strokeWidth={2} /> 
+                  <Video size={18} strokeWidth={2} />
                   <span>Мои видео</span>
                 </NavLink>
                 <NavLink title="Загрузить новое видео" to="/studio/upload" className="nav-link">
-                  <Plus size={18} strokeWidth={2} /> 
+                  <Plus size={18} strokeWidth={2} />
                   <span>Загрузка видео</span>
                 </NavLink>
               </>
@@ -51,7 +51,7 @@ const StudioLayout = () => {
 
             {!hasChannel && (
               <div className="nav-link disabled-link" title="Сначала создайте канал в профиле">
-                <span style={{ opacity: 0.5 }}>Остальные разделы <br/> доступны только Авторам</span>
+                <span style={{ opacity: 0.5 }}>Остальные разделы <br /> доступны только Авторам</span>
               </div>
             )}
           </nav>
@@ -69,16 +69,19 @@ const StudioLayout = () => {
             </NavLink>
           </nav>
           <div className="footer-links">
-                       <NavLink to="/landing">
-                         <span>О сервисе</span>
-                       </NavLink>
-                      <NavLink to="/privacy">
-                        <span>Политика конфиденциальности</span>
-                      </NavLink>
-                      <NavLink to="/terms">
-                        <span>Пользовательское соглашение</span>
-                      </NavLink>
-                    </div>
+
+            <div className='row'>
+              <NavLink to="/landing"><span>О сервисе</span></NavLink>
+              <a href="https://t.me/wemurr" target="_blank" rel="noopener noreferrer">
+                <span>Поддержка</span>
+              </a>
+            </div>
+
+            <NavLink to="/terms"><span>Пользовательское соглашение</span></NavLink>
+
+            <NavLink to="/privacy"><span>Политика конфиденциальности</span></NavLink>
+
+          </div>
         </div>
       </aside>
 
