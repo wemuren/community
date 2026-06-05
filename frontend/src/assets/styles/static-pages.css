@@ -1,0 +1,142 @@
+/* ==========================================================================
+   STATIC LEGAL PAGES DESIGN SYSTEM SPEC
+   ========================================================================== */
+
+.static-page-wrapper {
+  background: var(--white);
+  padding: 40px;
+  border-radius: var(--border-radius-lg); /* 24px */
+  min-height: 100vh;
+  width: 100%;
+  max-width: 900px; /* Идеальная ширина для чтения длинных текстов */
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* Навигация назад (Синхронизировано с settings-back-action) */
+.static-back-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-muted);
+  font-size: var(--descr); /* 16px */
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  margin-bottom: 32px;
+  user-select: none;
+}
+
+.static-back-action:hover {
+  color: var(--primary-red);
+}
+
+/* Заголовок страницы */
+.static-page-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 40px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  padding-bottom: 24px;
+}
+
+.static-header-icon {
+  color: var(--primary-red);
+  flex-shrink: 0;
+}
+
+.static-page-header h2 {
+  font-size: var(--h1); /* 32px */
+  font-weight: 700;
+  color: var(--text-main);
+  text-transform: uppercase;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+/* Карточка контента */
+.static-content-card {
+  display: flex;
+  flex-direction: column;
+  gap: 40px; /* Большой зазор между секциями заменяет уродливые <hr> */
+}
+
+/* Секция параграфа */
+.static-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.static-section h3 {
+  font-size: var(--p); /* 18px */
+  font-weight: 600;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.static-section p {
+  font-size: var(--descr); /* 16px */
+  font-weight: 400;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Маркированные списки внутри контента */
+.static-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-left: 20px;
+  margin: 4px 0 0 0;
+}
+
+.static-list li {
+  font-size: var(--descr); /* 16px */
+  font-weight: 400;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* АДАПТИВНОСТЬ ПОД НОУТБУКИ И МОБИЛКИ */
+@media (max-width: 768px) {
+  .static-page-wrapper {
+    padding: 24px 16px;
+  }
+  
+  .static-page-header h2 {
+    font-size: var(--h2); /* 24px */
+  }
+  
+  .static-page-header {
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+  }
+
+  .static-content-card {
+    gap: 32px;
+  }
+}
+
+
+/* Дополнительные стили для соглашений */
+.static-date-text {
+  font-size: 14px;
+  color: var(--text-muted);
+  font-style: italic;
+  margin: 0 0 -16px 0;
+}
+
+.static-intro-text {
+  font-size: var(--p); /* 18px */
+  font-weight: 500;
+  color: var(--text-main);
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+
+.static-section strong {
+  color: var(--text-main);
+}

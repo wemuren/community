@@ -34,6 +34,7 @@ try {
             FROM users
             WHERE (LOWER(username) LIKE ? OR LOWER(full_name) LIKE ?)
               AND is_active = 1
+              AND is_admin = 0 -- ИСПРАВЛЕНО: Скрываем системные аккаунты администраторов
             ORDER BY
                 CASE WHEN LOWER(username) = ? THEN 0
                      WHEN LOWER(username) LIKE ? THEN 1
@@ -54,6 +55,7 @@ try {
             LEFT JOIN video_tags vt ON v.id = vt.video_id
             LEFT JOIN tags t ON vt.tag_id = t.id
             WHERE u.is_active = 1
+              AND u.is_admin = 0 -- ИСПРАВЛЕНО: Ролики админов не попадают в выдачу контента
               AND (
                   LOWER(v.title) LIKE ?
                   OR LOWER(t.name) LIKE ?
@@ -83,6 +85,7 @@ try {
               AND p.is_private = 0
               AND p.type = 'custom'
               AND u.is_active = 1
+              AND u.is_admin = 0 -- ИСПРАВЛЕНО: Исключаем технические или системные плейлисты администраторов
             ORDER BY video_count DESC
             LIMIT 10
         ");

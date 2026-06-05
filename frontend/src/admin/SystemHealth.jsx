@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, RefreshCw, Trash, HardDrive, User, Image as ImageIcon, Video, Terminal } from 'lucide-react';
-import '../assets/styles/admin.css'; // Наша основная админ-система
+import { ChevronLeft, RefreshCw, Trash, HardDrive, User, Image as ImageIcon, Video } from 'lucide-react';
+import '../assets/styles/admin.css'; 
 import '../assets/styles/auth.css'; 
 
 import { API_BASE_URL } from '@/config/api';
@@ -27,13 +27,15 @@ const SystemHealth = () => {
 
   const clearLogs = async () => {
     if (!window.confirm("Вы уверены, что хотите полностью стереть логи сервера?")) return;
+    setIsRefreshing(true);
     try {
-      await axios.post(`${API_BASE_URL}/admin/get_system_health.php?admin_id=${authUser.id}`, {
-        admin_id: authUser.id
-      });
-      fetchHealth(); 
+      // ИСПРАВЛЕНО: Явно прокидываем admin_id в URL, чтобы сработал checkAdmin в PHP
+      await axios.post(`${API_BASE_URL}/admin/get_system_health.php?admin_id=${authUser.id}`);
+      await fetchHealth(); 
     } catch (err) { 
       alert("Не удалось очистить лог-файл"); 
+    } finally {
+      setIsRefreshing(false);
     }
   };
 
@@ -46,9 +48,14 @@ const SystemHealth = () => {
   return (
     <div className="settings-white-wrapper">
 
+      {/* КНОПКА НАЗАД */}
+      <div className="settings-back-action" onClick={() => navigate(-1)}>
+        <ChevronLeft size={16} strokeWidth={2} /> Назад
+      </div>
+
       <div className="pl-top-bar">
         <h2>Состояние системы</h2>
-        <div className="admin-wire-tag" style={{ background: 'var(--bg-card)', padding: '6px 14px', borderRadius: '8px', fontSize: '13px', fontWeight: 600 }}>
+        <div className="admin-wire-tag system-weight-badge">
           Общая нагрузка: {health.total_weight}
         </div>
       </div>
@@ -97,22 +104,20 @@ const SystemHealth = () => {
             <h3>Последние ошибки сервера</h3>
           </div>
           
-          <div className="admin-col-actions" style={{ width: 'auto' }}>
+          <div className="admin-col-actions system-toolbar-actions-fix">
             <button 
               type="button"
-              className={`tag-btn ${isRefreshing ? 'is-spinning-action' : ''}`} 
+              className={`tag-btn system-refresh-btn-padding ${isRefreshing ? 'is-spinning-action' : ''}`} 
               onClick={fetchHealth}
               title="Обновить данные логов"
-              style={{ padding: '8px 12px' }}
             >
               <RefreshCw size={14} strokeWidth={2.5} />
             </button>
             <button 
               type="button"
-              className="admin-action-btn-circle ban-toggle banned" 
+              className="admin-action-btn-circle ban-toggle banned system-trash-btn-size" 
               onClick={clearLogs}
               title="Очистить файл логов навсегда"
-              style={{ width: '32px', height: '32px' }}
             >
               <Trash size={14} strokeWidth={2} />
             </button>
@@ -121,7 +126,7 @@ const SystemHealth = () => {
         
         {/* СВЕТЛЫЙ ВЬЮПОРТ ЛОГОВ */}
         <div className="system-light-terminal-viewport">
-          {health.logs.length > 0 ? (
+          {health.logs && health.logs.length > 0 ? (
             health.logs.map((log, index) => (
               <div 
                 key={index} 
@@ -133,7 +138,7 @@ const SystemHealth = () => {
             ))
           ) : (
             <div className="terminal-light-empty-state">
-              <span>Системный лог-файл пуст. Ошибок ядра не зафиксировано ✨</span>
+              <span>Системный лог-файл пуст. Ошибок ядра не зафиксировано </span>
             </div>
           )}
         </div>

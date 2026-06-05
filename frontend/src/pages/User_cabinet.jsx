@@ -221,7 +221,7 @@ const getPluralForm = (number, forms) => {
       {isMyProfile && isBanned && (
         <div className="moderation-notice" style={{ background: '#fff0f0', borderColor: '#C20000' }}>
           <span>Вы были заблокированы за нарушение Правил сообщества.</span>
-          <a href="https://t.me/wemurr" style={{ color: '#C20000', fontWeight: 600 }}>
+          <a href="https://vk.com/wemurr" style={{ color: '#C20000', fontWeight: 600 }}>
             Обратиться в поддержку
           </a>
         </div>
@@ -237,7 +237,7 @@ const getPluralForm = (number, forms) => {
             >
               {!isPremiumActive(profileUser) && isMyProfile && (
                 <div className="banner-lock-overlay" onClick={() => navigate('/premium')}>
-                  <span>Premium истек. Продлите, чтобы разблокировать баннер</span>
+                  <span>Премиум истек. Продлите, чтобы разблокировать баннер</span>
                 </div>
               )}
             </div>
@@ -246,7 +246,7 @@ const getPluralForm = (number, forms) => {
               <div className="profile-banner default-bg">
                 {!isPremiumActive(profileUser) ? (
                   <div className="banner-lock-overlay" onClick={() => navigate('/premium')}>
-                    <span>Оплатите PREMIUM для баннера</span>
+                    <span>Оплатите премиум для баннера</span>
                   </div>
                 ) : (
                   <div className="banner-upload-prompt" onClick={() => navigate('/studio/profile')}>

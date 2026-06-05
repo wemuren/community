@@ -177,8 +177,8 @@ const Layout = () => {
             {activePremium ? (
               <>
                 <div className="premium-header-flex">
-                  <p className="premium-title">Premium активен</p>
-                  {daysLeft <= 5 && <span className="urgent-badge">!</span>}
+                  <p className="premium-title">Премиум активен</p>
+                  {daysLeft <= 5 && <span className="urgent-badge">Скоро истечет!</span>}
                 </div>
                 <p className="premium-days">
                   Осталось: <strong>{daysLeft} {getPluralForm(daysLeft, ['день', 'дня', 'дней'])}</strong>
@@ -186,7 +186,7 @@ const Layout = () => {
               </>
             ) : expiredPremium ? (
               <>
-                <p className="premium-title">Premium истек</p>
+                <p className="premium-title">Премиум истек</p>
                 <p className="premium-days">Функции ограничены</p>
               </>
             ) : (
@@ -213,18 +213,18 @@ const Layout = () => {
             </button>
           </nav>
           <div className="footer-links">
-            
-            <div className='row'>
-<NavLink to="/landing"><span>О сервисе</span></NavLink>
-            <a href="https://t.me/wemurr" target="_blank" rel="noopener noreferrer">
-              <span>Поддержка</span>
-            </a>
+
+            <div className='lay-row'>
+              <NavLink to="/landing"><span>О сервисе</span></NavLink>
+              <a href="https://vk.com/wemurr" target="_blank" rel="noopener noreferrer">
+                <span>Поддержка</span>
+              </a>
             </div>
-            
+
             <NavLink to="/terms"><span>Пользовательское соглашение</span></NavLink>
 
             <NavLink to="/privacy"><span>Политика конфиденциальности</span></NavLink>
-            
+
           </div>
         </div>
       </aside>
@@ -265,6 +265,7 @@ const Layout = () => {
                 {!searchLoading && hasResults && (
                   <>
                     {/* КАНАЛЫ */}
+                    {/* КАНАЛЫ */}
                     {searchResults.users?.length > 0 && (
                       <div className="search-dropdown-section">
                         <div className="search-dropdown-label">Каналы</div>
@@ -274,12 +275,13 @@ const Layout = () => {
                             className="search-dropdown-item"
                             onClick={() => handleSelect(`/profile/${u.id}`)}
                           >
-                            <div className="search-dd-avatar">
-                              {u.avatar
-                                ? <img src={`${API_BASE_URL}/uploads/avatars/${u.avatar}`} alt="" />
-                                : <span>{(u.full_name || u.username || '?').charAt(0).toUpperCase()}</span>
-                              }
-                            </div>
+                            {/* ИСПРАВЛЕНО: Убрали лишний div class="search-dd-avatar", 
+            теперь выводим чистый компонент, который сам возьмет размеры 40x40px */}
+                            <UserAvatar
+                              user={u}
+                              sizeClass="avatar-mini"
+                            />
+
                             <div className="search-dd-info">
                               <span className="search-dd-name">{u.full_name || u.username}</span>
                               <span className="search-dd-sub">@{u.username}</span>
@@ -288,7 +290,6 @@ const Layout = () => {
                         ))}
                       </div>
                     )}
-
                     {/* ВИДЕО */}
                     {searchResults.videos?.length > 0 && (
                       <div className="search-dropdown-section">

@@ -1,4 +1,5 @@
 /* --- АТОМАРНАЯ ОСНОВА КАРТОЧКИ ПЛЕЙЛИСТА (1:1 С VIDEO-CARD) --- */
+/* --- АТОМАРНАЯ ОСНОВА КАРТОЧКИ ПЛЕЙЛИСТА (ИСПРАВЛЕНО) --- */
 .playlist-card {
   padding: 12px;
   background: transparent;
@@ -13,6 +14,38 @@
   cursor: pointer;
   overflow: hidden;
   position: relative;
+
+  /* ЖЕЛЕЗОБЕТОННАЯ СТРАХОВКА: Запрещаем карточке распирать ячейку сетки */
+  min-width: 0; 
+}
+
+/* Текстовый информационный блок (ИСПРАВЛЕНО) */
+.playlist-info-block {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 8px; /* Четкий шаг в 8px из Фигмы до мета-строки */
+  width: 100%;
+
+  /* ИСПРАВЛЕНО: Даем флексу понять, что текстовый блок внутри грида имеет нулевой минимальный порог */
+  min-width: 0; 
+}
+
+.playlist-card-title {
+  font-size: var(--p); /* 18px */
+  font-weight: 400; /* Regular по макету */
+  color: var(--text-main);
+  margin: 0;
+  padding: 0;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  
+  /* ИСПРАВЛЕНО: Жестко зажимаем текст в рамки родительского контейнера */
+  width: 100%;
+  display: block; 
 }
 
 .playlist-card:hover {
@@ -134,27 +167,7 @@
 }
 
 /* Текстовый информационный блок */
-.playlist-info-block {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
-  gap: 8px; /* Четкий шаг в 8px из Фигмы до мета-строки */
-  width: 100%;
-}
 
-.playlist-card-title {
-  font-size: var(--p); /* 18px */
-  font-weight: 400; /* Regular по макету */
-  color: var(--text-main);
-  margin: 0;
-  padding: 0;
-  line-height: 1.3;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  width: 100%;
-}
 
 /* Мета-информация (Приватность, Дата обновления) */
 .playlist-meta-row {

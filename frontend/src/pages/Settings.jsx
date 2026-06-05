@@ -359,7 +359,7 @@ const Settings = () => {
               <span className="char-counter">{emailData.current.length}/{limits.email}</span>
               {emailTouched.current && emailErrors.current && <span className="error-label">{emailErrors.current}</span>}
             </div>
-            <button type="submit" className={`btn-auth ${emailData.current && !emailErrors.current ? 'active' : ''}`} disabled={!emailData.current || !!emailErrors.current}>
+            <button type="submit" style={{ marginTop: '16px' }} className={`btn-auth ${emailData.current && !emailErrors.current ? 'active' : ''}`} disabled={!emailData.current || !!emailErrors.current}>
               Получить код
             </button>
           </form>
@@ -386,7 +386,7 @@ const Settings = () => {
                 <button type="button" className="resend-link" onClick={resendCode}>Переотправить код</button>
               )}
             </div>
-            <button type="submit" className={`btn-auth ${emailData.code.length >= 4 ? 'active' : ''}`} disabled={!emailData.code}>
+            <button type="submit" style={{ marginTop: '16px' }} className={`btn-auth ${emailData.code.length >= 4 ? 'active' : ''}`} disabled={!emailData.code}>
               Подтвердить код
             </button>
           </form>
@@ -408,7 +408,7 @@ const Settings = () => {
               <span className="char-counter">{emailData.next.length}/{limits.email}</span>
               {emailTouched.next && emailErrors.next && <span className="error-label">{emailErrors.next}</span>}
             </div>
-            <button type="submit" className={`btn-auth ${emailData.next && !emailErrors.next ? 'active' : ''}`} disabled={!emailData.next || !!emailErrors.next}>
+            <button type="submit" style={{ marginTop: '16px' }} className={`btn-auth ${emailData.next && !emailErrors.next ? 'active' : ''}`} disabled={!emailData.next || !!emailErrors.next}>
               Привязать почту
             </button>
           </form>
@@ -430,7 +430,7 @@ const Settings = () => {
               Вы можете отредактировать информацию о вашем канале или полностью удалить его.
               Ваши подписки и профиль пользователя при этом сохранятся.
             </p>
-            <div className="row">
+            <div className="set-row">
               <Link to="/studio/profile" className="btn-settings-footer-action secondary-outline">
                 Редактировать профиль
               </Link>
@@ -452,9 +452,9 @@ const Settings = () => {
 
         {/* БЛОК УДАЛЕНИЯ АККАУНТА */}
         <div className="settings-account-delete-zone">
-          <h3 style={{ color: '#ff4d4f' }}>
+          <h2 style={{ color: '#ff4d4f', marginBottom: '32px'}}>
             Удаление учетной записи
-          </h3>
+          </h2>
           <p className="settings-current-info">
             Удаление аккаунта приведет к безвозвратной и полной потере всех данных вашего профиля без возможности восстановления.
           </p>

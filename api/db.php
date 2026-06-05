@@ -1,4 +1,7 @@
 <?php
+ini_set('error_log', __DIR__ . '/server_errors.log');
+ini_set('log_errors', '1');
+
 function getEnvConfigValue(string $key, string $default = ''): string
 {
     $value = getenv($key);
@@ -18,7 +21,7 @@ function getEnvConfigValue(string $key, string $default = ''): string
                 $line = trim($line);
                 if ($line === '' || str_starts_with($line, '#') || !str_contains($line, '=')) continue;
                 [$envKey, $envValue] = explode('=', $line, 2);
-                $envKey = trim($envKey);
+                $envKey   = trim($envKey);
                 $envValue = trim($envValue);
                 if (
                     (str_starts_with($envValue, '"') && str_ends_with($envValue, '"')) ||
@@ -34,14 +37,19 @@ function getEnvConfigValue(string $key, string $default = ''): string
     return $fileConfig[$key] ?? $default;
 }
 
-$host    = getEnvConfigValue('DB_HOST', '127.0.0.1'); 
-$db      = getEnvConfigValue('DB_NAME', 'community');
-$user    = getEnvConfigValue('DB_USER', 'root');
+$host    = getEnvConfigValue('DB_HOST',     '127.0.0.1');
+$port    = getEnvConfigValue('DB_PORT',     '3306');
+$db      = getEnvConfigValue('DB_NAME',     'community');
+$user    = getEnvConfigValue('DB_USER',     'root');
 $pass    = getEnvConfigValue('DB_PASSWORD', '');
-$port    = getEnvConfigValue('DB_PORT', '3306'); 
-$charset = getEnvConfigValue('DB_CHARSET', 'utf8mb4');
+$charset = getEnvConfigValue('DB_CHARSET',  'utf8mb4');
+$socket  = getEnvConfigValue('DB_SOCKET',   '');
 
-$dsn = "mysql:unix_socket=/Applications/XAMPP/xamppfiles/var/mysql/mysql.sock;dbname=$db;charset=$charset";
+// Если задан сокет — используем его, иначе host:port
+$dsn = $socket
+    ? "mysql:unix_socket={$socket};dbname={$db};charset={$charset}"
+    : "mysql:host={$host};port={$port};dbname={$db};charset={$charset}";
+
 $options = [
     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
@@ -53,4 +61,3 @@ try {
 } catch (\PDOException $e) {
     throw new \PDOException($e->getMessage(), (int)$e->getCode());
 }
-?>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { X } from 'lucide-react'; // Импортируем крестик для закрытия
 import '../assets/styles/premium.css';
 
 import { API_BASE_URL } from '@/config/api';
@@ -13,20 +14,16 @@ const Premium = () => {
   const [cardData, setCardData] = useState({ number: '', date: '', cvv: '' });
   const user = JSON.parse(localStorage.getItem('user'));
 
-  // 1. Маска для номера карты (0000 0000 0000 0000)
   const handleCardNumberChange = (e) => {
-    let val = e.target.value.replace(/\D/g, ''); // Только цифры
+    let val = e.target.value.replace(/\D/g, '');
     if (val.length > 16) val = val.slice(0, 16);
-    // Разбиваем по 4 цифры через пробел
     const formatted = val.match(/.{1,4}/g)?.join(' ') || '';
     setCardData({ ...cardData, number: formatted });
   };
 
-  // 2. Маска для даты (MM/YY)
   const handleExpiryChange = (e) => {
-    let val = e.target.value.replace(/\D/g, ''); // Только цифры
+    let val = e.target.value.replace(/\D/g, '');
     if (val.length > 4) val = val.slice(0, 4);
-    
     let formatted = val;
     if (val.length >= 3) {
       formatted = val.slice(0, 2) + '/' + val.slice(2);
@@ -34,7 +31,6 @@ const Premium = () => {
     setCardData({ ...cardData, date: formatted });
   };
 
-  // 3. Обработка CVC (Только 3 цифры)
   const handleCvcChange = (e) => {
     const val = e.target.value.replace(/\D/g, '').slice(0, 3);
     setCardData({ ...cardData, cvv: val });
@@ -64,7 +60,7 @@ const Premium = () => {
         amount: subPrice
       });
       if (res.data.status === 'success') {
-        alert("✨ Premium активирован!");
+        alert("Премиум активирован!");
         const newUser = { ...user, is_paid: 1 };
         localStorage.setItem('user', JSON.stringify(newUser));
         window.location.reload();
@@ -73,107 +69,112 @@ const Premium = () => {
   };
 
   const handleApplyPromo = async () => {
-  if (!promo.trim()) return setStatus('Введите код ⌨️');
-  
-  setStatus('Проверка...'); // Визуальный лоадер
+    if (!promo.trim()) return setStatus('Введите код ⌨️');
+    setStatus('Проверка...');
 
-  try {
-    const res = await axios.post(`${API_BASE_URL}/billing/apply_promo.php`, {
-      user_id: user.id,
-      code: promo
-    });
+    try {
+      const res = await axios.post(`${API_BASE_URL}/billing/apply_promo.php`, {
+        user_id: user.id,
+        code: promo
+      });
 
-    if (res.data.status === 'success') {
-      setStatus(`✨ ${res.data.message}`);
-      setPromo(''); // Очищаем поле
-      
-      // Обновляем локальные данные (чтобы сразу появилась корона/премиум статус)
-      const newUser = { ...user, is_paid: 1 };
-      localStorage.setItem('user', JSON.stringify(newUser));
-      
-      // Уведомляем другие компоненты (например, Header) через событие
-      window.dispatchEvent(new Event('storage'));
-      
-      // Через пару секунд обновляем страницу для верности
-      setTimeout(() => window.location.reload(), 2000);
+      if (res.data.status === 'success') {
+        setStatus(` ${res.data.message}`);
+        setPromo('');
+        const newUser = { ...user, is_paid: 1 };
+        localStorage.setItem('user', JSON.stringify(newUser));
+        window.dispatchEvent(new Event('storage'));
+        setTimeout(() => window.location.reload(), 2000);
+      }
+    } catch (e) {
+      const msg = e.response?.data?.message || 'Ошибка активации ❌';
+      setStatus(msg);
     }
-  } catch (e) {
-    // Берем сообщение об ошибке прямо с сервера
-    const msg = e.response?.data?.message || 'Ошибка активации ❌';
-    setStatus(msg);
-  }
-};
+  };
 
   return (
     <div className="premium-page-wrapper">
       <div className="premium-hero">
-        <h1>COMMUNITY <span className="red-shine">PREMIUM</span></h1>
+        <h1>КОМЬЮНИТИ <span className="red-shine">ПРЕМИУМ</span></h1>
       </div>
 
       <div className="premium-grid">
-        {/* Промокод */}
-        <div className="premium-card glass-card">
+        {/* Карточка Промокода */}
+        <div className="premium-card-bento">
           <h3>Активация кода</h3>
-          <input 
-            type="text" 
-            className="premium-input"
-            placeholder="COMM-XXXX-XXXX" 
-            value={promo}
-            onChange={(e) => setPromo(e.target.value.toUpperCase())}
-          />
-         <button className="premium-btn secondary" onClick={handleApplyPromo}>Активировать</button>
+          <div className="premium-input-container">
+            <input 
+              type="text" 
+              className="edit-input-field"
+              placeholder="COMM-XXXX-XXXX" 
+              value={promo}
+              onChange={(e) => setPromo(e.target.value.toUpperCase())}
+            />
+          </div>
+          <button className="premium-btn-sub" onClick={handleApplyPromo}>Активировать</button>
+          {status && <p className="premium-status-text">{status}</p>}
         </div>
 
-        {/* Купить */}
-        <div className="page-premium-card featured-card">
+        {/* Карточка Подписки */}
+        <div className="premium-card-bento featured-card">
           <h3>Месячная подписка</h3>
-          <div className="price-display">{subPrice}</div>
-          <button className="premium-btn primary" onClick={() => setIsPayModalOpen(true)}>Купить</button>
+          <div className="price-display">{subPrice} <span>₸ / мес</span></div>
+          <button className="premium-btn-main" onClick={() => setIsPayModalOpen(true)}>Купить подписку</button>
         </div>
       </div>
 
+      {/* МОДАЛКА ОПЛАТЫ КАРТОЙ */}
       {isPayModalOpen && (
-        <div className="pay-modal-overlay" onClick={() => setIsPayModalOpen(false)}>
-          <div className="pay-modal-content" onClick={e => e.stopPropagation()}>
-            <h2>Оплата подписки</h2>
-            <form onSubmit={handlePayment} className="pay-form">
+        <div className="admin-modal-overlay" onClick={() => setIsPayModalOpen(false)}>
+          <div className="playlist-modal-content" onClick={e => e.stopPropagation()}>
+            <div className="admin-header-flex" style={{ marginBottom: '24px' }}>
+              <h3 className="page-title" style={{ fontSize: '20px' }}>Оплата подписки</h3>
+              <button className="close-btn" onClick={() => setIsPayModalOpen(false)} style={{ fontSize: '24px' }}>
+                <X size={20} strokeWidth={2} />
+              </button>
+            </div>
+
+            <form onSubmit={handlePayment} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
               <div className="input-group">
-                <label>Номер карты</label>
+                <label style={{ fontSize: '14px', fontWeight: 500, marginBottom: '8px' }}>Номер карты</label>
                 <input 
                   type="text"
                   placeholder="0000 0000 0000 0000"
-                  className="premium-input-masked"
+                  className="edit-input-field premium-masked-font"
                   value={cardData.number}
                   onChange={handleCardNumberChange}
                   required
                 />
               </div>
 
-              <div className="row flex-row" style={{display: 'flex', gap: '15px'}}>
-                <div className="input-group">
-                  <label>ММ/ГГ</label>
+              <div className="modal-action-buttons">
+                <div className="input-group" style={{ flex: 1 }}>
+                  <label style={{ fontSize: '14px', fontWeight: 500, marginBottom: '8px' }}>ММ/ГГ</label>
                   <input 
                     type="text"
                     placeholder="12/26"
-                    className="premium-input-masked"
+                    className="edit-input-field premium-masked-font"
                     value={cardData.date}
                     onChange={handleExpiryChange}
                     required
                   />
                 </div>
-                <div className="input-group">
-                  <label>CVC</label>
+                <div className="input-group" style={{ flex: 1 }}>
+                  <label style={{ fontSize: '14px', fontWeight: 500, marginBottom: '8px' }}>CVC</label>
                   <input 
                     type="password"
                     placeholder="***"
-                    className="premium-input-masked"
+                    className="edit-input-field premium-masked-font cvc-stars"
                     value={cardData.cvv}
                     onChange={handleCvcChange}
                     required
                   />
                 </div>
               </div>
-              <button type="submit" className="pay-submit-btn">Оплатить {subPrice}</button>
+
+              <button type="submit" className="modal-btn-main" style={{ marginTop: '12px', width: '100%' }}>
+                Оплатить {subPrice} ₸
+              </button>
             </form>
           </div>
         </div>

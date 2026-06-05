@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Crown, Ticket, Trash, Plus, X, Copy, Check } from 'lucide-react';
+import { ChevronLeft, Crown, Ticket, Plus, X, Copy, Check } from 'lucide-react';
 import '../assets/styles/admin.css'; // Родная база админки
 import '../assets/styles/auth.css'; // База инпутов и кнопок
+import '../assets/styles/modals.css'; // Для сквозных модалок
 import UserAvatar from '../components/UserAvatar';
 
 import { API_BASE_URL } from '@/config/api';
@@ -65,22 +66,24 @@ const Monetization = () => {
     setTimeout(() => setCopiedCode(null), 2000);
   };
 
-  // Создание промокода с жесткой маской COMM-
+  // Создание промокода (Ручное или Рандомное)
   const handleCreatePromo = async (e) => {
     e.preventDefault();
-    if (!promoText.trim()) return;
     
-    const fullCode = `COMM-${promoText.trim().toUpperCase()}`;
+    // Если текст вбит — формируем кастомный, если пусто — отправляем пустую строку (бэк сделает рандом)
+    const fullCode = promoText.trim() ? `COMM-${promoText.trim().toUpperCase()}` : '';
+    
     try {
       await axios.post(`${API_BASE_URL}/admin/manage_monetization.php`, {
         admin_id: authUser.id, 
         action: 'generate_promo',
-        custom_code: fullCode // Передаем сформированный код на бэкенд
+        custom_code: fullCode
       });
       setPromoText('');
       fetchData();
     } catch (err) {
       console.error("Ошибка при генерации промокода:", err);
+      alert(err.response?.data?.message || "Ошибка генерации");
     }
   };
 
@@ -130,16 +133,16 @@ const Monetization = () => {
       <div className="admin-stats-grid">
         <div className="admin-stat-card clickable" onClick={() => setIsPriceModalOpen(true)}>
           <div className="admin-stat-card-header">
-            <span className="admin-stat-label">Стоимость Premium</span>
+            <span className="admin-stat-label">Стоимость</span>
             <Crown size={16} strokeWidth={2} className="admin-stat-icon-likes" />
           </div>
-          <h2 className="admin-stat-value critical">{data.price} Т</h2>
-          <span className="studio-field-subtext" style={{ color: 'var(--primary-red)', fontWeight: 500 }}>Изменить тариф платформы →</span>
+          <h2 className="admin-stat-value critical">{data.price}</h2>
+          <span className="studio-field-subtext-action">Изменить тариф платформы →</span>
         </div>
 
         <div className="admin-stat-card">
           <div className="admin-stat-card-header">
-            <span className="admin-stat-label">Активные Premium подписки</span>
+            <span className="admin-stat-label">Активные подписки</span>
             <Crown size={16} strokeWidth={2} className="admin-stat-icon-subs" />
           </div>
           <h2 className="admin-stat-value">{data.premiums.length}</h2>
@@ -148,40 +151,33 @@ const Monetization = () => {
       </div>
 
       {/* ДВУХКОЛОНОЧНЫЙ БЛОК: ПРОМОКОДЫ И ТАБЛИЦА */}
-      <div className="admin-split-view" style={{ display: 'flex', gap: '64px', marginTop: '40px' }}>
+      <div className="admin-split-view">
         
         {/* ЛЕВАЯ КОЛОНКА: МАРКЕТИНГ И ПРОМОКОДЫ */}
-        <div style={{ flex: 1, maxWidth: '420px' }}>
-          <h3 className="admin-tags-group-title" style={{ marginBottom: '20px', color: 'var(--text-main)', fontSiz: '16px', fontWeight: 700 }}>
-            Выпуск промокодов
+        <div className="monetization-promo-column">
+          <h3 className="admin-stat-label">
+            Создание промокода
           </h3>
           
-          {/* ФОРМА СОЗДАНИЯ С ЖЕСТКОЙ МАСКОЙ COMM- */}
-          <form onSubmit={handleCreatePromo} className="admin-tag-inline-form" style={{ marginBottom: '32px' }}>
+          {/* ФОРМА СОЗДАНИЯ: ЕСЛИ ПУСТО — ГЕНЕРИРУЕТ РАНДОМ */}
+          <form onSubmit={handleCreatePromo} className="admin-tag-inline-form">
             <div className="input-group">
-              <label style={{ fontSize: '13px', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 600 }}>
-                Новый промокод
-              </label>
-              <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid rgba(0, 0, 0, 0.32)', padding: '4px 0' }}>
-                <span style={{ fontFamily: 'var(--font-main)', fontSize: '18px', fontWeight: 700, color: 'var(--text-main)', paddingLeft: '8px', userSelect: 'none' }}>
+              <div className="promo-input-prefix-wrapper">
+                <span className="promo-static-prefix">
                   COMM-
                 </span>
                 <input 
-                  type="text" 
-                  placeholder="XMAS2026" 
+                  type="text"
                   value={promoText}
                   onChange={(e) => setPromoText(e.target.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase())}
-                  className="auth-input"
-                  style={{ borderBottom: 'none !important', paddingLeft: '4px' }}
-                  required
+                  className="auth-input promo-custom-padding"
                 />
               </div>
             </div>
             <button 
               type="submit" 
-              className="tag-btn active" 
-              disabled={!promoText.trim()} 
-              style={{ height: '40px', padding: '0 16px' }}
+              className="tag-btn active promo-btn-submit-size" 
+              title={promoText.trim() ? "Создать кастомный код" : "Сгенерировать случайный код"}
             >
               <Plus size={14} strokeWidth={2.5} />
             </button>
@@ -192,27 +188,26 @@ const Monetization = () => {
             {data.promos.map(p => (
               <div 
                 key={p.id} 
-                className="admin-tag-pill-item"
-                style={{ width: '100%', justifyContent: 'space-between', padding: '10px 12px 10px 16px', cursor: 'pointer' }}
+                className="admin-tag-pill-item promo-pill-fullwidth"
                 onClick={(e) => copyToClipboard(e, p.code)}
                 title="Кликните, чтобы скопировать"
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <Ticket size={16} className="stat-icon" style={{ opacity: 0.5 }} />
-                  <code style={{ fontSize: '15px', fontWeight: 700, fontFamily: 'monospace', letterSpacing: '0.5px' }}>
+                <div className="promo-code-text-block">
+                  <Ticket size={16} className="stat-icon promo-icon-opacity" />
+                  <code className="promo-monospace-code">
                     {p.code}
                   </code>
                   {copiedCode === p.code ? (
-                    <span style={{ fontSize: '12px', color: '#00B341', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                      <Check size={12} strokeWidth={3} /> Копи
+                    <span className="promo-copied-badge">
+                      <Check size={12} strokeWidth={3} /> Скопировано
                     </span>
                   ) : (
-                    <Copy size={12} style={{ opacity: 0.3 }} />
+                    <Copy size={12} className="promo-icon-opacity" />
                   )}
                 </div>
                 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                  <span className="studio-field-subtext" style={{ fontSize: '12px', fontWeight: 600, background: 'rgba(0,0,0,0.05)', padding: '2px 8px', borderRadius: '4px' }}>
+                <div className="promo-code-actions-block">
+                  <span className="studio-field-subtext promo-duration-badge">
                     30 ДН.
                   </span>
                   <button 
@@ -231,23 +226,23 @@ const Monetization = () => {
         </div>
 
         {/* ПРАВАЯ КОЛОНКА: МОНОЛИТНАЯ ТАБЛИЦА ПРЕМИУМ-ПОЛЬЗОВАТЕЛЕЙ */}
-        <div style={{ flex: 1.5 }}>
-          <h3 className="admin-tags-group-title" style={{ marginBottom: '24px', color: 'var(--text-main)', fontSize: '16px', fontWeight: 700 }}>
-            Реестр Premium-клиентов
+        <div className="monetization-table-column">
+          <h3 className="admin-stat-label">
+            Премиум-аккаунты
           </h3>
           
           <div className="admin-table">
             <div className="admin-table-header">
-              <div className="admin-col" style={{ flex: 2 }}><span className="admin-stat-label">Пользователь</span></div>
-              <div className="admin-col" style={{ flex: 1, justifyContent: 'center' }}><span className="admin-stat-label">Действует до</span></div>
-              <div className="admin-col" style={{ flex: 1, justifyContent: 'flex-end' }}><span className="admin-stat-label">Статус</span></div>
+              <div className="admin-col admin-col-user-flex"><span className="admin-stat-label">Пользователь</span></div>
+              <div className="admin-col admin-col-center-flex"><span className="admin-stat-label">Действует до</span></div>
+              <div className="admin-col admin-col-right-flex"><span className="admin-stat-label">Статус</span></div>
             </div>
 
             {data.premiums.map(u => {
               const daysLeft = getDaysRemaining(u.premium_until);
               return (
                 <div key={u.id} className="admin-table-row">
-                  <div className="admin-col" style={{ flex: 2 }}>
+                  <div className="admin-col admin-col-user-flex">
                     <div className="admin-user-cell">
                       <UserAvatar user={u} sizeClass="avatar-mini" />
                       <div className="admin-user-text">
@@ -257,19 +252,15 @@ const Monetization = () => {
                     </div>
                   </div>
                   
-                  <div className="admin-col" style={{ flex: 1, justifyContent: 'center', fontSize: '14px', fontWeight: 500 }}>
+                  <div className="admin-col admin-col-center-flex promo-table-date">
                     {formatDate(u.premium_until)}
                   </div>
 
-                  <div className="admin-col" style={{ flex: 1, justifyContent: 'flex-end' }}>
+                  <div className="admin-col admin-col-right-flex">
                     <span 
-                      className="tag-btn active" 
+                      className="tag-btn active promo-table-status-badge" 
                       style={{ 
-                        fontSize: '12px', 
-                        padding: '4px 10px', 
-                        borderRadius: '6px',
-                        background: daysLeft <= 5 ? 'var(--primary-red)' : '#00B341',
-                        pointerEvents: 'none'
+                        background: daysLeft <= 5 ? 'var(--primary-red)' : '#00B341'
                       }}
                     >
                       {daysLeft} {daysLeft === 1 ? 'день' : daysLeft > 1 && daysLeft < 5 ? 'дня' : 'дней'}
@@ -279,7 +270,7 @@ const Monetization = () => {
               );
             })}
             {data.premiums.length === 0 && (
-              <div style={{ padding: '24px', textAlign: 'center' }} className="studio-field-subtext">
+              <div className="studio-field-subtext promo-empty-table-text">
                 Платные подписки на платформе ещё не оформлены.
               </div>
             )}
@@ -287,54 +278,47 @@ const Monetization = () => {
         </div>
       </div>
 
-      {/* МОДАЛЬНОЕ ОКНО ИЗМЕНЕНИЯ ЦЕНЫ (1:1 ПО СИСТЕМНОМУ ГАЙДЛАЙНУ) */}
+      {/* МОДАЛЬНОЕ ОКНО ИЗМЕНЕНИЯ ЦЕНЫ (СИНХРОНИЗИРОВАНО С MODALS.CSS) */}
       {isPriceModalOpen && (
         <div className="admin-modal-overlay" onClick={() => setIsPriceModalOpen(false)}>
-          <div className="admin-modal-container" style={{ maxWidth: '400px' }} onClick={e => e.stopPropagation()}>
-            <div className="admin-table-header" style={{ justifyContent: 'space-between', padding: '20px 24px' }}>
-              <span className="admin-stat-label" style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-main)' }}>
+          <div className="playlist-modal-content" onClick={e => e.stopPropagation()}>
+            <div className="admin-header-flex promo-modal-header-margin">
+              <h3 className="page-title promo-modal-title-size">
                 Изменение тарифа
-              </span>
+              </h3>
               <button 
                 type="button" 
-                className="tag-pill-delete-action-btn" 
+                className="close-btn promo-modal-close-size" 
                 onClick={() => setIsPriceModalOpen(false)}
-                style={{ width: '28px', height: '28px', borderRadius: '50%' }}
               >
-                <X size={14} strokeWidth={2.5} />
+                &times;
               </button>
             </div>
             
-            <form onSubmit={handleUpdatePrice} className="admin-modal-scroll-content" style={{ padding: '24px', gap: '24px' }}>
+            <form onSubmit={handleUpdatePrice} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
               <div className="input-group">
-                <label style={{ fontSize: '13px', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 600 }}>
-                  Стоимость подписки (KZT)
-                </label>
                 <input 
                   type="number" 
-                  className="auth-input"
+                  className="auth-input promo-modal-value-input"
                   value={tempPrice}
                   onChange={(e) => setTempPrice(e.target.value)}
-                  style={{ fontSize: '24px', fontWeight: 700, letterSpacing: '-0.02em', textAlign: 'center', padding: '12px 0' }}
                   autoFocus
                   required
                 />
               </div>
 
-              <div style={{ display: 'flex', gap: '12px', width: '100%', marginTop: '8px' }}>
+              <div className="modal-action-buttons promo-modal-actions-spacing">
                 <button 
                   type="button" 
-                  className="tag-btn" 
+                  className="modal-btn-sub promo-modal-btn-fix" 
                   onClick={() => setIsPriceModalOpen(false)}
-                  style={{ flex: 1, border: '1px solid rgba(0,0,0,0.12)', height: '44px', fontSize: '14px' }}
                 >
                   Отмена
                 </button>
                 <button 
                   type="submit" 
-                  className="btn-auth active"
+                  className="modal-btn-main promo-modal-btn-fix-heavy"
                   disabled={loading || !tempPrice}
-                  style={{ flex: 1.5, padding: 0, height: '44px', fontSize: '14px' }}
                 >
                   {loading ? 'Сохранение...' : 'Сохранить'}
                 </button>

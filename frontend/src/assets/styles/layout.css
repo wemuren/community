@@ -85,6 +85,12 @@
   transition: color 0.2s, opacity 0.2s;
 }
 
+.lay-row{
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+}
+
 .nav-link:hover {
   color: var(--primary-red);
 }

@@ -27,7 +27,7 @@
 /* Двухколоночный тулбокс форм */
 .settings-columns-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 3fr 1fr;
   gap: 64px;
   align-items: start;
   margin-top: 32px;
@@ -47,8 +47,13 @@
   font-size: var(--descr);
   font-weight: 400;
   color: rgba(0, 0, 0, 0.48);
-  margin-bottom: 32px;
-  margin-top: -16px;
+  margin-bottom: 16px;
+}
+
+.set-row{
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
 }
 
 /* Линейный горизонтальный сепаратор зон */
@@ -164,7 +169,7 @@
 
 /* Смещаем расстояние между полями внутри блока (.auth-body по дефолту имеет 32px) */
 .settings-columns-grid .auth-body {
-  gap: 24px !important;
+  gap: 48px !important;
 }
 
 /* Ювелирно выравниваем глазик по новой базовой линии уменьшенного инпута */

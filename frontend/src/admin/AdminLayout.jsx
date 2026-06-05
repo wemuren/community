@@ -61,9 +61,9 @@ const AdminLayout = () => {
           </nav>
           <div className="footer-links">
 
-            <div className='row'>
+            <div className='lay-row'>
               <NavLink to="/landing"><span>О сервисе</span></NavLink>
-              <a href="https://t.me/wemurr" target="_blank" rel="noopener noreferrer">
+              <a href="https://vk.com/wemurr" target="_blank" rel="noopener noreferrer">
                 <span>Поддержка</span>
               </a>
             </div>

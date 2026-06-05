@@ -177,7 +177,7 @@ const Channels = () => {
                <button 
                  className={`admin-action-btn-circle premium-toggle ${u.is_paid == 1 ? 'active' : ''}`} 
                  onClick={() => toggleStatus(u.id, 'premium', u.is_paid)} 
-                 title="Premium status"
+                 title="Премиум статус"
                >
                  <Crown size={16} />
                </button>

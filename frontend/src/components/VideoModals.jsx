@@ -1,5 +1,6 @@
 import React from 'react';
 import UserAvatar from './UserAvatar';
+import '../assets/styles/modals.css';
 
 import { VIDEO_URL as UPLOADS_URL } from '@/config/api';
 import { Bookmark, Heart, Clock, TriangleAlert, Lock, Folder } from 'lucide-react';

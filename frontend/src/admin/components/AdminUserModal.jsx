@@ -76,7 +76,7 @@ const AdminUserModal = ({
               onClick={() => onToggleStatus(user.id, 'premium', user.is_paid)}
             >
               <Crown size={16} />
-              {user.is_paid == 1 ? 'Снять Premium' : 'Выдать Premium'}
+              {user.is_paid == 1 ? 'Снять премиум' : 'Выдать премиум'}
             </button>
           </div>
 

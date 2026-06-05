@@ -1,204 +1,168 @@
+/* ==========================================================================
+   COMMUNITY PREMIUM DESIGN SYSTEM SPEC
+   ========================================================================== */
+
 .premium-page-wrapper {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 60px 20px;
+  background: var(--white);
+  padding: 24px;
+  border-radius: var(--border-radius-lg); /* 24px */
+  min-height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
 }
 
+/* Центральный Hero блок */
 .premium-hero {
   text-align: center;
-  margin-bottom: 50px;
+  margin: 40px 0 56px;
 }
 
 .premium-hero h1 {
-  font-size: 3rem;
-  font-weight: 900;
-  letter-spacing: -1px;
+  font-size: var(--h1); /* 32px */
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--text-main);
+  text-transform: uppercase;
 }
 
+/* Эффект свечения */
 .red-shine {
-  color: var(--brand-red);
-  text-shadow: 0 0 20px rgba(255, 71, 71, 0.4);
+  color: var(--primary-red);
 }
 
+/* Bento сетка тарифов */
 .premium-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 30px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  max-width: 900px;
+  margin: 0 auto;
+  align-items: stretch;
 }
 
-.page-premium-card {
-  background: white;
-  padding: 40px;
-  border-radius: 24px;
-  border: 1px solid #eee;
+/* Атомарный bento блок карточки */
+.premium-card-bento {
+  background: var(--bg-card); /* #F4F4F4 */
+  padding: 40px 32px;
+  border-radius: var(--border-radius-lg); /* 24px */
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  transition: transform 0.3s ease;
-}
-
-.featured-card {
-  border: 2px solid var(--brand-red);
-  box-shadow: 0 20px 40px rgba(255, 71, 71, 0.1);
-  transform: scale(1.05);
-}
-
-.card-icon { font-size: 50px; margin-bottom: 20px; }
-
-.price-display {
-  font-size: 3.5rem;
-  font-weight: 800;
-  margin: 20px 0;
-}
-
-.price-display span { font-size: 1.5rem; color: #888; }
-
-.features-list {
-  list-style: none;
-  padding: 0;
-  margin: 20px 0 40px;
-  text-align: left;
-}
-
-.features-list li { margin-bottom: 10px; color: #444; }
-
-.premium-btn {
-  width: 100%;
-  padding: 16px;
-  border-radius: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  border: none;
-  transition: 0.2s;
-}
-
-.premium-btn.primary { background: var(--brand-red); color: white; }
-.premium-btn.secondary { background: #f0f0f0; color: #333; }
-.premium-btn:hover { opacity: 0.9; transform: translateY(-2px); }
-
-.premium-input {
-  width: 100%;
-  padding: 14px;
-  border: 2px solid #eee;
-  border-radius: 10px;
-  margin-bottom: 15px;
-  text-align: center;
-  font-family: monospace;
-  font-size: 1.1rem;
-}
-
-/* MODAL */
-.pay-modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.8);
-  backdrop-filter: blur(5px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2000;
-}
-
-.pay-modal-content {
-  background: white;
-  padding: 40px;
-  border-radius: 30px;
-  width: 100%;
-  max-width: 450px;
-}
-
-.pay-form { margin-top: 30px; }
-.input-group { margin-bottom: 20px; text-align: left; }
-.input-group label { display: block; margin-bottom: 8px; font-weight: 600; }
-.input-group input { 
-  width: 100%; 
-  padding: 12px; 
-  border: 1px solid #ddd; 
-  border-radius: 8px; 
-  font-size: 1rem;
-}
-
-.row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-
-.pay-submit-btn {
-  width: 100%;
-  padding: 16px;
-  background: var(--brand-red);
-  color: white;
-  border-radius: 12px;
-  border: none;
-  font-weight: 700;
-  margin-top: 10px;
-  cursor: pointer;
-}
-
-.pay-cancel-btn {
-  width: 100%;
-  margin-top: 10px;
-  background: none;
-  border: none;
-  color: #888;
-  cursor: pointer;
-}
-
-
-/* ... Предыдущие стили без изменений ... */
-
-/* УНИВЕРСАЛЬНЫЙ СТИЛЬ ДЛЯ МАСКИРОВАННЫХ ИНПУТОВ */
-.premium-input-masked {
-  width: 100%;
-  padding: 14px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  font-size: 1.1rem;
-  font-family: monospace; /* Чтобы цифры были одинаковой ширины */
-  letter-spacing: 1px;
-}
-
-.premium-input-masked:focus {
-  border-color: var(--brand-red);
-  box-shadow: 0 0 10px rgba(255, 71, 71, 0.1);
-}
-
-.mini-input {
-  text-align: center;
-  padding: 14px 10px;
-}
-
-.cvc-input {
-  font-family: Arial, sans-serif; /* Для звездочек *** обычный шрифт лучше */
-  font-size: 1.3rem;
-  letter-spacing: 3px;
-}
-
-/* MODAL FIXES */
-.modal-header-row {
-  display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  gap: 32px;
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  min-height: 280px;
 }
 
-.accepted-cards {
-  display: flex;
-  gap: 8px;
+.premium-card-bento h3 {
+  font-size: var(--h2); /* 24px */
+  font-weight: 600;
+  color: var(--text-main);
+  margin: 0;
 }
 
-.accepted-cards img {
-  height: 20px;
-  opacity: 0.7;
+/* Акцентная карточка подписки с рамкой */
+.featured-card {
+  border: 2px solid var(--text-main);
+  background: var(--white);
+  box-shadow: var(--shadow-soft);
 }
 
-.flex-row {
-  display: flex;
-  gap: 15px;
+/* Отображение цены подписки */
+.price-display {
+  font-size: 48px;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1;
+  font-family: var(--font-main);
 }
 
-.full-width {
-  width: 100% !important;
+.price-display span {
+  font-size: var(--descr); /* 16px */
+  color: var(--text-muted);
+  font-weight: 400;
 }
 
-.modal-actions {
-  margin-top: 30px;
+/* Контейнер ввода для промокода */
+.premium-input-container {
+  width: 100%;
+}
+
+/* Статус-сообщения */
+.premium-status-text {
+  font-size: 14px;
+  color: var(--primary-red);
+  font-weight: 500;
+  margin: 0;
+  text-align: center;
+}
+
+/* Специфические моноширинные шрифты для маски ввода карты */
+.premium-masked-font {
+  font-family: monospace !important;
+  font-size: 16px !important;
+  letter-spacing: 1.5px;
+}
+
+.cvc-stars {
+  letter-spacing: 4px;
+}
+
+/* Кнопки управления (Синхронизация с modals.css и layout.css) */
+.premium-btn-main {
+  width: 100%;
+  padding: 14px;
+  background: var(--primary-red);
+  color: var(--white);
+  font-weight: 600;
+  font-size: var(--descr); /* 16px */
+  border-radius: var(--border-radius-sm); /* 8px */
+  text-align: center;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.premium-btn-main:hover {
+  background-color: #a30000;
+}
+
+.premium-btn-main:active {
+  transform: scale(0.98);
+}
+
+.premium-btn-sub {
+  width: 100%;
+  padding: 14px;
+  background: var(--text-main);
+  color: var(--white);
+  font-weight: 600;
+  font-size: var(--descr); /* 16px */
+  border-radius: var(--border-radius-sm);
+  text-align: center;
+  transition: opacity 0.15s ease, transform 0.1s ease;
+}
+
+.premium-btn-sub:hover {
+  opacity: 0.85;
+}
+
+.premium-btn-sub:active {
+  transform: scale(0.98);
+}
+
+/* АДАПТИВНОСТЬ ПОД МОБИЛЬНЫЕ УСТРОЙСТВА */
+@media (max-width: 768px) {
+  .premium-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .premium-card-bento {
+    padding: 32px 24px;
+    min-height: unset;
+  }
+  
+  .premium-hero h1 {
+    font-size: 26px;
+  }
 }

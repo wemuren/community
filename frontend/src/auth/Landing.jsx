@@ -73,7 +73,7 @@ const Landing = () => {
           <div className="tariff-card premium">
             <div className="premium-badge">Максимум управления</div>
             <div className="tariff-header">
-              <h3>PREMIUM</h3>
+              <h3>Премиум</h3>
               <p className="tariff-desc">Полный контроль контента и визуала</p>
             </div>
             

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import '../assets/styles/video-page.css';
+import '../assets/styles/auth.css';
 
 import VideoModals from '../components/VideoModals';
 import { useVideoActions } from '../hooks/useVideoActions';
@@ -281,37 +282,39 @@ const VideoPage = () => {
             {getPluralForm(comments.length, ['комментарий', 'комментария', 'комментариев'])}
           </h3>
 
-          {/* Поле ввода */}
-          <div className="comment-input-block">
-            <div className="comment-input-inner">
-              <input
-                type="text"
-                placeholder={
-                  isPremiumActive(authUser)
-                    ? 'Оставьте комментарий...'
-                    : 'Только для Premium-пользователей'
-                }
-                disabled={!isPremiumActive(authUser)}
-                value={newComment}
-                onChange={handleCommentChange}
-                onKeyDown={(e) => e.key === 'Enter' && handleSendComment()}
-              />
-              {isPremiumActive(authUser) && newComment.length > 0 && (
-                <span className={`char-counter ${newComment.length >= COMMENT_LIMIT ? 'char-counter--limit' : ''}`}>
-                  {newComment.length}/{COMMENT_LIMIT}
-                </span>
-              )}
-            </div>
-            <button
-              className="comment-send-btn"
-              onClick={handleSendComment}
-              disabled={!isPremiumActive(authUser) || !newComment.trim()}
-              title="Отправить"
-            >
-              <Send size={16} strokeWidth={2} />
-              <span>Отправить</span>
-            </button>
-          </div>
+          {/* Поле ввода комментария (Аналогично настройкам и авторизации) */}
+<div className="comment-input-block">
+  <div className="comment-input-inner">
+    <input
+      type="text"
+      className="auth-input" /* Переиспользуем класс из настроек и auth.css */
+      placeholder={
+        isPremiumActive(authUser)
+          ? 'Оставьте комментарий...'
+          : 'Только для премиум-пользователей'
+      }
+      disabled={!isPremiumActive(authUser)}
+      value={newComment}
+      onChange={handleCommentChange}
+      onKeyDown={(e) => e.key === 'Enter' && handleSendComment()}
+    />
+    {isPremiumActive(authUser) && newComment.length > 0 && (
+      <span className={`char-counter ${newComment.length >= COMMENT_LIMIT ? 'char-counter--limit' : ''}`}>
+        {newComment.length}/{COMMENT_LIMIT}
+      </span>
+    )}
+  </div>
+  
+  <button
+    className="comment-send-btn"
+    onClick={handleSendComment}
+    disabled={!isPremiumActive(authUser) || !newComment.trim()}
+    title="Отправить"
+  >
+    <Send size={16} strokeWidth={2} />
+    <span>Отправить</span>
+  </button>
+</div>
 
           {/* Список комментариев */}
           <div className="comments-list">

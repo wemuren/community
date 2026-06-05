@@ -111,33 +111,33 @@ const VideoCard = ({
       </div>
 
       {/* Блок информации под видео */}
-      <div className="video-info">
-        {!hideAuthor && (
-          <Link 
-            to={`/profile/${video.user_id}`} 
-            className="author-avatar-link"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="author-avatar">
-              <UserAvatar 
-                user={{ avatar: video.avatar, full_name: video.full_name, username: video.username, is_paid: video.is_paid }} 
-                sizeClass="avatar-medium" // Синхронизировали с твоим новым атомарным классом
-              />
-            </div>
-          </Link>
-        )}
-        
-        <div className="video-text-block">
-          <span className="video-title">{video.title}</span>
-          
-          <div className="video-meta-row">
-            {!hideAuthor && <span className="video-meta-item">{video.full_name || video.username}</span>}
-            {/* ИСПРАВЛЕНО: Выводим число и динамически подобранное русское слово */}
-            <span className="video-meta-item">{viewsString} {viewsPlural}</span>
-            <span className="video-meta-item">{new Date(video.created_at).toLocaleDateString()}</span>
-          </div>
-        </div>
-      </div>
+      {/* Блок информации под видео */}
+<div className="video-info">
+  {!hideAuthor && (
+    <Link 
+      to={`/profile/${video.user_id}`} 
+      className="author-avatar-link"
+      onClick={(e) => e.stopPropagation()}
+    >
+      {/* ИСПРАВЛЕНО: Убрали лишний div className="author-avatar", 
+          теперь выводим чистый компонент, который сам возьмет размер 48x48px и отцентрирует букву */}
+      <UserAvatar 
+        user={{ avatar: video.avatar, full_name: video.full_name, username: video.username, is_paid: video.is_paid }} 
+        sizeClass="avatar-medium" 
+      />
+    </Link>
+  )}
+  
+  <div className="video-text-block">
+    <span className="video-title">{video.title}</span>
+    
+    <div className="video-meta-row">
+      {!hideAuthor && <span className="video-meta-item">{video.full_name || video.username}</span>}
+      <span className="video-meta-item">{viewsString} {viewsPlural}</span>
+      <span className="video-meta-item">{new Date(video.created_at).toLocaleDateString()}</span>
+    </div>
+  </div>
+</div>
     </div>
   );
 };

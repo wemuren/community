@@ -65,11 +65,11 @@ const AdminDashboard = () => {
         <div className="admin-stat-card clickable" onClick={() => navigate('/admin/monetization')}>
           <span className="admin-stat-label">Текущий оборот</span>
           <h2 className="admin-stat-value money">{stats.monthly_earnings} Т</h2>
-          <span className="studio-field-subtext">Прямой доход с Premium</span>
+          <span className="studio-field-subtext">Доход с премиум</span>
         </div>
 
         <div className="admin-stat-card clickable" onClick={() => navigate('/admin/monetization')}>
-          <span className="admin-stat-label">Premium аккаунты</span>
+          <span className="admin-stat-label">Премиум аккаунты</span>
           <h2 className="admin-stat-value critical">{stats.premium_users}</h2>
           <span className="studio-field-subtext">Перейти к монетизации →</span>
         </div>

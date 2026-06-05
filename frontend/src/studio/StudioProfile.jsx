@@ -132,7 +132,7 @@ const StudioProfile = () => {
         setAvatarFile(null);
         setBannerFile(null);
         
-        alert("Настройки канала успешно сохранены! ✨");
+        alert("Настройки канала успешно сохранены! ");
       } else {
         alert(res.data.message || "Неизвестная ошибка сервера");
       }
@@ -265,7 +265,7 @@ const StudioProfile = () => {
               
               {user.is_paid == 0 ? (
                 <p className="error-label" style={{marginTop: '8px', fontSize: '13px'}}>
-                  Загрузка кастомных баннеров доступна только пользователям с тарифом PREMIUM
+                  Загрузка кастомных баннеров доступна только пользователям с тарифом премиум
                 </p>
               ) : (
                 <p className="studio-field-subtext" style={{marginTop: '8px'}}>Широкоформатный баннер, рекомендуемый размер 1500x400px</p>

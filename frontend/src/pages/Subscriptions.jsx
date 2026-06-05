@@ -64,38 +64,42 @@ const Subscriptions = () => {
       {channels.length > 0 ? (
         <>
           {/* ЛЕНТА КАНАЛОВ (Скролл-кружочки по ТЗ) */}
-          <div className="tags-container">
-            {channels.map(channel => (
-              <Link 
-                key={channel.id} 
-                to={`/profile/${channel.id}`} 
-                className="sub-channel-item" 
-                style={{ 
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: '8px',
-                  minWidth: '76px',
-                  textDecoration: 'none'
-                }}
-              >
-                <div className="author-avatar" style={{ width: '56px', height: '56px', borderRadius: '50%' }}>
-                  <UserAvatar user={channel} sizeClass="avatar-subs-list" />
-                </div>
-                <span style={{ 
-                  fontSize: '13px', 
-                  fontWeight: '400', 
-                  color: 'var(--text-main)',
-                  maxWidth: '80px',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap'
-                }}>
-                  {channel.full_name || channel.username}
-                </span>
-              </Link>
-            ))}
-          </div>
+<div className="tags-container">
+  {channels.map(channel => (
+    <Link 
+      key={channel.id} 
+      to={`/profile/${channel.id}`} 
+      className="sub-channel-item" 
+      style={{ 
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: '8px',
+        minWidth: '76px',
+        textDecoration: 'none'
+      }}
+    >
+      {/* ИСПРАВЛЕНО: Убрали промежуточный div.author-avatar. 
+          Теперь выводим чистый UserAvatar, размеры которого контролирует CSS-класс */}
+      <UserAvatar 
+        user={channel} 
+        sizeClass="avatar-subs-list" 
+      />
+
+      <span style={{ 
+        fontSize: '13px', 
+        fontWeight: '400', 
+        color: 'var(--text-main)',
+        maxWidth: '80px',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap'
+      }}>
+        {channel.full_name || channel.username}
+      </span>
+    </Link>
+  ))}
+</div>
 
           {/* СЕТКА ВИДЕО (Железобетонные 4 в ряд на мониках, 3 на ноутах) */}
           <div className="video-grid">

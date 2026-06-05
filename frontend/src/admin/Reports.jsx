@@ -271,7 +271,7 @@ const Reports = () => {
                   onClick={() => toggleStatus(selectedUser.id, 'premium', selectedUser.is_paid)}
                 >
                   <Crown size={15} />
-                  {selectedUser.is_paid == 1 ? 'Снять Premium статус' : 'Выдать Premium доступ'}
+                  {selectedUser.is_paid == 1 ? 'Снять премиум статус' : 'Выдать премиум доступ'}
                 </button>
               </div>
 

@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axiosInstance from 'axios'; 
 import '../assets/styles/video-card.css';
 import '../assets/styles/grid.css';
 import '../assets/styles/playlist.css';
 import '../assets/styles/search.css';
 import VideoCard from '../components/VideoCard';
 import UserAvatar from '../components/UserAvatar';
+import PlaylistCard from '../components/PlaylistCard';
+import VideoModals from '../components/VideoModals'; // ИСПРАВЛЕНО: Добавили импорт компонента модальных окон
 import { useVideoActions } from '../hooks/useVideoActions';
-import { FolderHeart } from 'lucide-react'; // Для иконки плейлиста в счетчике
 
-import { API_BASE_URL, THUMB_URL } from '@/config/api';
+import { API_BASE_URL } from '@/config/api';
 
 const SearchResults = () => {
   const navigate = useNavigate();
@@ -19,13 +20,15 @@ const SearchResults = () => {
   const [results, setResults] = useState({ users: [], videos: [], courses: [], playlists: [] });
   const [loading, setLoading] = useState(false);
 
+  const authUser = JSON.parse(localStorage.getItem('user'));
+
   const va = useVideoActions();
 
   useEffect(() => {
     const fetchResults = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(`${API_BASE_URL}/search/global_search.php?q=${encodeURIComponent(query)}`);
+        const res = await axiosInstance.get(`${API_BASE_URL}/search/global_search.php?q=${encodeURIComponent(query)}`);
         setResults(res.data);
       } catch (err) {
         console.error("Search error:", err);
@@ -37,23 +40,41 @@ const SearchResults = () => {
   }, [query]);
 
   const isTag = query?.startsWith('#');
-  const isMention = query?.startsWith('@');
 
   const isEmpty = !loading &&
     results.users.length === 0 &&
     results.videos.length === 0 &&
     results.courses.length === 0 &&
-    (results.playlists?.length === 0 || !results.playlists);
+    (!results.playlists || results.playlists.length === 0);
+
+  const handleEditPlaylistPlaceholder = (playlist) => {
+    navigate(`/playlists?edit=${playlist.id}`);
+  };
 
   return (
     <div className="settings-white-wrapper">
+      {/* ИСПРАВЛЕНО: Вывели компонент модалок на страницу, передав ему все управление из хука va */}
+      <VideoModals 
+        showPlaylistModal={va.showPlaylistModal}
+        setShowPlaylistModal={va.setShowPlaylistModal}
+        playlists={va.playlists}
+        handleSaveToAny={va.handleSaveToAny}
+        newPlaylistTitle={va.newPlaylistTitle}
+        setNewPlaylistTitle={va.setNewPlaylistTitle}
+        handleQuickCreate={va.handleQuickCreate}
+        activeVideo={va.activeVideo}
+        setActiveVideo={va.setActiveVideo}
+      />
 
-      {/* СТЕРИЛЬНЫЙ ЗАГОЛОВОК С ОПТИМИЗИРОВАННЫМ HIGHLIGHT */}
-       <div className="pl-top-bar">
+      <div className="pl-top-bar">
         <h2>Результаты поиска:</h2>
       </div>
 
-      {loading && <div className="studio-field-subtext" style={{ fontSize: '16px', fontWeight: 600 }}>Поиск контента в базе данных...</div>}
+      {loading && (
+        <div className="studio-field-subtext" style={{ fontSize: '16px', fontWeight: 600 }}>
+          Поиск контента в базе данных...
+        </div>
+      )}
 
       {isEmpty && (
         <div className="search-empty-state">
@@ -62,9 +83,9 @@ const SearchResults = () => {
         </div>
       )}
 
-      {/* КАНАЛЫ (АВТОРЫ) — ЛЕНТА С КРУЖОЧКАМИ, ИМЕНЕМ И ЮЗЕРОМ */}
+      {/* КАНАЛЫ (АВТОРЫ) */}
       {results.users.length > 0 && (
-        <section className="settings-col-section  search-section">
+        <section className="settings-col-section search-section">
           <h3>Каналы</h3>
           <div className="search-channels-scroll-row">
             {results.users.map(u => (
@@ -92,44 +113,32 @@ const SearchResults = () => {
           <h3>{isTag ? "Найденные видеоролики" : "Видео"}</h3>
           <div className="video-grid">
             {results.videos.map(v => (
-              <VideoCard key={v.id} video={v} onVideoClick={va.handleVideoClick} {...va} />
+              <VideoCard 
+                key={v.id} 
+                video={v} 
+                onVideoClick={va.handleVideoClick} 
+                onPlaylistOpen={va.openPlaylistModal}
+                onToggleLiked={va.handleToggleSystem}
+                onToggleLater={va.handleToggleSystem}
+                onReport={va.handleReport}
+              />
             ))}
           </div>
         </section>
       )}
 
-      {/* ПЛЕЙЛИСТЫ (ИНТЕГРИРОВАНЫ В ОБЩИЙ СТИЛЬ С VIDEO-CARD) */}
+      {/* ПЛЕЙЛИСТЫ */}
       {results.playlists && results.playlists.length > 0 && (
         <section className="settings-col-section search-section">
           <h3>Плейлисты</h3>
           <div className="video-grid">
             {results.playlists.map(pl => (
-              <div key={pl.id} className="playlist-card" onClick={() => navigate(`/playlists/${pl.id}`)}>
-
-                {/* Обложка плейлиста со стопкой слоев по Фигме */}
-                <div className="playlist-cover-thumbnail">
-                  {pl.last_video_thumbnail ? (
-                    <img src={`${THUMB_URL}${pl.last_video_thumbnail}`} alt={pl.title} className="playlist-cover-img" />
-                  ) : (
-                    <div className="playlist-empty-placeholder" style={{ backgroundColor: 'var(--primary-red)' }}></div>
-                  )}
-
-                  {/* Счетчик видео в правом нижнем углу обложки */}
-                  <div className="playlist-video-counter">
-                    <FolderHeart size={14} strokeWidth={2} />
-                    <span className="playlist-counter-number">{pl.video_count}</span>
-                  </div>
-                </div>
-
-                {/* Инфо-блок под обложкой */}
-                <div className="playlist-info-block">
-                  <h4 className="playlist-card-title">{pl.title}</h4>
-                  <div className="playlist-meta-row">
-                    <span className="playlist-meta-item">Автор: {pl.author_name || pl.username}</span>
-                  </div>
-                </div>
-
-              </div>
+              <PlaylistCard 
+                key={pl.id}
+                playlist={pl}
+                authUser={authUser}
+                onEdit={handleEditPlaylistPlaceholder}
+              />
             ))}
           </div>
         </section>

@@ -148,7 +148,7 @@ const StudioEdit = () => {
 
     try {
       await axios.post(`${API_BASE_URL}/studio/update_video.php`, formData);
-      alert("Изменения успешно сохранены! ✨");
+      alert("Изменения успешно сохранены!");
       navigate('/studio');
     } catch (err) {
       setError(err.response?.data?.message || "Ошибка при сохранении изменений");

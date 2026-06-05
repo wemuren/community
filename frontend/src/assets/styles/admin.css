@@ -1034,3 +1034,231 @@
   color: #00B341; /* Индастриал зеленый */
   font-weight: 600;
 }
+
+/* ==========================================================================
+   MONETIZATION & BILLING DASHBOARD STYLES (NO INLINE)
+   ========================================================================== */
+
+/* Кликабельный текст изменения тарифа на карточке */
+.studio-field-subtext-action {
+  color: var(--primary-red);
+  font-weight: 500;
+  font-size: 13px;
+}
+
+/* Двухколоночный макет */
+.admin-split-view {
+  display: flex;
+  gap: 32px;
+  margin-top: 40px;
+}
+
+.admin-split-view .admin-stat-label{
+  margin-bottom: 16px;
+}
+
+.monetization-promo-column {
+  flex: 1;
+  max-width: 420px;
+}
+
+.monetization-table-column {
+  flex: 1.5;
+}
+
+/* Группа ввода с жестким префиксом COMM- */
+.promo-input-prefix-wrapper {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.32);
+  padding: 4px 0;
+}
+
+.promo-static-prefix {
+  font-family: var(--font-main);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-main);
+  padding-left: 8px;
+  user-select: none;
+}
+
+.auth-input.promo-custom-padding {
+  border-bottom: none !important;
+  padding-left: 4px;
+}
+
+.promo-btn-submit-size {
+  height: 40px;
+  padding: 0 16px;
+}
+
+/* Пилюли промокодов */
+.admin-tag-pill-item.promo-pill-fullwidth {
+  width: 100%;
+  justify-content: space-between;
+  padding: 10px 12px 10px 16px;
+  cursor: pointer;
+}
+
+.promo-code-text-block {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.promo-icon-opacity {
+  opacity: 0.5;
+}
+
+.promo-monospace-code {
+  font-size: 15px;
+  font-weight: 700;
+  font-family: monospace;
+  letter-spacing: 0.5px;
+}
+
+.promo-copied-badge {
+  font-size: 12px;
+  color: #00B341;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.promo-code-actions-block {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.studio-field-subtext.promo-duration-badge {
+  font-size: 12px;
+  font-weight: 600;
+  background: rgba(0, 0, 0, 0.05);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+/* Флекс-колонки реестра пользователей */
+.admin-col.admin-col-user-flex {
+  flex: 2;
+}
+
+.admin-col.admin-col-center-flex {
+  flex: 1;
+  justify-content: center;
+}
+
+.admin-col.admin-col-right-flex {
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.promo-table-date {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.tag-btn.active.promo-table-status-badge {
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  pointer-events: none;
+}
+
+.promo-empty-table-text {
+  padding: 24px;
+  text-align: center;
+}
+
+/* Специфика модального окна цены */
+.promo-modal-header-margin {
+  margin-bottom: 20px;
+}
+
+.promo-modal-title-size {
+  font-size: 20px !important;
+}
+
+.promo-modal-close-size {
+  font-size: 24px !important;
+}
+
+.promo-modal-input-label {
+  font-size: 13px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.auth-input.promo-modal-value-input {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-align: center;
+  padding: 12px 0;
+}
+
+.modal-action-buttons.promo-modal-actions-spacing {
+  margin-top: 8px;
+}
+
+.modal-btn-sub.promo-modal-btn-fix {
+  flex: 1;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  height: 44px;
+  font-size: 14px;
+}
+
+.modal-btn-main.promo-modal-btn-fix-heavy {
+  flex: 1.5;
+  padding: 0;
+  height: 44px;
+  font-size: 14px;
+}
+
+/* Адаптивный сброс флекс-колонок на планшетах */
+@media (max-width: 968px) {
+  .admin-split-view {
+    flex-direction: column;
+    gap: 32px;
+  }
+  .monetization-promo-column {
+    max-width: 100%;
+  }
+}
+
+/* Специфические классы для страницы состояния системы */
+.admin-wire-tag.system-weight-badge {
+  background: var(--bg-card);
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.admin-col-actions.system-toolbar-actions-fix {
+  width: auto;
+}
+
+.tag-btn.system-refresh-btn-padding {
+  padding: 8px 12px;
+}
+
+.admin-action-btn-circle.ban-toggle.banned.system-trash-btn-size {
+  width: 32px;
+  height: 32px;
+}
+
+/* Эффект вращения иконки при обновлении */
+.is-spinning-action svg {
+  animation: spinLoader 1s linear infinite;
+}
+
+@keyframes spinLoader {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Plus } from 'lucide-react';
 import '../assets/styles/playlist.css';
+import '../assets/styles/modals.css';
 import '../assets/styles/video-card.css'; // Переиспользуем .video-grid отсюда
 import PlaylistCard from '../components/PlaylistCard';
 
@@ -126,19 +127,34 @@ const Playlists = () => {
       {/* МОДАЛКА СОЗДАНИЯ */}
       {showCreateModal && (
         <div className="admin-modal-overlay" onClick={() => setShowCreateModal(false)}>
-          <div className="admin-user-card small-modal" onClick={e => e.stopPropagation()}>
-            <div className="card-header">
+          <div className="playlist-modal-content" onClick={e => e.stopPropagation()}>
+            <div className="admin-header-flex" style={{ marginBottom: '20px' }}>
               <h3 className="page-title" style={{ fontSize: '20px' }}>Новый плейлист</h3>
-              <button className="close-btn" onClick={() => setShowCreateModal(false)}>&times;</button>
+              <button className="close-btn" onClick={() => setShowCreateModal(false)} style={{ fontSize: '24px' }}>&times;</button>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '8px' }}>
-              <input type="text" className="edit-input-field" style={{ padding: '12px' }} value={newTitle} onChange={(e) => setNewTitle(e.target.value)} placeholder="Название" />
-              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', cursor: 'pointer' }}>
-                <input type="checkbox" checked={isPrivate} onChange={(e) => setIsPrivate(e.target.checked)} /> Приватный плейлист
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              <input 
+                type="text" 
+                className="edit-input-field" 
+                style={{ padding: '12px' }} 
+                value={newTitle} 
+                onChange={(e) => setNewTitle(e.target.value)} 
+                placeholder="Название плейлиста" 
+              />
+              
+              <label className="modal-checkbox-label">
+                <input 
+                  type="checkbox" 
+                  checked={isPrivate} 
+                  onChange={(e) => setIsPrivate(e.target.checked)} 
+                /> 
+                <span>Приватный плейлист</span>
               </label>
-              <div className="quick-actions-bar" style={{ marginTop: '12px' }}>
-                <button className="btn-action" style={{ background: 'var(--primary-red)', color: '#fff', border: 'none' }} onClick={handleCreate}>Создать</button>
-                <button className="btn-action" onClick={() => setShowCreateModal(false)}>Отмена</button>
+              
+              <div className="modal-action-buttons">
+                <button className="modal-btn-main" onClick={handleCreate}>Создать</button>
+                <button className="modal-btn-sub" onClick={() => setShowCreateModal(false)}>Отмена</button>
               </div>
             </div>
           </div>
@@ -148,13 +164,14 @@ const Playlists = () => {
       {/* МОДАЛКА РЕДАКТИРОВАНИЯ И НАСТРОЕК */}
       {editingPlaylist && (
         <div className="admin-modal-overlay" onClick={() => setEditingPlaylist(null)}>
-          <div className="admin-user-card" style={{ maxWidth: '420px', padding: '0' }} onClick={e => e.stopPropagation()}>
-            <div style={{ padding: '24px' }}>
-              <div className="card-header" style={{ marginBottom: '16px' }}>
-                <h3 className="page-title" style={{ fontSize: '20px' }}>Настройки плейлиста</h3>
-                <button className="close-btn" onClick={() => setEditingPlaylist(null)}>&times;</button>
+          <div className="playlist-modal-content" style={{ padding: '0', overflow: 'hidden' }} onClick={e => e.stopPropagation()}>
+            <div style={{ padding: '24px 24px 12px' }}>
+              <div className="admin-header-flex" style={{ marginBottom: '20px' }}>
+                <h3 className="page-title" style={{ fontSize: '20px' }}>Настройки</h3>
+                <button className="close-btn" onClick={() => setEditingPlaylist(null)} style={{ fontSize: '24px' }}>&times;</button>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 <input 
                   type="text" 
                   className="edit-input-field"
@@ -162,23 +179,25 @@ const Playlists = () => {
                   value={editingPlaylist.title}
                   onChange={(e) => setEditingPlaylist({...editingPlaylist, title: e.target.value})}
                 />
-                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', cursor: 'pointer' }}>
+                
+                <label className="modal-checkbox-label">
                   <input 
                     type="checkbox" 
                     checked={editingPlaylist.is_private == 1}
                     onChange={(e) => setEditingPlaylist({...editingPlaylist, is_private: e.target.checked ? 1 : 0})} 
                   />
-                  Сделать приватным
+                  <span>Сделать приватным</span>
                 </label>
-                <div className="quick-actions-bar">
-                  <button className="btn-action" style={{ background: 'var(--primary-red)', color: '#fff', border: 'none' }} onClick={handleUpdate}>Сохранить</button>
-                  <button className="btn-action" onClick={() => setEditingPlaylist(null)}>Отмена</button>
+                
+                <div className="modal-action-buttons">
+                  <button className="modal-btn-main" onClick={handleUpdate}>Сохранить</button>
+                  <button className="modal-btn-sub" onClick={() => setEditingPlaylist(null)}>Отмена</button>
                 </div>
               </div>
             </div>
 
-            <div style={{ background: '#fff1f1', padding: '16px 24px', borderRadius: '0 0 24px 24px', borderTop: '1px solid #ffe1e1', textAlign: 'right' }}>
-               <button className="btn-action danger" style={{ width: '100%' }} onClick={() => setIsDeleteConfirm(editingPlaylist)}>Удалить плейлист</button>
+            <div style={{ background: '#fff1f1', padding: '16px 24px', borderTop: '1px solid #ffe1e1', marginTop: '12px' }}>
+               <button className="modal-btn-danger" onClick={() => setIsDeleteConfirm(editingPlaylist)}>Удалить плейлист</button>
             </div>
           </div>
         </div>
@@ -187,12 +206,14 @@ const Playlists = () => {
       {/* ПОДТВЕРЖДЕНИЕ УДАЛЕНИЯ */}
       {isDeleteConfirm && (
         <div className="admin-modal-overlay" style={{ zIndex: 1100 }} onClick={() => setIsDeleteConfirm(null)}>
-          <div className="admin-user-card" style={{ maxWidth: '360px', textAlign: 'center' }} onClick={e => e.stopPropagation()}>
-            <h3 className="page-title" style={{ fontSize: '18px', marginBottom: '8px' }}>Удалить плейлист?</h3>
-            <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>"{isDeleteConfirm.title}" исчезнет навсегда.</p>
-            <div className="quick-actions-bar" style={{ marginTop: '24px' }}>
-               <button className="btn-action danger" onClick={handleDelete}>Да, удалить</button>
-               <button className="btn-action" onClick={() => setIsDeleteConfirm(null)}>Отмена</button>
+          <div className="playlist-modal-content" style={{ textAlign: 'center' }} onClick={e => e.stopPropagation()}>
+            <h3 className="page-title" style={{ fontSize: '18px', marginBottom: '8px', alignSelf: 'center' }}>Удалить плейлист?</h3>
+            <p style={{ color: 'var(--text-muted)', fontSize: '14px', margin: '0 0 24px 0', lineHeight: 1.4 }}>
+              "{isDeleteConfirm.title}" исчезнет навсегда. Видео внутри плейлиста не удалятся.
+            </p>
+            <div className="modal-action-buttons" style={{ flexDirection: 'column', gap: '8px' }}>
+               <button className="modal-btn-danger" style={{ width: '100%' }} onClick={handleDelete}>Да, удалить</button>
+               <button className="modal-btn-sub" style={{ width: '100%' }} onClick={() => setIsDeleteConfirm(null)}>Отмена</button>
             </div>
           </div>
         </div>

@@ -6,6 +6,7 @@ import { SquarePen, Heart, Folder } from 'lucide-react';
 import { API_BASE_URL } from '@/config/api';
 import { THUMB_URL } from '@/config/api';
 import '../assets/styles/playlist.css'; // Подключаем наши новые стили
+import '../assets/styles/modals.css';
 
 const PlaylistCard = ({ playlist, onEdit, authUser, fetchPlaylists }) => {
   const navigate = useNavigate();

@@ -1,67 +1,62 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Eye } from 'lucide-react';
+import { ChevronLeft, Eye } from 'lucide-react';
+import '../assets/styles/static-pages.css'; // Наш новый файл для текстовых страниц
 
 const Privacy = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="static-page-container" style={{ maxWidth: '800px', margin: '0 auto' }}>
-      <div className="settings-header" style={{ marginBottom: '32px' }}>
-        <button onClick={() => navigate(-1)} className="btn-back">
-          <ArrowLeft size={18} style={{ marginRight: '8px' }} /> Назад
-        </button>
-        <h1 className="user-name" style={{ marginTop: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <Eye size={32} color="var(--primary-red)" />
-          Политика конфиденциальности
-        </h1>
+    <div className="static-page-wrapper">
+      {/* КНОПКА ВОЗВРАТА (Один в один как в Settings) */}
+      <div className="static-back-action" onClick={() => navigate(-1)}>
+        <ChevronLeft size={16} strokeWidth={2} /> Назад
       </div>
 
-      <div className="glass-card" style={{ padding: '32px', display: 'flex', flexDirection: 'column', gap: '24px', lineHeight: '1.6' }}>
-        <section>
-          <h3 style={{ marginBottom: '12px', color: 'var(--text-main)' }}>1. Какие данные мы собираем</h3>
-          <p style={{ color: 'var(--text-muted)' }}>
+      {/* ШАПКА СТРАНИЦЫ */}
+      <div className="static-page-header">
+        <Eye size={32} className="static-header-icon" />
+        <h2>Политика конфиденциальности</h2>
+      </div>
+
+      {/* ТЕКСТОВЫЙ БЕНТО-БЛОК */}
+      <div className="static-content-card">
+        <section className="static-section">
+          <h3>1. Какие данные мы собираем</h3>
+          <p>
             Мы собираем только те данные, которые необходимы для стабильной работы платформы:
           </p>
-          <ul style={{ paddingLeft: '20px', marginTop: '8px', color: 'var(--text-muted)', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <ul className="static-list">
             <li>Данные профиля: Email адрес, имя пользователя, кастомные аватары и баннеры.</li>
             <li>Технические логи: Данные о просмотрах видео для формирования внутренней аналитики Студии и выявления автора дня.</li>
             <li>Сессионные данные: Токены авторизации и слепки конфигурации интерфейса, сохраняемые локально на вашем устройстве (LocalStorage).</li>
           </ul>
         </section>
 
-        <hr style={{ border: 'none', borderTop: '1px solid rgba(0,0,0,0.05)' }} />
-
-        <section>
-          <h3 style={{ marginBottom: '12px', color: 'var(--text-main)' }}>2. Как используются данные</h3>
-          <p style={{ color: 'var(--text-muted)' }}>
+        <section className="static-section">
+          <h3>2. Как используются данные</h3>
+          <p>
             Сбор информации направлен на персонализацию вашего интерфейса, защиту от спам-регистраций, валидацию транзакций по Premium-подпискам, а также для работы внутренних алгоритмов рекомендаций и счетчиков контента (лайки, сохранения, просмотры). Мы не передаем ваши личные данные сторонним организациям и коммерческим сервисам.
           </p>
         </section>
 
-        <hr style={{ border: 'none', borderTop: '1px solid rgba(0,0,0,0.05)' }} />
-
-        <section>
-          <h3 style={{ marginBottom: '12px', color: 'var(--text-main)' }}>3. Безопасность данных</h3>
-          <p style={{ color: 'var(--text-muted)' }}>
+        <section className="static-section">
+          <h3>3. Безопасность данных</h3>
+          <p>
             Пароли пользователей хранятся в базе данных в захешированном виде (с использованием криптографических алгоритмов BCRYPT) и не могут быть прочитаны администрацией платформы. Все операции по изменению конфиденциальных данных (смена Email, паролей) защищены обязательной двухэтапной верификацией по одноразовым кодам.
           </p>
         </section>
 
-        <hr style={{ border: 'none', borderTop: '1px solid rgba(0,0,0,0.05)' }} />
-
-        <section>
-          <h3 style={{ marginBottom: '12px', color: 'var(--text-main)' }}>4. Хранение контента</h3>
-          <p style={{ color: 'var(--text-muted)' }}>
+        <section className="static-section">
+          <h3>4. Хранение контента</h3>
+          <p>
             Загружаемые вами медиафайлы (обложки видео, аватары каналов) сохраняются на сервере в изолированных директориях и доступны для публичного просмотра согласно установленным вами настройкам приватности плейлистов и видеороликов.
           </p>
         </section>
 
-        <hr style={{ border: 'none', borderTop: '1px solid rgba(0,0,0,0.05)' }} />
-
-        <section>
-          <h3 style={{ marginBottom: '12px', color: 'var(--text-main)' }}>5. Управление своими данными</h3>
-          <p style={{ color: 'var(--text-muted)' }}>
+        <section className="static-section">
+          <h3>5. Управление своими данными</h3>
+          <p>
             Вы имеете полное право редактировать свою информацию в любой момент. При отправке запроса на удаление аккаунта, база данных принудительно очищает все таблицы, связанные с вашим ID (включая логи просмотров, подписки и кэш кодов), полностью стирая ваш цифровой след на платформе.
           </p>
         </section>
