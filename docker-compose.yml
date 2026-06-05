@@ -13,7 +13,6 @@ services:
       - --default-authentication-plugin=mysql_native_password
       - --character-set-server=${DB_CHARSET:-utf8mb4}
       - --collation-server=utf8mb4_unicode_ci
-      - --socket=/var/run/mysqld/mysqld.sock
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
       interval: 10s
@@ -22,7 +21,6 @@ services:
       start_period: 30s
     volumes:
       - mysql_data:/var/lib/mysql
-      - mysql_socket:/var/run/mysqld
       - ./${SQL_DUMP_FILE:-dump.sql}:/docker-entrypoint-initdb.d/10-init.sql:ro
 
   app:
@@ -38,12 +36,8 @@ services:
       - .env
     ports:
       - ${APP_PORT:-8080}:80
-    command: >
-      sh -c "ln -sf /Applications/XAMPP/xamppfiles/var/mysql/mysqld.sock /Applications/XAMPP/xamppfiles/var/mysql/mysql.sock && exec apache2-foreground"
     volumes:
       - ./api/uploads:/var/www/html/api/uploads
-      - mysql_socket:/Applications/XAMPP/xamppfiles/var/mysql
 
 volumes:
   mysql_data:
-  mysql_socket:
