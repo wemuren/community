@@ -1,38 +1,39 @@
 <?php
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-
-require_once __DIR__ . '/vendor/autoload.php';
-
 function sendVerificationCode(string $toEmail, string $code): bool {
-    $mail = new PHPMailer(true);
-    try {
-        $mail->isSMTP();
-        $mail->Host       = 'smtp.timeweb.ru';
-        $mail->SMTPAuth   = true;
-        $mail->Username   = 'noreply@community-it.ru';
-        $mail->Password   = getEnvConfigValue('MAIL_PASSWORD', '');
-        $mail->SMTPSecure = 'ssl';
-        $mail->Port       = 465;
-        $mail->CharSet    = 'UTF-8';
+    $apiKey = getEnvConfigValue('RESEND_API_KEY', '');
 
-        $mail->setFrom('noreply@community-it.ru', 'COMMUNITY');
-        $mail->addAddress($toEmail);
-
-        $mail->isHTML(true);
-        $mail->Subject = 'Код подтверждения — COMMUNITY';
-        $mail->Body    = "
+    $body = json_encode([
+        'from'    => 'COMMUNITY <noreply@community-it.ru>',
+        'to'      => [$toEmail],
+        'subject' => 'Код подтверждения — COMMUNITY',
+        'html'    => "
             <div style='font-family:sans-serif;max-width:400px;margin:0 auto'>
                 <h2 style='color:#1a1a1a'>Ваш код подтверждения</h2>
                 <p style='font-size:32px;font-weight:bold;letter-spacing:8px;color:#1a1a1a'>{$code}</p>
                 <p style='color:#666'>Код действителен 10 минут. Никому его не сообщайте.</p>
             </div>
-        ";
+        "
+    ]);
 
-        $mail->send();
-        return true;
-    } catch (Exception $e) {
-        error_log('Mailer error: ' . $mail->ErrorInfo);
+    $ch = curl_init('https://api.resend.com/emails');
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_POST           => true,
+        CURLOPT_POSTFIELDS     => $body,
+        CURLOPT_HTTPHEADER     => [
+            'Authorization: Bearer ' . $apiKey,
+            'Content-Type: application/json'
+        ]
+    ]);
+
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if ($httpCode !== 200 && $httpCode !== 201) {
+        error_log('Resend error: ' . $response);
         return false;
     }
+
+    return true;
 }
