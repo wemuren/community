@@ -175,7 +175,6 @@ const getPluralForm = (number, forms) => {
           display: 'flex', flexDirection: 'column', alignItems: 'center',
           justifyContent: 'center', padding: '80px 20px', textAlign: 'center', gap: '16px'
         }}>
-          <span style={{ fontSize: '48px' }}>🚫</span>
           <h2 style={{ margin: 0 }}>Канал заблокирован</h2>
           <p style={{ color: 'gray', maxWidth: '400px', margin: 0 }}>
             Этот аккаунт был заблокирован за нарушение Правил сообщества.
