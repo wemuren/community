@@ -108,7 +108,7 @@ const Settings = () => {
         setPassServerError(res.data.message || 'Ошибка сервера');
       }
     } catch {
-      setPassServerError('Сбой сети или сервера');
+      setPassServerError('Проверьте корректность введенного пароля или подключение к интернету');
     }
   };
 
