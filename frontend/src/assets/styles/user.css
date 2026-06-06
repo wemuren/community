@@ -228,6 +228,11 @@
 }
 
 .create-channel-promo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
     text-align: center;
     padding: 60px 20px;
     background: #FAFAFA;
@@ -235,14 +240,13 @@
     border: 2px dashed #EEE;
 }
 
-.create-channel-promo h3 {
-    margin-bottom: 12px;
+.create-channel-promo h2 {
     font-size: 20px;
+    width: fit-content;
 }
 
 .create-channel-promo p {
     color: #888;
-    margin-bottom: 24px;
 }
 
 .meta-separator {

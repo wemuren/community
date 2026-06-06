@@ -98,7 +98,7 @@ const Reports = () => {
   const ReportTable = ({ data, title, isVideo = false }) => (
     <div style={{ marginTop: '32px' }}>
       <h3 className="admin-tags-group-title" style={{ color: 'var(--text-main)', fontSize: '16px', fontWeight: 700, marginBottom: '16px' }}>
-        {title} <span className="tag-btn active" style={{ fontSize: '12px', padding: '2px 8px', borderRadius: '4px', marginLeft: '6px', pointerEvents: 'none' }}>{data.length}</span>
+        {title} <span className="tag-btn active">{data.length}</span>
       </h3>
       
       <div className="admin-table">

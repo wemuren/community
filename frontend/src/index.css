@@ -141,6 +141,7 @@ a {
 .row{
   display: flex;
   flex-direction: row;
+  gap: 8px;
 }
 
 /* 5. Размер для горизонтальной ленты подписок/каналов (56px) */

@@ -155,8 +155,8 @@ const StudioVideos = () => {
       </div>
 
       {videos.length === 0 && (
-        <div className="search-empty-state" style={{ marginTop: '32px' }}>
-          <p>У вас пока нет загруженных видеороликов.</p>
+        <div className="create-channel-promo">
+          <h2>У вас пока нет загруженных видеороликов.</h2>
           <span>Все добавленные видео будут отображаться в этой панели управления.</span>
         </div>
       )}

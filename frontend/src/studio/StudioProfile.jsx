@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Eye, ChevronLeft, Trash2, Image as ImageIcon, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { ChevronLeft, Trash2, Image as ImageIcon } from 'lucide-react';
 import '../assets/styles/studio.css';
-import '../assets/styles/auth.css'; // Переиспользуем базу инпутов
+import '../assets/styles/auth.css';
 
-import { API_BASE_URL, THUMB_URL, BANNER_URL } from '@/config/api';
-
-const normalize = (str) => (str || '').trim().toLowerCase();
+import { API_BASE_URL, BANNER_URL } from '@/config/api';
+import UserAvatar from '../components/UserAvatar'; // ИСПРАВЛЕНО: Подключили сквозной компонент аватарок
 
 const StudioProfile = () => {
   const navigate = useNavigate();
@@ -21,7 +20,7 @@ const StudioProfile = () => {
   const [bannerFile, setBannerFile] = useState(null);
   
   // Стейты для локального предпросмотра картинок перед отправкой
-  const [avatarPreview, setAvatarPreview] = useState(user?.avatar ? `${API_BASE_URL}/uploads/avatars/${user.avatar}` : null);
+  const [avatarPreview, setAvatarPreview] = useState(user?.avatar || null);
   const [bannerPreview, setBannerPreview] = useState(user?.banner ? `${BANNER_URL}${user.banner}` : null);
   
   const [loading, setLoading] = useState(false);
@@ -44,11 +43,11 @@ const StudioProfile = () => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Срочно пишем лог в консоль — проверяем, видит ли JS файл вообще
     console.log(`Выбран файл для ${type}:`, file.name, file.size);
 
     if (type === 'avatar') {
       setAvatarFile(file);
+      // Для аватарки пишем чистую Blob-ссылку прямо в стейт превью
       setAvatarPreview(URL.createObjectURL(file));
     } else if (type === 'banner') {
       setBannerFile(file);
@@ -103,7 +102,6 @@ const StudioProfile = () => {
     if (usernameError || loading) return;
     setLoading(true);
 
-    // СОЗДАЕМ ЧИСТЫЙ ОБЪЕКТ FORMDATA БЕЗ ЛИШНИХ КОСТЫЛЕЙ
     const formData = new FormData();
     formData.append('id', Number(user.id));
     formData.append('full_name', editData.full_name.trim());
@@ -123,12 +121,10 @@ const StudioProfile = () => {
         }
       });
       
-      // Ловим ответ от PHP
       if (res.data.status === 'success' && res.data.user) {
         localStorage.setItem('user', JSON.stringify(res.data.user));
         setUser(res.data.user);
         
-        // Обнуляем файлы, чтобы не слать их повторно при изменении текста
         setAvatarFile(null);
         setBannerFile(null);
         
@@ -209,17 +205,21 @@ const StudioProfile = () => {
             <div className="input-group">
               <label>Аватар профиля</label>
               <div className="studio-avatar-row-ctx">
-                <div className="studio-avatar-preview-circle">
-                  {avatarPreview ? (
-                    <img src={avatarPreview} alt="Avatar preview" />
-                  ) : (
-                    <User size={32} color="rgba(0,0,0,0.2)" />
-                  )}
-                </div>
+                {/* ИСПРАВЛЕНО: Интегрировали чистый UserAvatar. 
+                    Если юзер выбрал локальный файл — скармливаем Blob-ссылку напрямую */}
+                <UserAvatar 
+                  user={{ 
+                    avatar: avatarPreview, 
+                    full_name: editData.full_name, 
+                    username: editData.username 
+                  }} 
+                  sizeClass="avatar-large" 
+                />
+                
                 <div className="studio-upload-controls-block">
-                  <label className="btn-settings-footer-action secondary-outline" style={{margin: 0, cursor: 'pointer'}}>
+                  <label className="btn-settings-footer-action secondary-outline">
                     Загрузить фото
-                    <input type="file" accept="image/*" style={{display: 'none'}} onChange={e => handleFileChange(e, 'avatar')} />
+                    <input type="file" accept="image/*" className="studio-hidden-file-input" onChange={e => handleFileChange(e, 'avatar')} />
                   </label>
                   {avatarPreview && (
                     <button type="button" className="studio-media-delete-btn" title="Удалить аватар" onClick={() => handleDeleteMedia('avatar')}>
@@ -228,12 +228,12 @@ const StudioProfile = () => {
                   )}
                 </div>
               </div>
-              <p className="studio-field-subtext" style={{marginTop: '8px'}}>Квадратное изображение, рекомендуемый размер 400x400px</p>
+              <p className="studio-field-subtext studio-subtext-margin">Квадратное изображение, рекомендуемый размер 400x400px</p>
             </div>
 
             {/* БЛОК БАННЕРА */}
-            <div className="input-group" style={{marginTop: '32px'}}>
-              <label>Баннер канала {user.is_paid == 0}</label>
+            <div className="input-group studio-banner-group-margin">
+              <label>Баннер канала</label>
               
               <div className="studio-banner-preview-rectangle">
                 {bannerPreview ? (
@@ -245,13 +245,16 @@ const StudioProfile = () => {
                 )}
               </div>
 
-              <div className="studio-upload-controls-block" style={{marginTop: '12px'}}>
-                <label className={`btn-settings-footer-action secondary-outline ${user.is_paid == 0 ? 'disabled-label' : ''}`} style={{margin: 0, cursor: user.is_paid == 0 ? 'not-allowed' : 'pointer'}}>
+              <div className="studio-upload-controls-block studio-banner-controls-margin">
+                <label 
+                  className={`btn-settings-footer-action secondary-outline ${user.is_paid == 0 ? 'disabled-label' : ''}`} 
+                  style={{ cursor: user.is_paid == 0 ? 'not-allowed' : 'pointer' }}
+                >
                   Загрузить баннер
                   <input 
                     type="file" 
                     accept="image/*" 
-                    style={{display: 'none'}} 
+                    className="studio-hidden-file-input"
                     disabled={user.is_paid == 0} 
                     onChange={e => handleFileChange(e, 'banner')} 
                   />
@@ -264,11 +267,11 @@ const StudioProfile = () => {
               </div>
               
               {user.is_paid == 0 ? (
-                <p className="error-label" style={{marginTop: '8px', fontSize: '13px'}}>
+                <p className="error-label studio-subtext-margin-small">
                   Загрузка кастомных баннеров доступна только пользователям с тарифом премиум
                 </p>
               ) : (
-                <p className="studio-field-subtext" style={{marginTop: '8px'}}>Широкоформатный баннер, рекомендуемый размер 1500x400px</p>
+                <p className="studio-field-subtext studio-subtext-margin">Широкоформатный баннер, рекомендуемый размер 1500x400px</p>
               )}
             </div>
 

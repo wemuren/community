@@ -5,6 +5,7 @@ import '../assets/styles/video-page.css';
 import '../assets/styles/auth.css';
 
 import VideoModals from '../components/VideoModals';
+import UserAvatar from '../components/UserAvatar'; // ИСПРАВЛЕНО: Добавили импорт переиспользуемого компонента аватарок
 import { useVideoActions } from '../hooks/useVideoActions';
 
 import { API_BASE_URL } from '@/config/api';
@@ -207,10 +208,10 @@ const VideoPage = () => {
             {/* Автор */}
             <div className="author-info">
               <Link to={`/profile/${video.user_id}`} onClick={e => e.stopPropagation()}>
-                <img
-                  src={video.avatar ? `${API_BASE_URL}/uploads/avatars/${video.avatar}` : '/default-avatar.png'}
-                  alt={video.username}
-                  className="author-avatar-img"
+                {/* ИСПРАВЛЕНО: Вывели полноценный компонент аватара автора */}
+                <UserAvatar 
+                  user={{ avatar: video.avatar, full_name: video.full_name, username: video.username }} 
+                  sizeClass="avatar-medium" 
                 />
               </Link>
 
@@ -282,49 +283,49 @@ const VideoPage = () => {
             {getPluralForm(comments.length, ['комментарий', 'комментария', 'комментариев'])}
           </h3>
 
-          {/* Поле ввода комментария (Аналогично настройкам и авторизации) */}
-<div className="comment-input-block">
-  <div className="comment-input-inner">
-    <input
-      type="text"
-      className="auth-input" /* Переиспользуем класс из настроек и auth.css */
-      placeholder={
-        isPremiumActive(authUser)
-          ? 'Оставьте комментарий...'
-          : 'Только для премиум-пользователей'
-      }
-      disabled={!isPremiumActive(authUser)}
-      value={newComment}
-      onChange={handleCommentChange}
-      onKeyDown={(e) => e.key === 'Enter' && handleSendComment()}
-    />
-    {isPremiumActive(authUser) && newComment.length > 0 && (
-      <span className={`char-counter ${newComment.length >= COMMENT_LIMIT ? 'char-counter--limit' : ''}`}>
-        {newComment.length}/{COMMENT_LIMIT}
-      </span>
-    )}
-  </div>
-  
-  <button
-    className="comment-send-btn"
-    onClick={handleSendComment}
-    disabled={!isPremiumActive(authUser) || !newComment.trim()}
-    title="Отправить"
-  >
-    <Send size={16} strokeWidth={2} />
-    <span>Отправить</span>
-  </button>
-</div>
+          {/* Поле ввода комментария */}
+          <div className="comment-input-block">
+            <div className="comment-input-inner">
+              <input
+                type="text"
+                className="auth-input"
+                placeholder={
+                  isPremiumActive(authUser)
+                    ? 'Оставьте комментарий...'
+                    : 'Только для премиум-пользователей'
+                }
+                disabled={!isPremiumActive(authUser)}
+                value={newComment}
+                onChange={handleCommentChange}
+                onKeyDown={(e) => e.key === 'Enter' && handleSendComment()}
+              />
+              {isPremiumActive(authUser) && newComment.length > 0 && (
+                <span className={`char-counter ${newComment.length >= COMMENT_LIMIT ? 'char-counter--limit' : ''}`}>
+                  {newComment.length}/{COMMENT_LIMIT}
+                </span>
+              )}
+            </div>
+            
+            <button
+              className="comment-send-btn"
+              onClick={handleSendComment}
+              disabled={!isPremiumActive(authUser) || !newComment.trim()}
+              title="Отправить"
+            >
+              <Send size={16} strokeWidth={2} />
+              <span>Отправить</span>
+            </button>
+          </div>
 
           {/* Список комментариев */}
           <div className="comments-list">
             {comments.map(c => (
               <div key={c.id} className="comment-item">
                 <Link to={`/profile/${c.user_id}`} onClick={e => e.stopPropagation()}>
-                  <img
-                    src={c.avatar ? `${API_BASE_URL}/uploads/avatars/${c.avatar}` : '/default-avatar.png'}
-                    alt=""
-                    className="comment-avatar"
+                  {/* ИСПРАВЛЕНО: Вывели полноценный компонент аватара для каждого комментатора */}
+                  <UserAvatar 
+                    user={{ avatar: c.avatar, full_name: c.full_name, username: c.username }} 
+                    sizeClass="avatar-mini" 
                   />
                 </Link>
 

@@ -64,20 +64,12 @@ const Subscriptions = () => {
       {channels.length > 0 ? (
         <>
           {/* ЛЕНТА КАНАЛОВ (Скролл-кружочки по ТЗ) */}
-<div className="tags-container">
+<div className="subs-container">
   {channels.map(channel => (
     <Link 
       key={channel.id} 
       to={`/profile/${channel.id}`} 
       className="sub-channel-item" 
-      style={{ 
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: '8px',
-        minWidth: '76px',
-        textDecoration: 'none'
-      }}
     >
       {/* ИСПРАВЛЕНО: Убрали промежуточный div.author-avatar. 
           Теперь выводим чистый UserAvatar, размеры которого контролирует CSS-класс */}
@@ -86,15 +78,7 @@ const Subscriptions = () => {
         sizeClass="avatar-subs-list" 
       />
 
-      <span style={{ 
-        fontSize: '13px', 
-        fontWeight: '400', 
-        color: 'var(--text-main)',
-        maxWidth: '80px',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap'
-      }}>
+      <span>
         {channel.full_name || channel.username}
       </span>
     </Link>
@@ -119,17 +103,14 @@ const Subscriptions = () => {
         </>
       ) : (
         /* ПУСТОЕ СОСТОЯНИЕ (Минимализм без смайлов) */
-        <div className="create-channel-promo" style={{ padding: '80px 20px' }}>
-          <h3 className="page-title" style={{ marginBottom: '12px', fontSize: '20px' }}>
-            Вы еще ни на кого не подписаны
-          </h3>
-          <p style={{ color: 'var(--text-muted)', marginBottom: '24px', fontSize: '16px' }}>
+        <div className="create-channel-promo">
+         <h2> Вы еще ни на кого не подписаны</h2>
+          <p>
             Подписывайтесь на авторов платформы, чтобы их новые ролики появлялись в этой ленте.
           </p>
           <Link 
             to="/" 
             className="tag-btn active" 
-            style={{ display: 'inline-flex', textDecoration: 'none', padding: '10px 24px' }}
           >
             Найти интересные каналы
           </Link>

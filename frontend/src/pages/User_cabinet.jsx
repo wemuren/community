@@ -371,8 +371,11 @@ const getPluralForm = (number, forms) => {
         ) : isMyProfile && (
           <div className="empty-state">
             <div className="create-channel-promo">
-              <h3>Создайте свой канал, чтобы публиковать видео</h3>
-              <button className="btn-create-channel" onClick={handleCreateChannel}>Создать канал</button>
+              <h2>У вас еще нет канала</h2>
+               <p>
+            Создайте канал, чтобы получить возможность публиковать видео.
+          </p>
+              <button className="tag-btn active"  onClick={handleCreateChannel}>Создать канал</button>
             </div>
           </div>
         )}

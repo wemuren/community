@@ -90,7 +90,7 @@ const Tags = () => {
               required
             />
           </div>
-          <button type="submit" className="tag-btn active" style={{ height: '42px', padding: '0 24px' }}>
+          <button type="submit" className="tag-btn active">
             <Plus size={16} strokeWidth={2.5} style={{ marginRight: '6px' }} /> Добавить
           </button>
         </form>

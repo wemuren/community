@@ -443,7 +443,7 @@ const Settings = () => {
           <div className="empty-state">
             <div className="create-channel-promo">
               <p className="settings-current-info">У вас пока нет созданного канала на платформе.</p>
-              <button className="btn-auth active" onClick={() => navigate('/profile')}>
+              <button className="btn-auth active" onClick={() => navigate(`/profile/${authUser?.id}`)}>
                 Перейти в профиль для создания
               </button>
             </div>

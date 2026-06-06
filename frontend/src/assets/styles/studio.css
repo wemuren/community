@@ -519,3 +519,30 @@
 .change-cover-btn:active {
   transform: scale(0.98);
 }
+
+/* Фиксы для скрытия дефолтных инпутов загрузки медиа */
+.studio-hidden-file-input {
+  display: none;
+}
+
+.btn-settings-footer-action.studio-file-label-fix {
+  margin: 0; 
+  cursor: pointer;
+}
+
+.studio-subtext-margin {
+  margin-top: 8px;
+}
+
+.studio-banner-group-margin {
+  margin-top: 32px;
+}
+
+.studio-banner-controls-margin {
+  margin-top: 12px;
+}
+
+.error-label.studio-subtext-margin-small {
+  margin-top: 8px;
+  font-size: 13px;
+}
