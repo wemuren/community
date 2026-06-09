@@ -359,6 +359,7 @@ const getPluralForm = (number, forms) => {
                         authUser={authUser}
                         onEdit={() => navigate('/playlists')}
                         onSave={() => va.handleSavePlaylist?.(pl)}
+                        fetchPlaylists={fetchProfileData}
                       />
                     ))
                 ) : (

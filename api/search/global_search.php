@@ -4,6 +4,7 @@ header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
 
 $raw = isset($_GET['q']) ? trim($_GET['q']) : '';
+$viewer_id = isset($_GET['viewer_id']) ? (int)$_GET['viewer_id'] : 0;
 
 $results = ["users" => [], "videos" => [], "courses" => [], "playlists" => []];
 
@@ -49,7 +50,15 @@ try {
     // Ищем по названию + по тегам (нечёткое совпадение)
     if (!$isMention) {
         $v_stmt = $pdo->prepare("
-            SELECT DISTINCT v.*, u.username, u.full_name, u.avatar, u.is_paid
+            SELECT DISTINCT v.*, u.username, u.full_name, u.avatar, u.is_paid,
+                (SELECT COUNT(*) 
+                 FROM playlist_videos pv 
+                 JOIN playlists p ON pv.playlist_id = p.id 
+                 WHERE pv.video_id = v.id AND p.user_id = ? AND p.type = 'liked') as is_liked,
+                (SELECT COUNT(*) 
+                 FROM playlist_videos pv 
+                 JOIN playlists p ON pv.playlist_id = p.id 
+                 WHERE pv.video_id = v.id AND p.user_id = ? AND p.type = 'watch_later') as in_later
             FROM videos v
             JOIN users u ON v.user_id = u.id
             LEFT JOIN video_tags vt ON v.id = vt.video_id
@@ -65,7 +74,7 @@ try {
                 v.views DESC
             LIMIT 20
         ");
-        $v_stmt->execute([$like, $like, "{$clean}%"]);
+        $v_stmt->execute([$viewer_id, $viewer_id, $like, $like, "{$clean}%"]);
         $results['videos'] = $v_stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -78,7 +87,8 @@ try {
                  FROM playlist_videos plv
                  JOIN videos pv2 ON plv.video_id = pv2.id
                  WHERE plv.playlist_id = p.id
-                 ORDER BY plv.added_at DESC LIMIT 1) AS last_video_thumbnail
+                 ORDER BY plv.added_at DESC LIMIT 1) AS last_video_thumbnail,
+                (SELECT COUNT(*) FROM playlist_saves WHERE playlist_id = p.id AND user_id = ?) as is_saved
             FROM playlists p
             JOIN users u ON p.user_id = u.id
             WHERE LOWER(p.title) LIKE ?
@@ -89,7 +99,7 @@ try {
             ORDER BY video_count DESC
             LIMIT 10
         ");
-        $p_stmt->execute([$like]);
+        $p_stmt->execute([$viewer_id, $like]);
         $results['playlists'] = $p_stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 

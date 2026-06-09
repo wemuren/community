@@ -331,3 +331,196 @@
   from { opacity: 0; transform: translateY(-4px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+
+/* ── Laptop Responsive Overrides ── */
+@media (max-width: 1440px) or (max-height: 900px) {
+  .auth-container {
+    padding: 24px;
+  }
+
+  .logo-main img {
+    margin-bottom: 32px;
+    width: 280px !important;
+  }
+
+  .auth-card {
+    gap: 32px;
+    max-width: 440px;
+  }
+
+  .auth-container .auth-card h2 {
+    font-size: 26px !important;
+  }
+
+  .auth-body {
+    gap: 20px;
+  }
+
+  .input-group {
+    gap: 8px;
+  }
+
+  .input-group label {
+    font-size: 18px !important;
+  }
+
+  .auth-input {
+    padding: 6px 12px;
+    font-size: 16px;
+  }
+
+  .btn-auth {
+    padding: 12px;
+    font-size: 16px !important;
+  }
+
+  .auth-footer-section {
+    gap: 16px;
+  }
+
+  .auth-footer {
+    font-size: 16px;
+  }
+
+  .legal-text {
+    font-size: 13px;
+  }
+}
+
+/* ── Mobile Responsive Overrides (Figma Spec) ── */
+@media (max-width: 600px) {
+  .auth-container {
+    padding: calc(40px + env(safe-area-inset-top, 0px)) 16px calc(24px + env(safe-area-inset-bottom, 0px)) 16px;
+    min-height: 100vh; /* Fallback */
+    min-height: 100dvh; /* Динамическая высота под мобильные панели */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
+  }
+
+  .logo-main {
+    width: 100%;
+    max-width: 440px;
+    display: flex;
+    justify-content: center; /* Логотип по центру */
+    margin-bottom: auto; /* Равноудаленное распределение */
+  }
+
+  .logo-main img {
+    margin-bottom: 0 !important;
+    width: 184px !important;
+  }
+
+  .auth-card {
+    flex: 1; /* Карточка растягивается на всю оставшуюся высоту */
+    width: 100%;
+    max-width: 440px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Все элементы формы по левому краю по умолчанию */
+    margin-top: 24px; /* Минимальный зазор от логотипа */
+    gap: 0; /* Сбрасываем общий gap для точечного распределения auto-маргинами */
+  }
+
+  .auth-container .auth-card h2 {
+    font-size: 24px !important;
+    font-weight: 600 !important;
+    text-align: left;
+    margin: 0 0 24px 0 !important; /* Название близко к полям ввода */
+  }
+
+  .auth-body {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 32px; /* Spacing gap 32 между инпутами внутри формы */
+    margin-bottom: auto; /* Равноудаленное распределение от кнопки */
+  }
+
+  .input-group {
+    gap: 12px;
+  }
+
+  .input-group label {
+    font-size: 18px !important;
+    font-weight: 500 !important;
+    text-align: left;
+  }
+
+  .auth-input {
+    padding: 8px 0 !important; /* Ввод выравнивается по левому краю без внутренних отступов */
+    font-size: 16px;
+  }
+
+  .password-group .eye-icon {
+    right: 0 !important;
+    bottom: 8px !important;
+  }
+
+  .captcha-row {
+    padding: 8px 0;
+    gap: 8px;
+    justify-content: flex-start; /* Чекбокс по левому краю */
+  }
+
+  .captcha-row input[type="checkbox"] {
+    width: 24px;
+    height: 24px;
+  }
+
+  .captcha-row label {
+    font-size: 16px !important;
+    text-align: left;
+  }
+
+  .auth-footer-section {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Ссылки и кнопки в футере по центру */
+    gap: 24px;
+    margin-top: auto; /* Прижимает кнопку к низу карточки */
+    padding-top: 32px; /* Минимальный зазор от формы */
+  }
+
+  .btn-group {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .btn-auth {
+    padding: 16px;
+    font-size: 18px !important;
+    font-weight: 700;
+    border-radius: 8px;
+    text-align: center; /* Текст кнопки отцентрирован внутри неё */
+  }
+
+  .error-message {
+    font-size: 14px !important;
+    text-align: center; /* Ошибка по центру */
+  }
+
+  .auth-footer {
+    font-size: 16px;
+    justify-content: center; /* Текст футера по центру */
+    width: 100%;
+  }
+
+  .legal-text {
+    font-size: 14px;
+    line-height: 1.4;
+    text-align: center; /* Ссылки правил по центру */
+    width: 100%;
+  }
+
+  .timer-text,
+  .resend-link {
+    font-size: 16px !important;
+  }
+}

@@ -1,7 +1,7 @@
 /* --- АДАПТИВНАЯ СЕТКА ВИДЕОПОТОКА (GRID SYSTEM) --- */
 .video-grid {
   display: grid;
-  /* Базовое состояние для больших мониторов (1920 и выше) — строго 4 видео в ряд */
+  /* Базовое состояние для компьютеров и ноутбуков — строго 3 видео в ряд */
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 24px;
   width: 100%;
@@ -86,28 +86,28 @@
   transform: scale(0.98);
 }
 
-/* --- МЕДИА-ЗАПРОСЫ ПОД МОНИТОРЫ И НОУТБУКИ --- */
-
-/* Ноутбуки и экраны поменьше (например, 1440, 1366 и ниже) */
-@media (max-width: 2000px) {
+/* Планшеты (1024px и меньше) — строго 2 видео в ряд */
+@media (max-width: 1460px) {
   .video-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr)); /* Строго 3 в ряд */
-    gap: 20px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
+/* --- МЕДИА-ЗАПРОСЫ ПОД ПЛАНШЕТЫ И ТЕЛЕФОНЫ --- */
 
-/* Планшеты */
-@media (max-width: 1455px) {
+/* Планшеты (1024px и меньше) — строго 2 видео в ряд */
+@media (max-width: 1024px) {
   .video-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 16px;
   }
 }
 
-/* Мобильные телефоны */
+/* Мобильные телефоны (600px и меньше) — строго 1 видео в ряд */
 @media (max-width: 600px) {
   .video-grid {
-    grid-template-columns: minmax(0, 1fr); /* Строго 1 видео в ряд на весь экран */
-    gap: 16px;
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 20px;
+    column-gap: 0px;
+    padding: 0 !important;
   }
 }

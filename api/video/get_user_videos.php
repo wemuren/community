@@ -12,14 +12,22 @@ if (isset($_GET['user_id'])) {
     try {
         $sql = "SELECT 
                     v.id, v.title, v.video_url, v.thumbnail, v.views, v.created_at,
-                    u.username, u.full_name, u.avatar, u.is_paid, u.is_active
+                    u.username, u.full_name, u.avatar, u.is_paid, u.is_active,
+                    (SELECT COUNT(*) 
+                     FROM playlist_videos pv 
+                     JOIN playlists p ON pv.playlist_id = p.id 
+                     WHERE pv.video_id = v.id AND p.user_id = ? AND p.type = 'liked') as is_liked,
+                    (SELECT COUNT(*) 
+                     FROM playlist_videos pv 
+                     JOIN playlists p ON pv.playlist_id = p.id 
+                     WHERE pv.video_id = v.id AND p.user_id = ? AND p.type = 'watch_later') as in_later
                 FROM videos v
                 JOIN users u ON v.user_id = u.id
                 WHERE v.user_id = ?
                   AND (u.is_active = 1 OR u.id = ?)
                 ORDER BY v.created_at DESC";
         $stmt = $pdo->prepare($sql);
-        $stmt->execute([$user_id, $viewer_id]);
+        $stmt->execute([$viewer_id, $viewer_id, $user_id, $viewer_id]);
         echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
     } catch (Exception $e) {
         http_response_code(500);

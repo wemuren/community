@@ -160,6 +160,7 @@
   justify-content: flex-start;
   align-items: flex-start;
   width: 100%;
+  min-width: 0; /* Защита от переполнения */
 }
 
 .video-title {
@@ -171,12 +172,14 @@
   line-height: 1.3;
   word-wrap: break-word;
   word-break: break-word;
+  overflow-wrap: break-word;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   line-clamp: 2; /* Обрезает текст на 2 строке, если название гигантское */
   -webkit-box-orient: vertical;
   overflow: hidden;
-  min-height: 1.3em; /* Если строка одна — занимает одну строку, если две — расширяется до двух */
+  width: 100%;
+  min-width: 0;
 }
 
 .author-avatar-link:empty,
@@ -206,6 +209,7 @@
   display: inline-flex;
   align-items: center;
   color: var(--text-muted);
+  gap: 4px; /* Отступ между иконкой и текстом */
 }
 
 .video-meta-item:not(:last-child)::after {
@@ -213,8 +217,8 @@
   content: "·"; 
   display: inline-block;
   
-  /* Симметричные отступы по бокам */
-  margin: 0 8px; 
+  /* Асимметричный маргин для компенсации gap: 4px и сохранения симметрии в 8px по бокам */
+  margin: 0 8px 0 4px; 
   
   /* Задаем цвет и легкую прозрачность, как у остального muted текста */
   color: var(--text-muted); 
@@ -228,4 +232,38 @@
   height: auto;
   background: none;
   border-radius: 0;
+}
+
+/* Адаптив для подписей видео под ноутбуки (до 1440px) */
+@media (max-width: 1460px) {
+  .video-meta-row {
+    font-size: 13px; /* Уменьшаем шрифт, чтобы вмещалось в одну строку */
+    flex-wrap: nowrap; /* Не допускаем переноса на новую строку */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+  }
+
+  .video-meta-item:not(:last-child)::after {
+    margin: 0 5px 0 1px; /* Компенсируем gap на ноутбуках для симметрии в 5px */
+  }
+}
+
+/* Мобильные телефоны (600px и меньше) — карточки во весь экран, без скруглений */
+@media (max-width: 600px) {
+  .video-card {
+    padding: 0 0 20px 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+  }
+
+  .video-thumbnail {
+    border-radius: 0 !important;
+  }
+
+  .video-info {
+    padding: 0 16px !important;
+    box-sizing: border-box;
+  }
 }

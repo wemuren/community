@@ -136,7 +136,7 @@ const Monetization = () => {
             <span className="admin-stat-label">Стоимость</span>
             <Crown size={16} strokeWidth={2} className="admin-stat-icon-likes" />
           </div>
-          <h2 className="admin-stat-value critical">{data.price}</h2>
+          <h2 className="admin-stat-value critical">{data.price}<span className="currency-icon"></span></h2>
           <span className="studio-field-subtext-action">Изменить тариф платформы →</span>
         </div>
 

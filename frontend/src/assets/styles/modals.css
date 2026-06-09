@@ -221,7 +221,6 @@
   margin-top: 4px;
 }
 
-/* Главная кнопка (Создать / Сохранить) */
 .modal-btn-main {
   flex: 1;
   padding: 12px 20px;
@@ -233,6 +232,10 @@
   border-radius: var(--border-radius-sm); /* 8px */
   cursor: pointer;
   font-family: var(--font-main);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
   transition: background-color 0.15s ease, transform 0.1s ease;
 }
 

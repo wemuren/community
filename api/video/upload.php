@@ -29,10 +29,10 @@ try {
     if (!$dbUser) throw new Exception("Пользователь не найден");
 
     $is_premium = ((int)$dbUser['is_paid'] === 1);
-    $max_bytes = $is_premium ? (2048 * 1024 * 1024) : (100 * 1024 * 1024);
+    $max_bytes = $is_premium ? (1024 * 1024 * 1024) : (100 * 1024 * 1024);
 
     if ($_FILES['video']['size'] > $max_bytes) {
-        $limit_text = $is_premium ? "2ГБ" : "100МБ";
+        $limit_text = $is_premium ? "1ГБ" : "100МБ";
         throw new Exception("Файл слишком велик. Ваш лимит: $limit_text");
     }
 

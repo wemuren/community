@@ -153,3 +153,25 @@ a {
 .avatar-subs-list.avatar-initials span {
   font-size: 18px;
 }
+
+/* Глобальная иконка валюты с маской */
+.currency-icon {
+  display: inline-block;
+  vertical-align: middle;
+  width: 20px;
+  height: 20px;
+  background-color: var(--primary-red); /* По умолчанию красная на светлом/белом фоне */
+  mask: url('./assets/img/money.svg') no-repeat center;
+  -webkit-mask: url('./assets/img/money.svg') no-repeat center;
+  mask-size: contain;
+  -webkit-mask-size: contain;
+  margin-left: 4px;
+  flex-shrink: 0;
+}
+
+/* На красном фоне заливка белым */
+.featured-card .currency-icon,
+.modal-btn-main .currency-icon,
+.premium-button .currency-icon {
+  background-color: var(--white) !important;
+}

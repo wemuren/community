@@ -66,8 +66,24 @@
   color: #00B341;
 }
 
+.admin-stat-value.money .currency-icon {
+  background-color: #00B341 !important;
+  width: 24px;
+  height: 24px;
+  vertical-align: middle;
+  margin-left: 6px;
+}
+
 .admin-stat-value.critical {
   color: var(--primary-red);
+}
+
+.admin-stat-value.critical .currency-icon {
+  background-color: var(--primary-red) !important;
+  width: 24px;
+  height: 24px;
+  vertical-align: middle;
+  margin-left: 6px;
 }
 
 .admin-stat-value.muted {

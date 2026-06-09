@@ -52,7 +52,7 @@ const Premium = () => {
     if (cleanNumber.length < 16) return alert("Введите 16 цифр карты");
     if (cardData.date.length < 5) return alert("Введите дату в формате ММ/ГГ");
     
-    if (!window.confirm(`Подтверждаете оплату ${subPrice} ₸?`)) return;
+    if (!window.confirm(`Подтверждаете оплату ${subPrice} ед.?`)) return;
 
     try {
       const res = await axios.post(`${API_BASE_URL}/billing/process_payment.php`, {
@@ -100,7 +100,7 @@ const Premium = () => {
 
       <div className="premium-grid">
         {/* Карточка Промокода */}
-        <div className="premium-card-bento">
+        <div className="premium-card-bento promo-card">
           <h3>Активация кода</h3>
           <div className="premium-input-container">
             <input 
@@ -117,8 +117,8 @@ const Premium = () => {
 
         {/* Карточка Подписки */}
         <div className="premium-card-bento featured-card">
-          <h3>Месячная подписка</h3>
-          <div className="price-display">{subPrice} <span>₸ / мес</span></div>
+          <h3>Оформить подписку</h3>
+          <div className="price-display">{subPrice}<span className="currency-icon"></span><span> / мес</span></div>
           <button className="premium-btn-main" onClick={() => setIsPayModalOpen(true)}>Купить подписку</button>
         </div>
       </div>
@@ -136,7 +136,7 @@ const Premium = () => {
 
             <form onSubmit={handlePayment} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
               <div className="input-group">
-                <label style={{ fontSize: '14px', fontWeight: 500, marginBottom: '8px' }}>Номер карты</label>
+                <label className="premium-label">Номер карты</label>
                 <input 
                   type="text"
                   placeholder="0000 0000 0000 0000"
@@ -147,9 +147,9 @@ const Premium = () => {
                 />
               </div>
 
-              <div className="modal-action-buttons">
-                <div className="input-group" style={{ flex: 1 }}>
-                  <label style={{ fontSize: '14px', fontWeight: 500, marginBottom: '8px' }}>ММ/ГГ</label>
+              <div className="modal-action-buttons" style={{ alignItems: 'flex-start' }}>
+                <div className="input-group" style={{ flex: 1, width: '50%' }}>
+                  <label className="premium-label">ММ/ГГ</label>
                   <input 
                     type="text"
                     placeholder="12/26"
@@ -159,8 +159,8 @@ const Premium = () => {
                     required
                   />
                 </div>
-                <div className="input-group" style={{ flex: 1 }}>
-                  <label style={{ fontSize: '14px', fontWeight: 500, marginBottom: '8px' }}>CVC</label>
+                <div className="input-group" style={{ flex: 1, width: '50%' }}>
+                  <label className="premium-label">CVC</label>
                   <input 
                     type="password"
                     placeholder="***"
@@ -172,8 +172,8 @@ const Premium = () => {
                 </div>
               </div>
 
-              <button type="submit" className="modal-btn-main" style={{ marginTop: '12px', width: '100%' }}>
-                Оплатить {subPrice} ₸
+              <button type="submit" className="modal-btn-main" >
+                Оплатить {subPrice}<span className="currency-icon"></span>
               </button>
             </form>
           </div>

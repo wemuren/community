@@ -88,7 +88,7 @@ const StudioVideos = () => {
       </div>
 
       {/* Интегрированная сетка видеороликов из video-card.css */}
-      <div className="video-grid" style={{ marginTop: '32px' }}>
+      <div className="video-grid">
         {videos.map(v => {
           const viewsCount = parseInt(v.views) || 0;
           const likesCount = parseInt(v.likes_count) || 0;
@@ -130,18 +130,18 @@ const StudioVideos = () => {
                   <span className="video-title">{v.title}</span>
                   
                   {/* ИНДАСТРИАЛ СТРОКА СТАТИСТИКИ С ПРАВИЛЬНЫМИ СКЛОНЕНИЯМИ СЛОВ */}
-                  <div className="video-meta-row" style={{ marginTop: '4px' }}>
-                    <span className="video-meta-item" style={{ gap: '6px' }}>
+                  <div className="video-meta-row">
+                    <span className="video-meta-item">
                       <Eye size={14} strokeWidth={2} style={{ opacity: 0.7 }} />
                       {formatCount(viewsCount)} {getPluralForm(viewsCount, 'просмотр', 'просмотра', 'просмотров')}
                     </span>
                     
-                    <span className="video-meta-item" style={{ gap: '6px' }}>
+                    <span className="video-meta-item">
                       <Heart size={14} strokeWidth={2} style={{ opacity: 0.7 }} />
                       {formatCount(likesCount)} {getPluralForm(likesCount, 'лайк', 'лайка', 'лайков')}
                     </span>
                     
-                    <span className="video-meta-item" style={{ gap: '6px' }}>
+                    <span className="video-meta-item">
                       <Folder size={14} strokeWidth={2} style={{ opacity: 0.7 }} />
                       {formatCount(savesCount)} {getPluralForm(savesCount, 'сохранение', 'сохранения', 'сохранений')}
                     </span>

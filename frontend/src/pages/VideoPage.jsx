@@ -50,6 +50,7 @@ const VideoPage = () => {
   const [subLoading, setSubLoading] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [similarVideos, setSimilarVideos] = useState([]);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const authUser = useMemo(() => getAuthUser(), []);
 
@@ -190,7 +191,7 @@ const VideoPage = () => {
           )}
 
           {/* Заголовок */}
-          <h2 className="vp-title">{video.title}</h2>
+          <h2 className={`vp-title ${isExpanded ? 'expanded' : 'collapsed'}`}>{video.title}</h2>
 
           {/* Статистика */}
           <div className="vp-stats-row">
@@ -268,10 +269,18 @@ const VideoPage = () => {
             </div>
           </div>
 
+          {video.description && (
+            <button className="vp-expand-btn" onClick={() => setIsExpanded(!isExpanded)}>
+              {isExpanded ? 'Свернуть описание' : 'Посмотреть описание'}
+            </button>
+          )}
+
           {/* Описание */}
           {video.description && (
-            <div className="video-description">
-              <p>{video.description}</p>
+            <div className={`video-description-container ${isExpanded ? 'expanded' : 'collapsed'}`}>
+              <div className="video-description">
+                <p>{video.description}</p>
+              </div>
             </div>
           )}
         </div>

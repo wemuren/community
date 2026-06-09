@@ -271,7 +271,7 @@ const VideoUpload = () => {
             {isUploading && (
               <div className="upload-progress-container">
                 <div className="progress-info">
-                  <span>{uploadProgress < 100 ? `Загрузка пакета: ${uploadProgress}%` : 'Обработка медиа-потока сервером...'}</span>
+                  <span>{uploadProgress < 100 ? `Загрузка видео: ${uploadProgress}%` : 'Обработка видео сервером...'}</span>
                 </div>
                 <div className="progress-bar-bg">
                   <div className="progress-bar-fill" style={{ width: `${uploadProgress}%` }}></div>

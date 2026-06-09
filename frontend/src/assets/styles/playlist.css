@@ -139,6 +139,18 @@
   color: var(--primary-red) !important;
 }
 
+/* Активный лайк плейлиста: красный контур + красная заливка */
+.playlist-action-badge.badge-heart.is-active svg {
+  color: var(--primary-red) !important;
+  fill: var(--primary-red) !important;
+}
+
+/* При ховере на активный лайк: инверсия в черный контур + без заливки */
+.playlist-action-badge.badge-heart.is-active:hover svg {
+  color: #000 !important;
+  fill: none !important;
+}
+
 /* Блок счетчика видео в правом нижнем углу обложки (Из экспорта Фигмы) */
 .playlist-video-counter {
   position: absolute;
@@ -197,6 +209,22 @@
   margin: 0 8px; /* Симметричный зазор точек разделителя */
   vertical-align: middle;
   opacity: 0.6;
+}
+
+/* Адаптив для подписей плейлистов под ноутбуки (до 1440px) */
+@media (max-width: 1440px) {
+  .playlist-meta-row {
+    font-size: 13px; /* Уменьшаем шрифт, чтобы вмещалось в одну строку */
+    flex-wrap: nowrap; /* Не допускаем переноса на новую строку */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+  }
+
+  .playlist-meta-item:not(:last-child)::after {
+    margin: 0 5px; /* Чуть компактнее отступы точек */
+  }
 }
 
 /* Верхний тулбар страницы плейлистов */

@@ -64,7 +64,7 @@ const AdminDashboard = () => {
         {/* БЛОК ДЕНЕГ */}
         <div className="admin-stat-card clickable" onClick={() => navigate('/admin/monetization')}>
           <span className="admin-stat-label">Текущий оборот</span>
-          <h2 className="admin-stat-value money">{stats.monthly_earnings} Т</h2>
+          <h2 className="admin-stat-value money">{stats.monthly_earnings}<span className="currency-icon"></span></h2>
           <span className="studio-field-subtext">Доход с премиум</span>
         </div>
 

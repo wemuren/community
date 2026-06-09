@@ -1,10 +1,12 @@
 /* ==========================================================================
-   COMMUNITY PREMIUM DESIGN SYSTEM SPEC
+   COMMUNITY PREMIUM DESIGN SYSTEM SPEC (PREMIUM BRANDED EDITION)
    ========================================================================== */
+
+@import "./modals.css";
 
 .premium-page-wrapper {
   background: var(--white);
-  padding: 24px;
+  padding: 40px;
   border-radius: var(--border-radius-lg); /* 24px */
   min-height: 100vh;
   width: 100%;
@@ -14,18 +16,19 @@
 /* Центральный Hero блок */
 .premium-hero {
   text-align: center;
-  margin: 40px 0 56px;
+  margin: 40px 0 64px;
 }
 
 .premium-hero h1 {
-  font-size: var(--h1); /* 32px */
+  font-family: var(--font-main);
+  font-size: 38px;
   font-weight: 700;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
   color: var(--text-main);
   text-transform: uppercase;
+  line-height: 1.2;
 }
 
-/* Эффект свечения */
 .red-shine {
   color: var(--primary-red);
 }
@@ -34,7 +37,7 @@
 .premium-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 24px;
+  gap: 32px;
   max-width: 900px;
   margin: 0 auto;
   align-items: stretch;
@@ -42,8 +45,7 @@
 
 /* Атомарный bento блок карточки */
 .premium-card-bento {
-  background: var(--bg-card); /* #F4F4F4 */
-  padding: 40px 32px;
+  padding: 48px 40px;
   border-radius: var(--border-radius-lg); /* 24px */
   display: flex;
   flex-direction: column;
@@ -51,50 +53,109 @@
   align-items: center;
   gap: 32px;
   box-sizing: border-box;
-  border: 1px solid transparent;
-  min-height: 280px;
+  min-height: 360px; /* Увеличена высота для вместительности и воздуха */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .premium-card-bento h3 {
-  font-size: var(--h2); /* 24px */
+  font-family: var(--font-main);
+  font-size: 22px;
   font-weight: 600;
-  color: var(--text-main);
   margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-/* Акцентная карточка подписки с рамкой */
-.featured-card {
-  border: 2px solid var(--text-main);
+/* Карточка Промокода — Белая с тенью, без обводки */
+.promo-card {
   background: var(--white);
-  box-shadow: var(--shadow-soft);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.06);
+  color: var(--text-main);
+}
+
+.promo-card h3 {
+  color: var(--text-main);
+}
+
+/* Карточка Купить — Насыщенного красного цвета, без обводки */
+.featured-card {
+  background: var(--primary-red);
+  box-shadow: 0 12px 32px rgba(194, 0, 0, 0.15);
+  color: var(--white);
+}
+
+.featured-card h3 {
+  color: var(--white);
 }
 
 /* Отображение цены подписки */
 .price-display {
-  font-size: 48px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 54px;
   font-weight: 700;
   color: var(--text-main);
   line-height: 1;
   font-family: var(--font-main);
 }
 
+.price-display .currency-icon {
+  width: 32px; /* Увеличенный размер для крупной цены */
+  height: 32px;
+  margin-left: 2px;
+}
+
+.featured-card .price-display {
+  color: var(--white);
+}
+
 .price-display span {
-  font-size: var(--descr); /* 16px */
+  font-size: 18px;
   color: var(--text-muted);
   font-weight: 400;
 }
 
-/* Контейнер ввода для промокода */
+.featured-card .price-display span {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Поля ввода (без обводки) */
 .premium-input-container {
   width: 100%;
 }
 
+.promo-card .edit-input-field {
+  width: 100%;
+  padding: 14px 18px;
+  background: var(--bg-card);
+  border: none; /* Без обводки */
+  border-radius: var(--border-radius-sm);
+  font-size: 15px;
+  font-family: var(--font-main);
+  color: var(--text-main);
+  outline: none;
+  box-sizing: border-box;
+  text-align: center;
+  letter-spacing: 1px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.promo-card .edit-input-field:focus {
+  background-color: #ededed;
+  border: none;
+  outline: none;
+}
+
 /* Статус-сообщения */
 .premium-status-text {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--primary-red);
-  font-weight: 500;
-  margin: 0;
+  font-weight: 600;
+  margin: -16px 0 0 0;
   text-align: center;
 }
 
@@ -109,60 +170,106 @@
   letter-spacing: 4px;
 }
 
-/* Кнопки управления (Синхронизация с modals.css и layout.css) */
+/* Кнопки управления */
+
+/* Кнопка "Купить" — Белая с красным текстом на красном Bento-блоке */
 .premium-btn-main {
   width: 100%;
-  padding: 14px;
-  background: var(--primary-red);
-  color: var(--white);
-  font-weight: 600;
-  font-size: var(--descr); /* 16px */
+  padding: 16px;
+  background: var(--white);
+  color: var(--primary-red);
+  font-weight: 700;
+  font-size: 15px;
   border-radius: var(--border-radius-sm); /* 8px */
   text-align: center;
-  transition: background-color 0.15s ease, transform 0.1s ease;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
 }
 
 .premium-btn-main:hover {
-  background-color: #a30000;
+  background-color: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .premium-btn-main:active {
   transform: scale(0.98);
 }
 
+/* Кнопка "Активировать" — Черная/Темная */
 .premium-btn-sub {
   width: 100%;
-  padding: 14px;
+  padding: 16px;
   background: var(--text-main);
   color: var(--white);
-  font-weight: 600;
-  font-size: var(--descr); /* 16px */
+  font-weight: 700;
+  font-size: 15px;
   border-radius: var(--border-radius-sm);
   text-align: center;
+  border: none;
+  cursor: pointer;
   transition: opacity 0.15s ease, transform 0.1s ease;
 }
 
 .premium-btn-sub:hover {
-  opacity: 0.85;
+  opacity: 0.9;
 }
 
 .premium-btn-sub:active {
   transform: scale(0.98);
 }
 
+/* Стилизация полей модалки (без обводки) */
+.playlist-modal-content .edit-input-field {
+  background: var(--bg-card);
+  border: none; /* Без обводки */
+  padding: 14px 16px;
+  font-size: 15px;
+}
+
+.playlist-modal-content .edit-input-field:focus {
+  background-color: #ededed;
+  border: none;
+  outline: none;
+}
+
+.premium-label {
+ text-transform: none;
+ font-size: var(--descr) !important;
+ font-weight: 400 !important;
+}
+
 /* АДАПТИВНОСТЬ ПОД МОБИЛЬНЫЕ УСТРОЙСТВА */
 @media (max-width: 768px) {
+  .premium-page-wrapper {
+    padding: 24px 16px;
+  }
+
   .premium-grid {
     grid-template-columns: 1fr;
-    gap: 16px;
+    gap: 20px;
   }
   
   .premium-card-bento {
-    padding: 32px 24px;
-    min-height: unset;
+    padding: 36px 24px;
+    min-height: 320px;
   }
   
-  .premium-hero h1 {
-    font-size: 26px;
+  .premium-hero {
+    margin: 24px 0 40px;
   }
+
+  .premium-hero h1 {
+    font-size: 28px;
+  }
+}
+
+.input-group label.premium-label {
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: var(--text-main) !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  margin-bottom: 8px !important;
+  display: block !important;
 }

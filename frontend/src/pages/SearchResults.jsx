@@ -28,7 +28,7 @@ const SearchResults = () => {
     const fetchResults = async () => {
       setLoading(true);
       try {
-        const res = await axiosInstance.get(`${API_BASE_URL}/search/global_search.php?q=${encodeURIComponent(query)}`);
+        const res = await axiosInstance.get(`${API_BASE_URL}/search/global_search.php?q=${encodeURIComponent(query)}&viewer_id=${authUser?.id || 0}`);
         setResults(res.data);
       } catch (err) {
         console.error("Search error:", err);
@@ -138,6 +138,7 @@ const SearchResults = () => {
                 playlist={pl}
                 authUser={authUser}
                 onEdit={handleEditPlaylistPlaceholder}
+                fetchPlaylists={fetchResults}
               />
             ))}
           </div>

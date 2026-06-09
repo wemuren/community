@@ -155,7 +155,17 @@ button.nav-link {
   line-height: 1.3;
 }
 
-.premium-price,
+.premium-price {
+  color: rgba(0, 0, 0, 0.50);  /* Фигма: rgba(0,0,0,0.50) */
+  font-size: 13px;
+  font-weight: 400;
+  margin: 0;
+  line-height: 1.3;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
 .premium-days {
   color: rgba(0, 0, 0, 0.50);  /* Фигма: rgba(0,0,0,0.50) */
   font-size: 13px;
@@ -264,23 +274,195 @@ button.nav-link {
   flex-direction: column;
 }
 
-@media (max-height: 850px) {
-  .logo-container {
-    margin-bottom: 20px;
+@media (max-width: 1440px) or (max-height: 900px) {
+  .sidebar {
+    width: 250px; /* Сужаем боковую панель, высвобождая место под основной контент */
+    min-width: 250px;
+    padding: 24px 16px; /* Меньше внутренние отступы — больше пространства */
   }
+
+  .logo-container {
+    margin-bottom: clamp(16px, 3vh, 32px); /* Уменьшаем отступ под лого */
+  }
+
+  .nav-menu {
+    gap: 20px; /* Увеличено расстояние между ссылками разделов */
+  }
+
   .nav-link {
-    font-size: 15px;
+    font-size: 14px; /* Делаем текст ссылок меньше */
     gap: 10px;
   }
+
+  .nav-link svg {
+    width: 16px; /* Соответственно уменьшаем иконки */
+    height: 16px;
+  }
+
   .premium-card {
     padding: 12px;
-    gap: 8px;
+    gap: 12px;
   }
+
   .premium-title {
-    font-size: 15px;
+    font-size: 13px; /* Уменьшаем текст премиум плашки */
   }
+
+  .premium-price,
+  .premium-days {
+    font-size: 11px;
+  }
+
   .premium-button {
     padding: 8px;
-    font-size: 16px; /* Чуть уменьшаем под масштаб ноутбука */
+    font-size: 14px;
+  }
+
+  .footer-links {
+    gap: 8px !important;
+  }
+
+  .footer-links a,
+  .footer-links span {
+    font-size: 11px; /* Уменьшаем копирайты и соглашения */
+  }
+
+  .page-wrapper {
+    padding: 24px; /* Даем больше свободного пространства (отступов) контенту вокруг */
+  }
+}
+
+/* --- МОБИЛЬНЫЕ СТИЛИ (768px и меньше) --- */
+@media (max-width: 768px) {
+  /* Боковое меню превращается в выдвижную панель (Drawer) */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 280px;
+    min-width: 280px;
+    z-index: 1000;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: none;
+    border-right: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Задний полупрозрачный фон */
+  .sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 999;
+  }
+
+  /* Адаптация шапки под мобильные */
+  .header {
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Мобильный логотип в шапке */
+  .header-logo-mobile {
+    display: block;
+    cursor: pointer;
+    height: 32px;
+  }
+
+  .header-logo-mobile img {
+    height: 100%;
+    width: auto;
+    display: block;
+  }
+
+  /* Поиск в шапке сужается, чтобы влезть */
+  .search-wrapper {
+    width: 60%;
+    padding: 8px 16px;
+  }
+
+  /* Добавляем отступ снизу под нижний бар */
+  .main-content {
+    padding-bottom: 60px;
+  }
+
+  /* Нижний бар навигации */
+  .mobile-bottom-bar {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: var(--white);
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.03);
+    z-index: 100;
+    align-items: center;
+    justify-content: space-around;
+  }
+
+  .mobile-bottom-link {
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    transition: color 0.2s ease, background-color 0.2s ease;
+  }
+
+  .mobile-bottom-link.active {
+    color: var(--primary-red) !important;
+  }
+
+  /* Специальные стили для творческой студии на мобильных */
+  .studio-header {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  .studio-logo-mobile {
+    height: 24px !important; /* Делаем логотип немного меньше */
+  }
+}
+
+/* На мобильных телефонах убираем боковые отступы */
+@media (max-width: 600px) {
+  .page-wrapper {
+    padding: 16px 0 !important;
+  }
+  .home-container {
+    padding: 16px 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+}
+
+/* На компьютере скрываем мобильные элементы */
+@media (min-width: 769px) {
+  .header-logo-mobile,
+  .mobile-bottom-bar,
+  .sidebar-overlay,
+  .studio-header {
+    display: none !important;
   }
 }

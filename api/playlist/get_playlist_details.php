@@ -12,6 +12,7 @@ if (!isset($_GET['id'])) {
 }
 
 $id = (int)$_GET['id'];
+$viewer_id = isset($_GET['viewer_id']) ? (int)$_GET['viewer_id'] : 0;
 
 try {
     // 1. Инфа о плейлисте (ИСПРАВЛЕНО: Теперь с джойном юзера, чтобы забрать его никнейм)
@@ -34,13 +35,21 @@ try {
                                 u.full_name, 
                                 u.username, 
                                 u.avatar, 
-                                u.is_paid 
+                                u.is_paid,
+                                (SELECT COUNT(*) 
+                                 FROM playlist_videos pv2 
+                                 JOIN playlists p ON pv2.playlist_id = p.id 
+                                 WHERE pv2.video_id = v.id AND p.user_id = ? AND p.type = 'liked') as is_liked,
+                                (SELECT COUNT(*) 
+                                 FROM playlist_videos pv3 
+                                 JOIN playlists p ON pv3.playlist_id = p.id 
+                                 WHERE pv3.video_id = v.id AND p.user_id = ? AND p.type = 'watch_later') as in_later
                              FROM videos v 
                              JOIN playlist_videos pv ON v.id = pv.video_id 
                              JOIN users u ON v.user_id = u.id
                              WHERE pv.playlist_id = ? 
                              ORDER BY pv.id DESC");
-    $v_stmt->execute([$id]);
+    $v_stmt->execute([$viewer_id, $viewer_id, $id]);
     $videos = $v_stmt->fetchAll(PDO::FETCH_ASSOC);
 
     echo json_encode([

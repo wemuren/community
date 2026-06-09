@@ -11,8 +11,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 require_once 'admin_auth.php';
 checkAdmin($pdo, $_REQUEST['admin_id'] ?? 0);
 
-// Всегда пишем в локальный файл рядом со скриптом
-$logPath = __DIR__ . '/server_errors.log';
+// Всегда пишем в файл логов в основной директории api
+$logPath = dirname(__DIR__) . '/server_errors.log';
 
 // Направляем PHP-ошибки в этот файл
 ini_set('error_log', $logPath);

@@ -29,9 +29,14 @@ const Layout = () => {
   const [searchResults, setSearchResults] = useState(null);
   const [searchLoading, setSearchLoading] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const debounceTimer = useRef(null);
   const searchRef = useRef(null);
+
+  const handleNavClick = () => {
+    setIsSidebarOpen(false);
+  };
 
   const getPluralForm = (number, titles) => {
     const cases = [2, 0, 1, 1, 1, 2];
@@ -80,7 +85,7 @@ const Layout = () => {
     debounceTimer.current = setTimeout(async () => {
       try {
         const res = await axios.get(
-          `${API_BASE_URL}/search/global_search.php?q=${encodeURIComponent(val.trim())}`
+          `${API_BASE_URL}/search/global_search.php?q=${encodeURIComponent(val.trim())}&viewer_id=${user?.id || 0}`
         );
         setSearchResults(res.data);
       } catch (err) {
@@ -133,38 +138,42 @@ const Layout = () => {
 
   return (
     <div className="app-container">
-      <aside className="sidebar">
+      {isSidebarOpen && (
+        <div className="sidebar-overlay" onClick={() => setIsSidebarOpen(false)} />
+      )}
+
+      <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-top">
-          <div className="logo-container" style={{ cursor: 'pointer' }} onClick={() => navigate('/')}>
+          <div className="logo-container" style={{ cursor: 'pointer' }} onClick={() => { navigate('/'); setIsSidebarOpen(false); }}>
             <img src={logo} alt="Community Logo" />
           </div>
           <nav className="nav-menu">
-            <NavLink to="/" className="nav-link">
+            <NavLink to="/" className="nav-link" onClick={handleNavClick}>
               <House size={18} strokeWidth={2} />
               <span>Главная</span>
             </NavLink>
-            <NavLink to="/subs" className="nav-link">
+            <NavLink to="/subs" className="nav-link" onClick={handleNavClick}>
               <Users size={18} strokeWidth={2} />
               <span>Подписки</span>
             </NavLink>
-            <NavLink to="/playlists" className="nav-link">
+            <NavLink to="/playlists" className="nav-link" onClick={handleNavClick}>
               <ListVideo size={18} strokeWidth={2} />
               <span>Плейлисты</span>
             </NavLink>
-            <NavLink to={user ? `/profile/${user.id}` : '/login'} className="nav-link">
+            <NavLink to={user ? `/profile/${user.id}` : '/login'} className="nav-link" onClick={handleNavClick}>
               <User size={18} strokeWidth={2} />
               <span>Профиль</span>
             </NavLink>
 
             {hasChannel && (
-              <NavLink to="studio/profile" className="nav-link">
+              <NavLink to="studio/profile" className="nav-link" onClick={handleNavClick}>
                 <PaintbrushVertical size={18} strokeWidth={2} />
                 <span>Творческая студия</span>
               </NavLink>
             )}
 
             {hasChannel && !isBanned && (
-              <NavLink title="Загрузить новое видео" to="/studio/upload" className="nav-link">
+              <NavLink title="Загрузить новое видео" to="/studio/upload" className="nav-link" onClick={handleNavClick}>
                 <Plus size={18} strokeWidth={2} />
                 <span>Загрузить видео</span>
               </NavLink>
@@ -192,22 +201,22 @@ const Layout = () => {
             ) : (
               <>
                 <p className="premium-title">Полный доступ к контенту</p>
-                <p className="premium-price">Всего за {price} единиц валюты!</p>
+                <p className="premium-price">Всего за {price}<span className="currency-icon"></span>!</p>
               </>
             )}
           </div>
-          <button className="premium-button" onClick={() => navigate('/premium')}>
+          <button className="premium-button" onClick={() => { navigate('/premium'); setIsSidebarOpen(false); }}>
             {activePremium ? 'ПРОДЛИТЬ' : expiredPremium ? 'РАЗБЛОКИРОВАТЬ' : 'ОФОРМИТЬ'}
           </button>
         </div>
 
         <div className="sidebar-bottom">
           <nav className="nav-menu">
-            <NavLink to="/settings" className="nav-link">
+            <NavLink to="/settings" className="nav-link" onClick={handleNavClick}>
               <Settings size={18} strokeWidth={2} />
               <span>Настройки</span>
             </NavLink>
-            <button onClick={handleLogout} className="nav-link">
+            <button onClick={() => { handleLogout(); setIsSidebarOpen(false); }} className="nav-link">
               <LogOut size={18} strokeWidth={2} transform="rotate(180)" />
               <span>Выйти</span>
             </button>
@@ -215,15 +224,15 @@ const Layout = () => {
           <div className="footer-links">
 
             <div className='lay-row'>
-              <NavLink to="/landing"><span>О сервисе</span></NavLink>
+              <NavLink to="/landing" onClick={handleNavClick}><span>О сервисе</span></NavLink>
               <a href="https://vk.com/wemurr" target="_blank" rel="noopener noreferrer">
                 <span>Поддержка</span>
               </a>
             </div>
 
-            <NavLink to="/terms"><span>Пользовательское соглашение</span></NavLink>
+            <NavLink to="/terms" onClick={handleNavClick}><span>Пользовательское соглашение</span></NavLink>
 
-            <NavLink to="/privacy"><span>Политика конфиденциальности</span></NavLink>
+            <NavLink to="/privacy" onClick={handleNavClick}><span>Политика конфиденциальности</span></NavLink>
 
           </div>
         </div>
@@ -231,6 +240,9 @@ const Layout = () => {
 
       <main className="main-content">
         <header className="header">
+          <div className="header-logo-mobile" onClick={() => setIsSidebarOpen(true)}>
+            <img src={logo} alt="Community Logo" />
+          </div>
           <div className="search-wrapper" ref={searchRef}>
             <div className="search-icon" onClick={() => {
               if (searchQuery.trim()) {
@@ -265,7 +277,6 @@ const Layout = () => {
                 {!searchLoading && hasResults && (
                   <>
                     {/* КАНАЛЫ */}
-                    {/* КАНАЛЫ */}
                     {searchResults.users?.length > 0 && (
                       <div className="search-dropdown-section">
                         <div className="search-dropdown-label">Каналы</div>
@@ -275,8 +286,6 @@ const Layout = () => {
                             className="search-dropdown-item"
                             onClick={() => handleSelect(`/profile/${u.id}`)}
                           >
-                            {/* ИСПРАВЛЕНО: Убрали лишний div class="search-dd-avatar", 
-            теперь выводим чистый компонент, который сам возьмет размеры 40x40px */}
                             <UserAvatar
                               user={u}
                               sizeClass="avatar-mini"
@@ -361,6 +370,20 @@ const Layout = () => {
           <Outlet />
         </section>
       </main>
+
+      <nav className="mobile-bottom-bar">
+        <NavLink to="/" className="mobile-bottom-link" onClick={handleNavClick}>
+          <House size={24} strokeWidth={2} />
+        </NavLink>
+        {user && !isBanned && (
+          <NavLink to="/studio/upload" className="mobile-bottom-link" onClick={handleNavClick}>
+            <Plus size={24} strokeWidth={2} />
+          </NavLink>
+        )}
+        <NavLink to={user ? `/profile/${user.id}` : '/login'} className="mobile-bottom-link" onClick={handleNavClick}>
+          <User size={24} strokeWidth={2} />
+        </NavLink>
+      </nav>
     </div>
   );
 };

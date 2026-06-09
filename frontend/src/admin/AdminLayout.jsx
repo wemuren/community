@@ -1,10 +1,11 @@
 import React from 'react';
-import { NavLink, Outlet, Navigate } from 'react-router-dom';
+import { NavLink, Outlet, Navigate, useNavigate } from 'react-router-dom';
 import '../assets/styles/layout.css'; // Используем синхронизированные стили лайаута
 import logo from '../assets/img/logo.svg';
 import { LayoutDashboard, Users, Flag, Tags, Crown, HeartPulse, LogOut } from 'lucide-react';
 
 const AdminLayout = () => {
+  const navigate = useNavigate();
   const authUser = JSON.parse(localStorage.getItem('user'));
 
   // Защита: если не админ — на выход
@@ -17,7 +18,7 @@ const AdminLayout = () => {
       {/* Левая панель — Сайдбар */}
       <aside className="sidebar admin-sidebar">
         <div className="sidebar-top">
-          <div className="logo-container" style={{ cursor: 'pointer' }}>
+          <div className="logo-container" style={{ cursor: 'pointer' }} onClick={() => navigate('/admin')}>
             <img src={logo} alt="Community Logo" />
           </div>
 

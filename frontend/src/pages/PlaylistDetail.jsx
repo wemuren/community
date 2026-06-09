@@ -25,7 +25,7 @@ const PlaylistDetail = () => {
 
   const fetchPlaylistContent = useCallback(async () => {
     try {
-      const res = await axios.get(`${API_BASE_URL}/playlist/get_playlist_details.php?id=${id}`);
+      const res = await axios.get(`${API_BASE_URL}/playlist/get_playlist_details.php?id=${id}&viewer_id=${authUser?.id || 0}`);
       setPlaylist(res.data.playlist);
       setVideos(res.data.videos);
     } catch (err) { 

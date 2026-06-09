@@ -605,8 +605,22 @@
 
 @media (max-width: 600px) {
   .video-page-container {
-    padding: 12px;
+    padding: 0 0 20px 0 !important;
+    border-radius: 0 !important;
     gap: 16px;
+    background: transparent !important;
+  }
+
+  .player-wrapper {
+    border-radius: 0 !important;
+  }
+
+  .video-details,
+  .comments-section,
+  .video-sidebar {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+    box-sizing: border-box;
   }
 
   .sidebar-grid {
@@ -622,6 +636,35 @@
     font-size: var(--h2); /* чуть меньше на мобиле */
   }
 
+  /* Сворачивание заголовка */
+  .vp-title.collapsed {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Сворачивание описания */
+  .video-description-container.collapsed {
+    display: none;
+  }
+
+  .vp-expand-btn {
+    display: block;
+    background: var(--bg-card);
+    border: none;
+    color: var(--text-main);
+    font-weight: 600;
+    font-size: 14px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 4px;
+    align-self: flex-start;
+    font-family: var(--font-main);
+  }
+
   .comment-input-block {
     flex-direction: column;
     align-items: stretch;
@@ -629,5 +672,15 @@
 
   .comment-send-btn {
     justify-content: center;
+  }
+}
+
+/* На десктопе скрываем кнопку и всегда показываем описание */
+@media (min-width: 601px) {
+  .vp-expand-btn {
+    display: none !important;
+  }
+  .video-description-container.collapsed {
+    display: block !important;
   }
 }
