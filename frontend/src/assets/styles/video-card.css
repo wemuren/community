@@ -197,12 +197,16 @@
   display: flex;
   flex-direction: row;
   align-items: center; /* Выравнивает и текст, и точки строго по одной оси */
-  flex-wrap: wrap;
+  flex-wrap: nowrap; /* Не допускаем переноса на новую строку */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   gap: 0;
   color: var(--text-muted);
-  font-size: var(--descr);
+  font-size: 13px; /* Уменьшаем шрифт, чтобы вмещалось в одну строку на всех ПК и ноутбуках */
   font-weight: 400;
   line-height: 1.2;
+  width: 100%;
 }
 
 .video-meta-item {
@@ -216,38 +220,14 @@
   /* Вставляем честный юникод точки вместо пустого блока с фоном */
   content: "·"; 
   display: inline-block;
-  
-  /* Асимметричный маргин для компенсации gap: 4px и сохранения симметрии в 8px по бокам */
-  margin: 0 8px 0 4px; 
-  
-  /* Задаем цвет и легкую прозрачность, как у остального muted текста */
+  margin: 0 5px 0 1px; /* Симметрия в 5px */
   color: var(--text-muted); 
   opacity: 0.6;
-  
-  /* Идеальное центрирование относительно базовой линии шрифта */
   vertical-align: middle; 
-  
-  /* Сбрасываем старые свойства, чтобы они не конфликтовали */
   width: auto;
   height: auto;
   background: none;
   border-radius: 0;
-}
-
-/* Адаптив для подписей видео под ноутбуки (до 1440px) */
-@media (max-width: 1460px) {
-  .video-meta-row {
-    font-size: 13px; /* Уменьшаем шрифт, чтобы вмещалось в одну строку */
-    flex-wrap: nowrap; /* Не допускаем переноса на новую строку */
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    width: 100%;
-  }
-
-  .video-meta-item:not(:last-child)::after {
-    margin: 0 5px 0 1px; /* Компенсируем gap на ноутбуках для симметрии в 5px */
-  }
 }
 
 /* Мобильные телефоны (600px и меньше) — карточки во весь экран, без скруглений */
