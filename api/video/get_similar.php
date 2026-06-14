@@ -19,21 +19,21 @@ try {
     $tagIds = $tagStmt->fetchAll(PDO::FETCH_COLUMN);
 
     if (empty($tagIds)) {
-        // Если у видео нет тегов, отдаем просто последние видео (кроме текущего)
-        $stmt = $pdo->prepare("SELECT v.*, u.username, u.full_name FROM videos v JOIN users u ON v.user_id = u.id WHERE v.id != ? ORDER BY v.created_at DESC LIMIT 10");
+        // Если у видео нет тегов, отдаем просто последние видео (кроме текущего) и только от активных авторов
+        $stmt = $pdo->prepare("SELECT v.*, u.username, u.full_name FROM videos v JOIN users u ON v.user_id = u.id WHERE v.id != ? AND u.is_active = 1 ORDER BY v.created_at DESC LIMIT 10");
         $stmt->execute([$videoId]);
         echo json_encode($stmt->fetchAll());
         exit;
     }
 
-    // 2. Ищем похожие видео по совпадению тегов
+    // 2. Ищем похожие видео по совпадению тегов (только от активных авторов)
     $placeholders = implode(',', array_fill(0, count($tagIds), '?'));
     $sql = "
         SELECT v.*, u.username, u.full_name, COUNT(vt.tag_id) as common_tags_count
         FROM videos v
         JOIN video_tags vt ON v.id = vt.video_id
         JOIN users u ON v.user_id = u.id
-        WHERE vt.tag_id IN ($placeholders) AND v.id != ?
+        WHERE vt.tag_id IN ($placeholders) AND v.id != ? AND u.is_active = 1
         GROUP BY v.id
         ORDER BY common_tags_count DESC, v.created_at DESC
         LIMIT 10
