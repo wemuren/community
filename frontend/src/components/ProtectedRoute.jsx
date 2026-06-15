@@ -8,7 +8,7 @@ const ProtectedRoute = () => {
 
   // Если не залогинен — редирект на регистрацию или логин
   if (!isAuthenticated) {
-    return <Navigate to="/register" replace />;
+    return <Navigate to="/landing" replace />;
   }
 
   // Если всё ок — показываем дочерние элементы (Outlet)
