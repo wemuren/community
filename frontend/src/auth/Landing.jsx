@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import '../assets/styles/landing.css';
 
 import logo  from '../assets/img/logo.svg';
@@ -547,7 +548,9 @@ export default function Landing() {
           <div className="lnd-nav" ref={headerNavRef}>
             <a href="#features" className="lnd-nav-link">Возможности</a>
             <a href="#pricing"  className="lnd-nav-link lnd-nav-link--hide-mob">Тарифы</a>
-            <button className="lnd-btn-grad lnd-btn-reg">Регистрация</button>
+           <Link to="/register" className="lnd-btn-grad lnd-btn-reg" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+              Регистрация
+            </Link>
           </div>
         </div>
       </div>
@@ -682,10 +685,10 @@ export default function Landing() {
         <div className="lnd-cta">
           <div className="lnd-cta__top">
             <div className="lnd-cta__title" ref={ctaTitleRef}>присоединяйтесь<br />к комьюнити!</div>
-            <button className="lnd-btn-grad lnd-btn-reg2" ref={ctaBtnRef}>
+           <Link to="/register" className="lnd-btn-grad lnd-btn-reg2" ref={ctaBtnRef} style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}>
               <span>Зарегистрироваться</span>
               <ArrowUpRight className="lnd-arrow-icon" />
-            </button>
+            </Link>
           </div>
           <div className="lnd-cta__bottom">
             <div className="lnd-cta__desc" ref={ctaDescRef}>Создавайте образовательный контент, развивайте собственный канал<br />и становитесь частью сообщества, где главная ценность — знания.</div>
@@ -702,9 +705,10 @@ export default function Landing() {
             <div className="lnd-footer__copy">Дипломный проект 2026</div>
           </div>
           <div className="lnd-footer__links">
-            <a href="#" className="lnd-footer__link">Политика Конфиденциальности</a>
-            <a href="#" className="lnd-footer__link">Пользовательское Соглашение</a>
-            <a href="#" className="lnd-footer__link">Поддержка</a>
+            <Link to="/privacy" className="lnd-footer__link">Политика Конфиденциальности</Link>
+            <Link to="/terms" className="lnd-footer__link">Пользовательское Соглашение</Link>
+            {/* Ссылка на поддержку — сюда ты вставишь свой URL ВКонтакте */}
+            <a href="https://vk.com/wemurr" target="_blank" rel="noopener noreferrer" className="lnd-footer__link">Поддержка</a>
           </div>
         </div>
       </div>
