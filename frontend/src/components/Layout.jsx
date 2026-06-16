@@ -201,7 +201,7 @@ const Layout = () => {
             ) : (
               <>
                 <p className="premium-title">Полный доступ к контенту</p>
-                <p className="premium-price">Всего за {price}<span className="currency-icon"></span>!</p>
+                <p className="premium-price">Всего за {price} денежек!</p>
               </>
             )}
           </div>
@@ -255,7 +255,7 @@ const Layout = () => {
             </div>
             <input
               type="text"
-              placeholder="Поиск видео, каналов, плейлистов..."
+              placeholder="Поиск"
               className="search-input"
               value={searchQuery}
               onChange={handleSearchChange}

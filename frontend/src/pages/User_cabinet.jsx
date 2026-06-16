@@ -194,8 +194,10 @@ const getPluralForm = (number, forms) => {
     );
   }
 
+  const hasBanner = profileUser.channel_created == 1 && (isPremiumActive(profileUser) || isMyProfile);
+
   return (
-    <div className="white-card profile-container">
+    <div className={`white-card profile-container ${hasBanner ? 'has-banner' : 'no-banner'}`}>
       <VideoModals
         showPlaylistModal={va.showPlaylistModal}
         setShowPlaylistModal={va.setShowPlaylistModal}

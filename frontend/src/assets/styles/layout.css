@@ -334,6 +334,12 @@ button.nav-link {
 
 /* --- МОБИЛЬНЫЕ СТИЛИ (768px и меньше) --- */
 @media (max-width: 768px) {
+  .app-container,
+  .main-content,
+  .page-wrapper {
+    background: var(--white) !important;
+  }
+
   /* Боковое меню превращается в выдвижную панель (Drawer) */
   .sidebar {
     position: fixed;
@@ -382,7 +388,7 @@ button.nav-link {
   .header-logo-mobile {
     display: block;
     cursor: pointer;
-    height: 32px;
+    height: 20px;
   }
 
   .header-logo-mobile img {
@@ -393,8 +399,26 @@ button.nav-link {
 
   /* Поиск в шапке сужается, чтобы влезть */
   .search-wrapper {
-    width: 60%;
-    padding: 8px 16px;
+    width: 58% !important;
+    padding: 6px 12px !important;
+    gap: 8px !important;
+  }
+
+  .search-input {
+    font-size: 13px !important;
+  }
+
+  .search-icon svg {
+    width: 14px !important;
+    height: 14px !important;
+  }
+
+  /* Выпадающее меню поиска побольше на мобильных */
+  .search-dropdown {
+    width: 85vw !important;
+    max-width: 340px !important;
+    right: 0 !important;
+    left: auto !important;
   }
 
   /* Добавляем отступ снизу под нижний бар */

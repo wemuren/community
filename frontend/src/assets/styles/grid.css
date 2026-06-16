@@ -110,4 +110,45 @@
     column-gap: 0px;
     padding: 0 !important;
   }
+  .tags-container {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+  .subscriptions-page .pl-top-bar,
+  .playlists-page .pl-top-bar {
+    padding: 0 16px !important;
+    margin-bottom: 20px !important;
+  }
+  .playlists-page .sub-text {
+    padding: 0 16px !important;
+  }
+  .subscriptions-page .subs-container {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+    gap: 16px !important;
+  }
+  .playlist-detail-page .playlist-detail-header {
+    padding: 0 16px !important;
+    margin-bottom: 20px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: flex-start !important;
+    align-items: flex-start !important;
+    gap: 16px !important;
+  }
+  .playlist-detail-page .playlist-detail-meta {
+    font-size: 14px !important;
+    flex-wrap: nowrap !important;
+    white-space: nowrap !important;
+    overflow-x: auto !important;
+    scrollbar-width: none !important;
+    width: 100% !important;
+  }
+  .playlist-detail-page .playlist-detail-meta::-webkit-scrollbar {
+    display: none !important;
+  }
+  .playlist-detail-page .settings-back-action {
+    padding: 0 16px !important;
+    margin-bottom: 24px !important;
+  }
 }

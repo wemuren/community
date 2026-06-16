@@ -45,7 +45,7 @@ const Subscriptions = () => {
   if (loading) return <div className="admin-loader">Загрузка ваших подписок...</div>;
 
   return (
-    <div className="home-container">
+    <div className="home-container subscriptions-page">
       {/* КОМПОНЕНТ МОДАЛОК (плейлисты, жалобы) */}
       <VideoModals 
         showPlaylistModal={va.showPlaylistModal}

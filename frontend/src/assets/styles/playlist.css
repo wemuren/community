@@ -371,3 +371,19 @@
 .back-button-wrapper {
   margin-bottom: 24px;
 }
+
+/* --- МОБИЛЬНАЯ ВЕРСИЯ КАРТОЧЕК ПЛЕЙЛИСТОВ (ДО 600PX) --- */
+@media (max-width: 600px) {
+  .playlist-card {
+    padding: 0 0 20px 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+  }
+  .playlist-cover-thumbnail {
+    border-radius: 0 !important;
+  }
+  .playlist-info-block {
+    padding: 0 16px !important;
+    box-sizing: border-box;
+  }
+}

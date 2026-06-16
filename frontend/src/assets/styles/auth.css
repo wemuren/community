@@ -390,7 +390,7 @@
 /* ── Mobile Responsive Overrides (Figma Spec) ── */
 @media (max-width: 600px) {
   .auth-container {
-    padding: calc(40px + env(safe-area-inset-top, 0px)) 16px calc(24px + env(safe-area-inset-bottom, 0px)) 16px;
+    padding: calc(16px + env(safe-area-inset-top, 0px)) 16px calc(16px + env(safe-area-inset-bottom, 0px)) 16px;
     min-height: 100vh; /* Fallback */
     min-height: 100dvh; /* Динамическая высота под мобильные панели */
     display: flex;
@@ -404,7 +404,7 @@
     max-width: 440px;
     display: flex;
     justify-content: center; /* Логотип по центру */
-    margin-bottom: auto; /* Равноудаленное распределение */
+    margin-bottom: 0 !important;
   }
 
   .logo-main img {
@@ -428,7 +428,8 @@
     font-size: 24px !important;
     font-weight: 600 !important;
     text-align: left;
-    margin: 0 0 24px 0 !important; /* Название близко к полям ввода */
+    margin-top: auto !important;
+    margin-bottom: 32px !important; /* Отступ 32px по фигме */
   }
 
   .auth-body {
@@ -436,7 +437,7 @@
     display: flex;
     flex-direction: column;
     gap: 32px; /* Spacing gap 32 между инпутами внутри формы */
-    margin-bottom: auto; /* Равноудаленное распределение от кнопки */
+    margin: 0 !important; /* Форма и заголовок центрируются вместе */
   }
 
   .input-group {
@@ -450,12 +451,16 @@
   }
 
   .auth-input {
-    padding: 8px 0 !important; /* Ввод выравнивается по левому краю без внутренних отступов */
+    padding: 8px 16px !important; /* Паддинг по фигме 16пх с боков */
     font-size: 16px;
   }
 
+  .password-group .auth-input {
+    padding-right: 48px !important; /* Защита от перекрытия текста иконкой */
+  }
+
   .password-group .eye-icon {
-    right: 0 !important;
+    right: 16px !important; /* Выравнивание с учетом бокового паддинга */
     bottom: 8px !important;
   }
 

@@ -263,7 +263,7 @@ const VideoUpload = () => {
                 )}
               </label>
               <p className="studio-field-subtext" style={{ color: IS_PREMIUM ? '#00B341' : 'rgba(0,0,0,0.4)' }}>
-                {IS_PREMIUM ? 'Premium аккаунт: лимит до 2 ГБ' : 'Базовый тариф: лимит файла до 100 МБ'}
+                {IS_PREMIUM ? 'Premium аккаунт: лимит до 1 ГБ' : 'Базовый тариф: лимит файла до 100 МБ'}
               </p>
             </div>
 

@@ -616,26 +616,43 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 ═══════════════════════════════════ */
 @media (max-width: 767px) {
 
+  .lnd-root {
+    display: flex !important;
+  }
+  .lnd-header-wrap { order: 1; padding: 0; }
+  .lnd-cta-wrap { order: 2; }
+  .lnd-features-wrap { order: 3; }
+  .lnd-pricing-wrap { order: 4; }
+  .lnd-promo { order: 5; }
+  .lnd-footer { order: 6; }
+
   /* header */
-  .lnd-header-wrap { padding: 0; }
-  .lnd-header { height: auto; padding: 16px; }
-  .lnd-logo img { width: 120px; height: 20px; }
-  .lnd-nav { gap: 12px; }
-  .lnd-nav-link--hide-mob { display: none; }
-  .lnd-nav-link { font-size: 12px; }
-  .lnd-btn-reg { padding: 0 24px; font-size: 12px; line-height: 32px; }
+  .lnd-header {
+    height: auto;
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+  .lnd-logo {
+    display: block !important;
+  }
+  .lnd-logo img {
+    width: 180px !important;
+    height: 30px !important;
+    object-fit: contain;
+  }
+  .lnd-nav {
+    display: none !important;
+  }
+
 
   /* hero */
-  .lnd-hero-wrap { padding: 16px; }
-  .lnd-hero { height: 235px; padding: 16px; border-radius: 32px; }
-  .lnd-hero__top { gap: 8px; }
-  .lnd-hero__row { gap: 10px; }
-  .lnd-hero__word { font-size: 24px; }
-  .lnd-hero__row--end .lnd-hero__word { font-size: 29px; }
-  .lnd-hero__star { width: 28px; height: 28px; }
-  .lnd-hero__desc { font-size: 14px; line-height: 16.8px; }
-  .lnd-hero__sub  { display: none; }
-  .lnd-hero__bottom { gap: 10px; }
+  .lnd-hero-wrap {
+    display: none !important;
+  }
+
 
   /* section title */
   .lnd-section-title { font-size: 24px; }
@@ -701,11 +718,26 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
   /* pricing */
   .lnd-pricing-wrap { padding: 16px; gap: 24px; }
-  .lnd-pricing-cards { flex-direction: column; gap: 16px; }
-  .lnd-plan-card { padding: 16px; border-radius: 16px; gap: 24px; }
+  .lnd-pricing-cards {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch !important;
+  }
+  .lnd-plan-card {
+    padding: 16px;
+    border-radius: 16px;
+    gap: 24px;
+    height: auto !important;
+    flex: none !important;
+    width: 100% !important;
+  }
   .lnd-plan-title { font-size: 24px; line-height: 28.8px; }
   .lnd-plan-list  { gap: 24px; }
-  .lnd-plan-item  { gap: 8px; }
+  .lnd-plan-item  {
+    gap: 8px;
+    display: flex !important;
+    align-self: stretch !important;
+  }
   .lnd-plan-item__text { font-size: 14px; line-height: 16.8px; }
   .lnd-check-icon { width: 16px; height: 16px; }
 
@@ -763,9 +795,16 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 @media (max-width: 767px) {
   .lnd-prem-badge {
-    padding: 8px 16px;
+    padding: 12px !important;
+    padding-left: 24px !important;
+    border-radius: 12px;
     font-size: 14px;
     line-height: 16.8px;
     white-space: normal;
+    display: flex !important;
+    flex: 1 1 auto !important;
+    width: 100% !important;
+    justify-content: flex-start !important;
+    text-align: left !important;
   }
 }

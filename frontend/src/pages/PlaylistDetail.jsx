@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, Edit } from 'lucide-react';
 import '../assets/styles/grid.css';
 import '../assets/styles/playlist.css';
 import VideoCard from '../components/VideoCard';
@@ -64,7 +64,7 @@ const PlaylistDetail = () => {
   if (!playlist) return <div className="admin-loader">Загрузка...</div>;
 
   return (
-    <div className="home-container">
+    <div className="home-container playlist-detail-page">
       {/* КНОПКА НАЗАД */}
       <div className="settings-back-action" onClick={() => navigate(-1)}>
         <ChevronLeft size={16} strokeWidth={2} /> Назад
@@ -91,7 +91,7 @@ const PlaylistDetail = () => {
                         setIsEditMode(!isEditMode);
                         setSelectedVideos([]);
                     }}>
-                        {isEditMode ? 'Отмена' : 'Управление'}
+                        {isEditMode ? 'Отмена' : <Edit size={16} strokeWidth={2} />}
                     </button>
                     {isEditMode && selectedVideos.length > 0 && (
                       <>

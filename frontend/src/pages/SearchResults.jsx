@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import axiosInstance from 'axios'; 
 import '../assets/styles/video-card.css';
@@ -24,20 +24,22 @@ const SearchResults = () => {
 
   const va = useVideoActions();
 
+  const fetchResults = useCallback(async () => {
+    if (!query) return;
+    setLoading(true);
+    try {
+      const res = await axiosInstance.get(`${API_BASE_URL}/search/global_search.php?q=${encodeURIComponent(query)}&viewer_id=${authUser?.id || 0}`);
+      setResults(res.data);
+    } catch (err) {
+      console.error("Search error:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, [query, authUser?.id]);
+
   useEffect(() => {
-    const fetchResults = async () => {
-      setLoading(true);
-      try {
-        const res = await axiosInstance.get(`${API_BASE_URL}/search/global_search.php?q=${encodeURIComponent(query)}&viewer_id=${authUser?.id || 0}`);
-        setResults(res.data);
-      } catch (err) {
-        console.error("Search error:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    if (query) fetchResults();
-  }, [query]);
+    fetchResults();
+  }, [fetchResults]);
 
   const isTag = query?.startsWith('#');
 
@@ -52,7 +54,7 @@ const SearchResults = () => {
   };
 
   return (
-    <div className="settings-white-wrapper">
+    <div className="settings-white-wrapper search-results-wrapper">
       {/* ИСПРАВЛЕНО: Вывели компонент модалок на страницу, передав ему все управление из хука va */}
       <VideoModals 
         showPlaylistModal={va.showPlaylistModal}

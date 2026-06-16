@@ -77,7 +77,7 @@ const Playlists = () => {
 
 
   return (
-    <div className="home-container">
+    <div className="home-container playlists-page">
       {/* ВЕРХНЯЯ ПАНЕЛЬ С СИСТЕМНОЙ ИКОНКОЙ PLUS */}
       <div className="pl-top-bar">
         <h2>Плейлисты</h2>

@@ -366,3 +366,109 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* --- МОБИЛЬНАЯ ВЕРСИЯ ПРОФИЛЯ (ДО 600PX) --- */
+@media (max-width: 600px) {
+  .profile-container {
+    padding: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    gap: 0 !important;
+    position: relative;
+  }
+
+  .profile-banner-wrapper {
+    border-radius: 0 !important;
+  }
+
+  .profile-header {
+    padding: 16px 16px 8px 16px !important;
+    margin-bottom: 8px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 16px !important;
+  }
+
+  .avatar-profile-main {
+    width: 72px !important;
+    height: 72px !important;
+    font-size: 24px !important;
+    border-width: 2px !important;
+  }
+
+  .user-text-block {
+    gap: 4px !important;
+  }
+
+  .user-text-block .author-name {
+    font-size: 18px !important;
+    font-weight: 700 !important;
+  }
+
+  .user-text-block .user-item,
+  .user-text-block .user-stats {
+    font-size: 13px !important;
+  }
+
+  .profile-actions {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+
+  /* Когда баннер активен, позиционируем кнопки абсолютно в правый нижний угол баннера */
+  .has-banner .profile-actions {
+    position: absolute !important;
+    top: calc(100vw * 9 / 21 - 52px) !important;
+    right: 16px !important;
+    z-index: 10 !important;
+  }
+
+  /* Стилизация кнопок внутри баннера на мобилках */
+  .has-banner .profile-actions .btn-create-playlist-main,
+  .has-banner .profile-actions .btn-sub {
+    padding: 8px 16px !important;
+    font-size: 13px !important;
+    height: 36px !important;
+  }
+  .has-banner .profile-actions .profile-report-badge-btn {
+    height: 36px !important;
+    width: 36px !important;
+    padding: 0 !important;
+    border-radius: 50% !important;
+  }
+
+  /* Когда баннера нет, выстраиваем кнопки в колонку под текстом */
+  .no-banner .profile-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 16px !important;
+  }
+  .no-banner .profile-actions {
+    width: 100% !important;
+    justify-content: flex-start !important;
+  }
+  .no-banner .profile-actions .btn-create-playlist-main,
+  .no-banner .profile-actions .btn-sub {
+    flex: 1 !important;
+    padding: 10px 16px !important;
+    font-size: 14px !important;
+    text-align: center !important;
+  }
+
+  .channel-navigation {
+    padding: 0 16px !important;
+    gap: 24px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .empty-text {
+    padding: 0 16px !important;
+  }
+
+  .moderation-notice {
+    margin: 16px !important;
+  }
+}
