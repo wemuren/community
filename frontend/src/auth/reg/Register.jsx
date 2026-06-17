@@ -196,7 +196,7 @@ const Register = () => {
           <>
             <div className="auth-body">
               <div className="input-group">
-                <label htmlFor="code">введите код подтверждения</label>
+                <label htmlFor="code">ВВЕДИТЕ КОД ПОДТВЕРЖДЕНИЯ</label>
                 <input
                   id="code"
                   className={`auth-input${serverError ? ' invalid' : ''}`}
@@ -244,7 +244,7 @@ const Register = () => {
           <>
             <div className="auth-body">
               <div className="input-group password-group">
-                <label htmlFor="password">придумайте пароль</label>
+                <label htmlFor="password">ПРИДУМАЙТЕ ПАРОЛЬ</label>
                 <span className="char-counter">{formData.password.length}/{limits.password}</span>
                 <input
                   id="password"
@@ -263,7 +263,7 @@ const Register = () => {
               </div>
 
               <div className="input-group password-group">
-                <label htmlFor="confirmPassword">повторите пароль</label>
+                <label htmlFor="confirmPassword">ПОВТОРИТЕ ПАРОЛЬ</label>
                 <input
                   id="confirmPassword"
                   className={`auth-input${fieldErrors.confirmPassword && touched.confirmPassword ? ' invalid' : ''}`}
