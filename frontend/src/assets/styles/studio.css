@@ -546,3 +546,176 @@
   margin-top: 8px;
   font-size: 13px;
 }
+
+/* --- СТИЛИ ДЛЯ ШАБЛОНА ДЕЙСТВИЙ ПРОФИЛЯ НА ДЕСКТОПЕ --- */
+.studio-profile-actions {
+  grid-column: 1 / -1;
+  width: 100%;
+  margin-top: 24px;
+}
+
+/* --- МОБИЛЬНАЯ ВЕРСИЯ ТВОРЧЕСКОЙ СТУДИИ (ДО 600PX) --- */
+@media (max-width: 600px) {
+  /* Убираем боковые отступы и скругления у основного контейнера, добавляем большой отступ снизу под нижний бар */
+  .settings-white-wrapper {
+    padding: 0 0 120px 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    gap: 0 !important;
+  }
+
+  /* Вертикальное сложение колонок в сетках */
+  .settings-columns-grid,
+  .studio-upload-grid {
+    grid-template-columns: 1fr !important;
+    gap: 32px !important;
+    margin-top: 16px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .settings-white-wrapper .settings-col-section {
+    min-width: 0 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Добавляем боковые паддинги для элементов */
+  .settings-white-wrapper .settings-back-action {
+    padding: 0 16px !important;
+    margin-bottom: 24px !important;
+  }
+  .settings-white-wrapper .pl-top-bar {
+    padding: 0 16px !important;
+    margin-bottom: 20px !important;
+  }
+  .settings-white-wrapper .settings-col-section h3 {
+    padding: 0 16px !important;
+    margin-bottom: 16px !important;
+  }
+  .settings-white-wrapper .auth-body {
+    padding: 0 16px !important;
+  }
+  /* Самое популярное видео по размеру должно быть как обычные видео (во весь экран) */
+  .settings-white-wrapper .top-video-body {
+    padding: 0 !important;
+  }
+  .settings-white-wrapper .studio-media-upload-body {
+    padding: 0 16px !important;
+  }
+  /* Сетка карточек статистики в 2 колонки на мобильных */
+  .settings-white-wrapper .admin-stats-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+    padding: 0 16px !important;
+    margin-bottom: 24px !important;
+  }
+
+  /* Если число карточек нечетное (5), растягиваем последнюю на всю ширину */
+  .settings-white-wrapper .admin-stats-grid .admin-stat-card:last-child:nth-child(odd) {
+    grid-column: span 2 !important;
+  }
+
+  .settings-white-wrapper .admin-stat-card {
+    padding: 12px 16px !important;
+    gap: 8px !important;
+    border-radius: 12px !important;
+  }
+
+  .settings-white-wrapper .admin-stat-label {
+    font-size: 11px !important;
+  }
+
+  .settings-white-wrapper .admin-stat-value {
+    font-size: 22px !important;
+  }
+
+  .settings-white-wrapper .create-channel-promo {
+    margin: 16px !important;
+  }
+
+  /* Сдвиг и растягивание кнопки сохранения/обновления на весь экран */
+  .studio-profile-actions {
+    padding: 0 16px !important;
+    box-sizing: border-box !important;
+    margin-bottom: 24px !important;
+  }
+  .studio-profile-actions .btn-auth {
+    width: 100% !important;
+  }
+}
+
+/* Глобальное предотвращение растягивания двухколоночной сетки и настройка "hug" для правой колонки */
+.settings-columns-grid {
+  min-width: 0 !important;
+}
+
+@media (min-width: 961px) {
+  .settings-columns-grid {
+    grid-template-columns: 3fr 2fr !important;
+    gap: 48px !important;
+  }
+}
+
+.settings-col-section {
+  min-width: 0 !important;
+}
+
+/* Корректировка отображения длинных комментариев для ПК и мобильной версий */
+.auth-body .comments-list {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+.auth-body .comment-item {
+  box-sizing: border-box !important;
+  max-width: 100% !important;
+  width: 100% !important;
+  overflow: hidden !important;
+}
+.auth-body .comment-body {
+  flex: 1 !important;
+  min-width: 0 !important;
+  width: auto !important;
+  box-sizing: border-box !important;
+  max-width: 100% !important;
+}
+.auth-body .comment-meta {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  gap: 8px !important;
+  width: 100% !important;
+}
+.auth-body .comment-text {
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+  white-space: pre-wrap !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+.auth-body .comment-date {
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+  white-space: normal !important;
+}
+
+/* Отображение кнопок сохранения настроек в зависимости от устройства */
+.pc-only-actions {
+  display: block !important;
+}
+.mobile-only-actions {
+  display: none !important;
+}
+
+@media (max-width: 600px) {
+  .pc-only-actions {
+    display: none !important;
+  }
+  .mobile-only-actions {
+    display: block !important;
+  }
+}

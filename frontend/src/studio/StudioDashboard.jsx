@@ -111,7 +111,7 @@ const StudioDashboard = () => {
         {/* ЛЕВАЯ КОЛОНКА: ВАШ ГЛАВНЫЙ ХИТ */}
         <section className="settings-col-section">
           <h3>Самое популярное видео</h3>
-          <div className="auth-body">
+          <div className="auth-body top-video-body">
             {stats.top_video ? (
               <VideoCard 
                 video={stats.top_video}

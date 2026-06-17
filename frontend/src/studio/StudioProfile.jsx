@@ -185,13 +185,16 @@ const StudioProfile = () => {
               <p className="studio-field-subtext">Только латиница, цифры и нижнее подчеркивание</p>
             </div>
 
-            <button 
-              type="submit" 
-              className={`btn-auth ${isFormValid && !loading ? 'active' : ''}`} 
-              disabled={!isFormValid || loading}
-            >
-              {loading ? 'Сохраняем...' : 'Обновить настройки канала'}
-            </button>
+            {/* Кнопка сохранения для ПК */}
+            <div className="studio-profile-actions pc-only-actions">
+              <button 
+                type="submit" 
+                className={`btn-auth ${isFormValid && !loading ? 'active' : ''}`} 
+                disabled={!isFormValid || loading}
+              >
+                {loading ? 'Сохраняем...' : 'Обновить настройки канала'}
+              </button>
+            </div>
           </div>
         </section>
 
@@ -277,6 +280,17 @@ const StudioProfile = () => {
 
           </div>
         </section>
+
+        {/* Кнопка сохранения для мобильных */}
+        <div className="studio-profile-actions mobile-only-actions">
+          <button 
+            type="submit" 
+            className={`btn-auth ${isFormValid && !loading ? 'active' : ''}`} 
+            disabled={!isFormValid || loading}
+          >
+            {loading ? 'Сохраняем...' : 'Обновить настройки канала'}
+          </button>
+        </div>
       </form>
     </div>
   );
