@@ -206,15 +206,15 @@
   margin-top: 8px;
 }
 
-/* --- СТИЛИ ДЛЯ ТАБОВ НАВИГАЦИИ НАСТРОЕК --- */
-.channel-navigation {
+/* --- СТИЛИ ДЛЯ ТАБОВ НАВИГАЦИИ НАСТРОЕК (СКОУПНУТЫ НА НАСТРОЙКИ) --- */
+.settings-white-wrapper .channel-navigation {
   display: flex;
   gap: 40px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
   margin-bottom: 24px;
 }
 
-.nav-tab {
+.settings-white-wrapper .nav-tab {
   padding: 12px 0;
   font-size: 15px;
   font-weight: 600;
@@ -225,7 +225,7 @@
   cursor: pointer;
 }
 
-.nav-tab.active {
+.settings-white-wrapper .nav-tab.active {
   color: var(--brand-red, var(--primary-red)) !important;
   box-shadow: inset 0 -2px 0 var(--brand-red, var(--primary-red)) !important;
 }
@@ -279,7 +279,7 @@
   }
   
   /* Делаем вкладки списком (в столбик) на мобилке, чтобы названия влезали целиком */
-  .channel-navigation {
+  .settings-white-wrapper .channel-navigation {
     display: flex !important;
     flex-direction: column !important;
     flex-wrap: nowrap !important;
@@ -291,22 +291,23 @@
     border-bottom: none !important;
   }
   
-  .nav-tab {
+  .settings-white-wrapper .nav-tab {
     white-space: normal !important;
     flex-shrink: 0 !important;
     width: 100% !important;
-    padding: 14px 16px !important;
-    background: var(--bg-card, #f4f4f4) !important;
-    border-radius: 12px !important;
+    padding: 12px 0 !important;
+    background: transparent !important;
+    border-radius: 0 !important;
     box-sizing: border-box !important;
-    transition: background-color 0.2s ease !important;
-    border-bottom: none !important;
+    transition: color 0.2s ease !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+    color: var(--text-muted) !important;
   }
   
-  .nav-tab.active {
-    background: var(--primary-red) !important;
-    color: var(--white) !important;
-    box-shadow: none !important;
+  .settings-white-wrapper .nav-tab.active {
+    background: transparent !important;
+    color: var(--brand-red, var(--primary-red)) !important;
+    box-shadow: inset 0 -2px 0 var(--brand-red, var(--primary-red)) !important;
   }
 
   /* Вертикальное сложение кнопок действий */

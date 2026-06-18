@@ -41,6 +41,7 @@
   --bg-card: #F4F4F4;
   --white: #FFFFFF;
   --primary-red: #C20000;
+  --brand-red: var(--primary-red);
   --text-main: #000000;
   --text-muted: rgba(0, 0, 0, 0.50);
   --border-radius-lg: 24px;

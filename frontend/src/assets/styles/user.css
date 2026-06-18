@@ -91,6 +91,7 @@
     letter-spacing: 0.05em;
     color: var(--text-muted);
     transition: 0.2s;
+    cursor: pointer;
 }
 
 .nav-tab.active {

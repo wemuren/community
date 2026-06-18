@@ -86,8 +86,8 @@
   transform: scale(0.98);
 }
 
-/* Планшеты (1024px и меньше) — строго 2 видео в ряд */
-@media (max-width: 1460px) {
+/* Ноутбуки (1480px и меньше) — 3 видео в ряд */
+@media (max-width: 1480px) {
   .video-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
