@@ -138,7 +138,7 @@ const SystemHealth = () => {
             ))
           ) : (
             <div className="terminal-light-empty-state">
-              <span>Системный лог-файл пуст. Ошибок ядра не зафиксировано </span>
+              <span>Системный лог-файл пуст. Ошибок не зафиксировано </span>
             </div>
           )}
         </div>
